@@ -1,0 +1,341 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+enum WeekDay {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+
+enum NotificationType {
+  REMINDER
+  SYSTEM
+  BILLING
+  MESSAGE
+}
+
+enum SubscriptionPlan {
+  FREE
+  BASIC
+  PREMIUM
+  ENTERPRISE
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Otp {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  createdAt DateTime @default(now())
+  expiresAt DateTime
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  image         String?
+  emailVerified DateTime?
+  role          String
+  password      String
+
+  accounts      Account[]
+  sessions      Session[]
+  patient       Patient?
+  clinic        Clinic?
+  doctor        Doctor?
+  notifications Notification[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Doctor {
+  id             String                   @id @default(cuid())
+  degree         String
+  gender         Gender?
+  hospital       String?
+  street         String?
+  state          String?
+  city           String?
+  country        String?
+  zipCode        String?
+  averageRating  Float                    @default(0.0)
+  reviewsCount   Int?
+  specialization String
+  searchVector   Unsupported("tsvector")? @map("_search")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  reviews         DoctorReview[]
+  memberships     ClinicMembership[]
+  userId          String             @unique
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pastAppointment PastAppointment[]
+
+  @@index([city], type: Hash)
+  @@index([gender], type: Hash)
+  @@index([averageRating], type: BTree)
+  @@index([city, averageRating])
+  @@index([city, specialization])
+  @@index([country, city])
+  @@index([searchVector], type: Gin)
+}
+
+model Clinic {
+  id String @id @default(cuid())
+
+  phoneNumber     String
+  isActive        Boolean @default(true)
+  description     String? @db.Text
+  openingHour     String?
+  establishedYear Int?
+  street          String?
+  city            String?
+  country         String?
+  zipCode         String?
+
+  // For better text search
+  searchVector Unsupported("tsvector")? @map("_search")
+
+  userId       String             @unique
+  user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reviews      ClinicReview[]
+  members      ClinicMembership[]
+  subscription Subscription?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Indexes for faster filtering
+  @@index([city], type: Hash)
+  @@index([country], type: Hash)
+  @@index([isActive], type: Hash)
+  @@index([city, country])
+  @@index([city, isActive])
+  @@index([searchVector], type: Gin)
+}
+
+model Patient {
+  id String @id @default(cuid())
+
+  age         Int?
+  gender      Gender  @default(MALE)
+  bloodGroup  String?
+  phoneNumber String?
+  street      String?
+  city        String?
+  country     String?
+  zipCode     String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  doctorReviews   DoctorReview[]
+  clinicReviews   ClinicReview[]
+  pastAppointment PastAppointment[]
+  medicalHistory  MedicalHistory[]
+
+  @@index([userId])
+  @@index([city])
+}
+
+model ClinicMembership {
+  id              String   @id @default(cuid())
+  doctorId        String
+  clinicId        String
+  isActive        Boolean  @default(true)
+  discount        Int      @default(0)
+  maxAppointments Int      @default(0)
+  fee             Int      @default(0)
+  joinedAt        DateTime @default(now())
+
+  doctor    Doctor     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  clinic    Clinic     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  schedules Schedule[]
+
+  @@unique([doctorId, clinicId])
+  @@index([clinicId])
+}
+
+model Schedule {
+  id           String  @id @default(cuid())
+  membershipId String
+  startDay     WeekDay
+  endDay       WeekDay
+  startTime    String
+  endTime      String
+
+  membership ClinicMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+
+  @@unique([membershipId, startDay])
+  @@index([membershipId, startDay])
+  @@index([startDay])
+}
+
+model PastAppointment {
+  id        String   @id @default(cuid())
+  doctorId  String
+  patientId String
+  joinedAt  DateTime @default(now())
+
+  doctor         Doctor           @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  patient        Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  medicalHistory MedicalHistory[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([doctorId])
+  @@index([patientId])
+}
+
+model MedicalHistory {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  date        DateTime @db.Date
+  document    String?
+  patientId   String
+
+  pastAppointment   PastAppointment? @relation(fields: [pastAppointmentId], references: [id], onDelete: Cascade)
+  pastAppointmentId String?
+  patient           Patient          @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date])
+  @@index([pastAppointmentId])
+  @@index([patientId])
+}
+
+model DoctorReview {
+  id        String  @id @default(cuid())
+  patientId String
+  doctorId  String
+  rating    Int     @default(1)
+  comment   String? @db.Text
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([patientId, doctorId])
+  @@index([doctorId])
+  @@index([rating])
+}
+
+model ClinicReview {
+  id        String  @id @default(cuid())
+  patientId String
+  clinicId  String
+  rating    Int     @default(1)
+  comment   String? @db.Text
+
+  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  clinic  Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([patientId, clinicId])
+  @@index([clinicId])
+  @@index([rating])
+}
+
+model Subscription {
+  id                   String           @id @default(cuid())
+  clinicId             String           @unique
+  plan                 SubscriptionPlan
+  startDate            DateTime
+  endDate              DateTime
+  status               String           @default("active")
+  stripeCustomerId     String?          @unique
+  stripeSubscriptionId String?          @unique
+
+  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([plan])
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  userId      String
+  title       String
+  message     String           @db.Text
+  type        NotificationType
+  referenceId String?
+  isRead      Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([isRead])
+  @@index([type])
+  @@index([createdAt])
+}
