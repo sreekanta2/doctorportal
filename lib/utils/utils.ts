@@ -10,42 +10,7 @@ export const UserRole = {
   ADMIN: "admin",
   CLINIC: "clinic",
 };
-export const DOCTOR_SPECIALTIES = [
-  { value: "", label: "All" },
-  { value: "anesthesiology", label: "Anesthesiology" },
-  { value: "cardiology", label: "Cardiology" },
-  { value: "colorectal-surgery", label: "Colorectal Surgery" },
-  { value: "dentistry", label: "Dentistry" },
-  { value: "dermatology", label: "Dermatology" },
-  { value: "ent", label: "ENT (Ear, Nose & Throat)" },
-  { value: "endocrinology", label: "Endocrinology" },
-  { value: "gastroenterology", label: "Gastroenterology" },
-  { value: "general-physician", label: "General Physician" },
-  { value: "general-surgery", label: "General Surgery" },
-  { value: "gynecologic-oncology", label: "Gynecologic Oncology" },
-  { value: "gynecology-obstetrics", label: "Gynecology & Obstetrics" },
-  { value: "hematology", label: "Hematology" },
-  { value: "hepatology", label: "Hepatology" },
-  { value: "medical-oncology", label: "Medical Oncology" },
-  { value: "internal-medicine", label: "Internal Medicine" },
-  { value: "nephrology", label: "Nephrology" },
-  { value: "neurology", label: "Neurology" },
-  { value: "neurosurgery", label: "Neurosurgery" },
-  { value: "oncology", label: "Oncology" },
-  { value: "ophthalmology", label: "Ophthalmology" },
-  { value: "orthopedics", label: "Orthopedics" },
-  { value: "pediatric-surgery", label: "Pediatric Surgery" },
-  { value: "pediatrics", label: "Pediatrics" },
-  { value: "physical-medicine", label: "Physical Medicine" },
-  { value: "plastic-surgery", label: "Plastic Surgery" },
-  { value: "psychiatry", label: "Psychiatry" },
-  { value: "radiation-oncology", label: "Radiation Oncology" },
-  { value: "respiratory-medicine", label: "Respiratory Medicine" },
-  { value: "rheumatology", label: "Rheumatology" },
-  { value: "thoracic-surgery", label: "Thoracic Surgery" },
-  { value: "urology", label: "Urology" },
-  { value: "vascular-surgery", label: "Vascular Surgery" },
-];
+
 export const BANGLADESH_DISTRICTS = [
   { value: "", label: "All" },
   { value: "dhaka", label: "Dhaka" },
@@ -68,3 +33,25 @@ export const BANGLADESH_DISTRICTS = [
 
 // Type for strict district value checking
 export type BangladeshDistrict = (typeof BANGLADESH_DISTRICTS)[number]["value"];
+
+type Specialization = {
+  id: string;
+  name: string;
+  totalDoctors: number;
+};
+
+type SelectOption = {
+  value: string;
+  label: string;
+  totalDoctors: number;
+};
+
+export function mapSpecializationsToOptions(
+  specializations: Specialization[]
+): SelectOption[] {
+  return specializations.map((spec) => ({
+    value: spec.name.toLowerCase().replace(/\s+/g, "_"), // convert to lowercase with underscores
+    label: spec.name,
+    totalDoctors: spec.totalDoctors,
+  }));
+}

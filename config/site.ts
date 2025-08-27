@@ -2,8 +2,8 @@ import avatar from "@/public/images/avatar/avatar-11.jpg";
 export { avatar };
 export const siteConfig = {
   sidebarBg: "none",
-  siteName: "Medexa",
-  name: "Doccare - Find & Book Doctors Online",
+  siteName: "Medixa",
+  name: "Medixa - Find & Book Doctors Online",
   url: `${process.env.NEXT_PUBLIC_API_URL || "https://doccare.srikanto.site"}`,
   description:
     "Find and book appointments with top-rated doctors by specialty, location, and availability. Read verified patient reviews.",
@@ -30,6 +30,7 @@ export const siteConfig = {
 
   // Contact Information
   contact: {
+    officeAddress: "3556 Beech Street, San Francisco, California, CA 94108",
     phone: "+8801737813575",
     email: "support@Doccare.com",
   },

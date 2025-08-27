@@ -201,6 +201,23 @@ model Patient {
   @@index([city])
 }
 
+model Specialization {
+  id           String @id @default(cuid())
+  name         String @unique
+  totalDoctors Int    @default(0)
+
+  @@index([name])
+  @@index([id])
+}
+
+model City {
+  id   String @id @default(cuid())
+  name String @unique
+
+  @@index([name])
+  @@index([id])
+}
+
 model ClinicMembership {
   id              String   @id @default(cuid())
   doctorId        String

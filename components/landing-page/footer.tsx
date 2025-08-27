@@ -1,5 +1,5 @@
 "use client";
-import { SiteLogo } from "@/components/svg";
+import { siteConfig } from "@/config/site";
 import footerImage from "@/public/images/landing-page/footer.jpg";
 import facebook from "@/public/images/social/facebook-1.png";
 import linkedin from "@/public/images/social/linkedin-1.png";
@@ -48,10 +48,10 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {/* Logo and social links */}
           <div className="w-full max-w-xl mx-auto flex flex-col items-start text-default-600">
-            <Link href="/" className="flex items-center gap-1">
-              <SiteLogo className="h-8 w-8 text-primary" />
-              <span className="text-primary-500 font-medium text-xl">Care</span>
-            </Link>
+            <span className="text-primary-500 font-medium text-xl">
+              {siteConfig?.siteName}
+            </span>
+
             <p className="text-base text-default-600 mt-3">
               Effortlessly schedule your medical appointments with Doccure.
               Connect with healthcare professionals, manage appointments &
@@ -101,13 +101,13 @@ const Footer = () => {
             <h1 className="text-lg font-bold">Contact Us</h1>
             <ul>
               <li className="text-md w-full group transition duration-300 ease-out hover:translate-x-2 cursor-pointer">
-                3556 Beech Street, San Francisco, California, CA 94108
+                {siteConfig?.contact?.officeAddress}
               </li>
               <li className="text-md w-full group transition duration-300 ease-out hover:translate-x-2 cursor-pointer">
-                +1 315 369 5943
+                {siteConfig?.contact?.phone}
               </li>
               <li className="text-md w-full group transition duration-300 ease-out hover:translate-x-2 cursor-pointer">
-                doccure@example.com
+                {siteConfig?.contact?.email}
               </li>
             </ul>
           </div>
@@ -116,8 +116,8 @@ const Footer = () => {
         {/* Copyright */}
         <div className="relative bg-primary-900 dark:bg-default-50 py-6  ">
           <div className="container flex flex-col text-center md:text-start md:flex-row gap-2">
-            <p className="text-default-500 flex-1 text-base font-medium">
-              COPYRIGHT &copy; Doccure All rights Reserved
+            <p className="text-default-200 flex-1 text-base font-medium">
+              COPYRIGHT &copy; {siteConfig?.siteName} All rights Reserved
             </p>
           </div>
         </div>

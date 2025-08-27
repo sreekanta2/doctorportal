@@ -3,7 +3,6 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Rating } from "@/components/ui/rating";
 import {
   Table,
   TableBody,
@@ -39,14 +38,14 @@ export default function ReviewsList({
 
   return (
     <>
-      <Table className="w-[1250px]">
+      <Table className="">
         <TableHeader>
           <TableRow>
             <TableHead>Patient Name</TableHead>
             <TableHead>Doctor Name</TableHead>
-            <TableHead>Rating</TableHead>
+
             <TableHead>Content</TableHead>
-            <TableHead>Date</TableHead>
+
             <TableHead>Status</TableHead>
             <TableHead>Action</TableHead>
           </TableRow>
@@ -77,14 +76,6 @@ export default function ReviewsList({
                 </div>
               </TableCell>
 
-              <TableCell>
-                <Rating
-                  value={review.rating || 0}
-                  readOnly
-                  className="max-w-[100px]"
-                />
-              </TableCell>
-
               {review?.comment && (
                 <TableCell>
                   {review?.comment?.length > 42
@@ -92,11 +83,7 @@ export default function ReviewsList({
                     : review.comment}
                 </TableCell>
               )}
-              <TableCell>
-                {review.createdAt
-                  ? new Date(review.createdAt).toLocaleDateString("en-GB")
-                  : "N/A"}
-              </TableCell>
+
               <TableCell>
                 <Badge
                   variant="soft"

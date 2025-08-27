@@ -1,26 +1,25 @@
 "use client";
 
+import { mapSpecializationsToOptions } from "@/lib/utils/utils";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import "swiper/css";
 import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
-const specialties = [
-  { name: "Anesthesia" },
-  { name: "Cardiology" },
-  { name: "Cardiology" },
-  { name: "Cardiology" },
-  { name: "Cardiology" },
-  { name: "Cardiology" },
-  { name: "Cardiology" },
-  { name: "Cardiology" },
-  { name: "Cardiology" },
-  { name: "Cardiology" },
-];
-
 const SpecialtiesCarousel = () => {
+  const [specialties, setSpecialties] = useState([]);
+  useEffect(() => {
+    const fetchSpecialties = async () => {
+      const response = await fetch("/api/specialties");
+      const result = await response.json();
+      setSpecialties(result?.data?.data);
+    };
+    fetchSpecialties();
+  }, []);
+  const mappedSpecialties = mapSpecializationsToOptions(specialties);
   return (
     <motion.section className="bg-card/30    pt-16 lg:py-20">
       <div className="container    ">
@@ -72,20 +71,20 @@ const SpecialtiesCarousel = () => {
             }}
             className="!py-4"
           >
-            {specialties.map((item, index) => (
+            {mappedSpecialties.map((item, index) => (
               <SwiperSlide key={index}>
                 <Link
-                  href={`/doctors?specialty=${item.name}`}
+                  href={`/doctors?specialization=${item.value}`}
                   className="block h-full"
                 >
                   <motion.div
                     initial={{ opacity: 0, scale: 0.8 }}
                     whileInView={{ opacity: 1, scale: 1 }}
                     transition={{ duration: 0.3, delay: index * 0.1 }}
-                    className="group relative bg-card rounded-lg shadow-md p-6 text-left border dark:border-0 h-full"
+                    className="group relative bg-card rounded-lg shadow-md px-12 py-6 md:p-6 text-left border dark:border-0 h-full"
                   >
                     <div className="absolute top-4 right-4 bg-primary-50 dark:bg-primary-900/30 text-primary  text-xs font-medium px-2.5 py-0.5 rounded-full">
-                      + Doctors
+                      {item?.totalDoctors} + Doctors
                     </div>
 
                     <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 mb-4">
@@ -94,7 +93,7 @@ const SpecialtiesCarousel = () => {
 
                     <div>
                       <h3 className="text-base font-semibold text-default-800 dark:text-white line-clamp-2">
-                        {item.name}
+                        {item.label}
                       </h3>
                       <button className="mt-3 text-base text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 flex items-center gap-1">
                         View specialists

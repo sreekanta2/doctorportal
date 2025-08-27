@@ -2,11 +2,11 @@
 
 import { Gender } from "@prisma/client";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
-import { BANGLADESH_DISTRICTS, DOCTOR_SPECIALTIES } from "@/lib/utils/utils";
+import { mapSpecializationsToOptions } from "@/lib/utils/utils";
 import CustomFormField, { FormFieldType } from "./custom-form-field";
 import { Form } from "./ui/form";
 
@@ -21,6 +21,8 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const DoctorFilterForm = () => {
+  const [specialties, setSpecialties] = useState([]);
+  const [cities, setCities] = useState([]);
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFirstRender = useRef(true);
@@ -56,6 +58,41 @@ const DoctorFilterForm = () => {
     const newUrl = `${currentUrl.pathname}?${params.toString()}`;
     router.push(newUrl);
   }, [watchedValues, router]);
+
+  useEffect(() => {
+    let isMounted = true; // prevent state update after unmount
+
+    const fetchData = async () => {
+      try {
+        const [specialtiesRes, citiesRes] = await Promise.all([
+          fetch("/api/specialties"),
+          fetch("/api/cities"),
+        ]);
+
+        const specialtiesData = await specialtiesRes.json();
+        const citiesData = await citiesRes.json();
+
+        if (isMounted) {
+          setSpecialties(specialtiesData?.data?.data || []);
+          setCities(citiesData?.data?.data || []);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // cleanup
+    };
+  }, []);
+
+  const mappedSpecialties = mapSpecializationsToOptions(specialties);
+  const mappedCities = cities.map((city: { id: string; name: string }) => ({
+    value: city.name.toLowerCase(),
+    label: city.name,
+  }));
   return (
     <Form {...form}>
       <form className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-md mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -75,7 +112,7 @@ const DoctorFilterForm = () => {
           placeholder="Select Specialization"
           className="w-full"
           label="Specialty"
-          options={DOCTOR_SPECIALTIES}
+          options={mappedSpecialties}
         />
 
         <CustomFormField
@@ -85,7 +122,7 @@ const DoctorFilterForm = () => {
           placeholder="Select Location"
           className="w-full"
           label="Location"
-          options={BANGLADESH_DISTRICTS}
+          options={mappedCities}
         />
 
         <CustomFormField
@@ -96,7 +133,6 @@ const DoctorFilterForm = () => {
           className="w-full"
           label="Gender"
           options={[
-            { value: "", label: "All" },
             { value: Gender.MALE, label: "Male" },
             { value: Gender.FEMALE, label: "Female" },
             { value: Gender.OTHER, label: "Other" },

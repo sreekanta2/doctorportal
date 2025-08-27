@@ -1,11 +1,7 @@
 "use client";
-import doctor1 from "@/public/images/doctors/doctor1.webp";
-import doctor2 from "@/public/images/doctors/doctor2.webp";
-import doctor3 from "@/public/images/doctors/doctor3.webp";
-import doctor4 from "@/public/images/doctors/doctor4.webp";
-import doctor5 from "@/public/images/doctors/doctor5.webp";
+import { DoctorWithRelations } from "@/types";
 import { motion, useInView } from "framer-motion";
-import { Bookmark, ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star } from "lucide-react";
 import Image, { StaticImageData } from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
@@ -29,95 +25,9 @@ interface Doctor {
   specialties?: string[];
 }
 
-const doctors: Doctor[] = [
-  {
-    id: 1,
-    image: doctor1,
-    name: "Dr. Ruby Perrin",
-    rating: 3.0,
-    qualification: "BDS, MDS - Oral & Maxillofacial",
-    location: "Dallas, USA",
-    consultations: 400,
-    yearsExperience: 15,
-    reviews: 43,
-    specialties: ["Oral Surgery", "Dental Implants"],
-  },
-  {
-    id: 2,
-    image: doctor2,
-    name: "Dr. John Doe",
-    rating: 4.5,
-    qualification: "MBBS, MD - Cardiology",
-    location: "New York, USA",
-    consultations: 550,
-    yearsExperience: 21,
-    reviews: 87,
-    specialties: ["Cardiac Care", "Echocardiography"],
-  },
-  {
-    id: 3,
-    image: doctor3,
-    name: "Dr. Emily Carter",
-    rating: 4.2,
-    qualification: "MS - Orthopedics",
-    location: "Los Angeles, USA",
-    consultations: 620,
-    yearsExperience: 18,
-    reviews: 65,
-    specialties: ["Joint Replacement", "Sports Medicine"],
-  },
-  {
-    id: 4,
-    image: doctor4,
-    name: "Dr. Michael Smith",
-    rating: 4.8,
-    qualification: "MD - Neurology",
-    location: "Houston, USA",
-    consultations: 710,
-    yearsExperience: 25,
-    reviews: 112,
-    specialties: ["Stroke Care", "Epilepsy"],
-  },
-  {
-    id: 5,
-    image: doctor5,
-    name: "Dr. Sarah Johnson",
-    rating: 3.9,
-    qualification: "MD - Dermatology",
-    location: "Chicago, USA",
-    consultations: 480,
-    yearsExperience: 12,
-    reviews: 38,
-    specialties: ["Cosmetic Dermatology", "Skin Cancer"],
-  },
-  {
-    id: 6,
-    image: doctor2,
-    name: "Dr. William Brown",
-    rating: 4.6,
-    qualification: "MD - Urology",
-    location: "San Francisco, USA",
-    consultations: 530,
-    yearsExperience: 19,
-    reviews: 76,
-    specialties: ["Prostate Care", "Kidney Stones"],
-  },
-  {
-    id: 7,
-    image: doctor4,
-    name: "Dr. Olivia Wilson",
-    rating: 4.7,
-    qualification: "MS - Gynecology",
-    location: "Boston, USA",
-    consultations: 590,
-    yearsExperience: 17,
-    reviews: 94,
-    specialties: ["Prenatal Care", "Menopause"],
-  },
-];
-
 const BestDoctors = () => {
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
+  const [doctors, setDoctors] = useState<DoctorWithRelations[]>([]);
   const sectionRef = useRef<HTMLElement>(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
@@ -127,6 +37,25 @@ const BestDoctors = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, [swiperInstance]);
 
+  useEffect(() => {
+    const fetchDoctors = async () => {
+      try {
+        const response = await fetch("/api/doctors?page=1&limit=15");
+        const data = await response.json();
+        if (response.ok) {
+          // Update state with fetched doctors
+          setDoctors(data?.data);
+        } else {
+          console.error("Error fetching doctors:", data);
+        }
+      } catch (error) {
+        console.error("Error fetching doctors:", error);
+      }
+    };
+
+    fetchDoctors();
+  }, []);
+  console.log(doctors[0]);
   return (
     <motion.section
       ref={sectionRef}
@@ -205,10 +134,10 @@ const BestDoctors = () => {
               >
                 {/* Doctor Image with proper alt text */}
                 <figure className="relative lg:mx-auto h-full max-h-[250px] w-full max-w-[300px] aspect-square">
-                  {doctor?.image ? (
+                  {doctor?.user?.image ? (
                     <Image
-                      src={doctor.image}
-                      alt={`Portrait of ${doctor.name}`}
+                      src={doctor.user?.image}
+                      alt={`Portrait of ${doctor.user?.name}`}
                       fill
                       className="rounded-lg object-cover"
                       sizes="(max-width: 640px) 100vw, 250px"
@@ -227,103 +156,85 @@ const BestDoctors = () => {
                       itemScope
                       itemType="https://schema.org/AggregateRating"
                     >
-                      <span itemProp="ratingValue">{doctor.rating}</span>
+                      <span itemProp="ratingValue">
+                        {doctor?.averageRating}
+                      </span>
                     </span>
                   </div>
                 </figure>
 
                 {/* Doctor Info with structured data */}
-                <div className="flex-1 flex flex-col">
-                  <div className="mb-4">
-                    <div className="flex justify-between items-center">
-                      <Link
-                        href={`/doctors/${doctor.id}`}
-                        className="text-xl font-bold text-default-800 dark:text-white mb-1"
-                        itemProp="url"
-                      >
-                        <h3 itemProp="name">{doctor.name}</h3>
-                      </Link>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="rounded-full hover:text-white"
-                        aria-label={`Bookmark ${doctor.name}`}
-                      >
-                        <Bookmark className="w-5 h-5 " />
-                      </Button>
-                    </div>
-                    <p
-                      className="text-base text-default-600 dark:text-default-300"
-                      itemProp="hasCredential"
+
+                <div className="mb-4">
+                  <Link
+                    href={`/doctors/${doctor?.id}`}
+                    className="text-xl font-bold text-default-800 dark:text-white mb-1"
+                    itemProp="url"
+                  >
+                    <h3 itemProp="name">{doctor?.user?.name}</h3>
+                  </Link>
+
+                  <p
+                    className="text-base text-default-600 dark:text-default-300"
+                    itemProp="hasCredential"
+                  >
+                    {doctor?.specialization}
+                  </p>
+                  <meta
+                    itemProp="medicalSpecialty"
+                    content={doctor.hospital || ""}
+                  />
+                </div>
+
+                {/* Location and Experience with microdata */}
+
+                <div className="flex flex-col gap-2 ">
+                  <div>
+                    <span className="text-primary">●</span>
+                    <span
+                      itemProp="location"
+                      itemScope
+                      itemType="https://schema.org/Place"
                     >
-                      {doctor.qualification}
-                    </p>
-                    <meta
-                      itemProp="medicalSpecialty"
-                      content={doctor.specialties?.join(", ")}
-                    />
+                      <span itemProp="address"> {doctor?.hospital}</span>
+                    </span>
                   </div>
-
-                  {/* Location and Experience with microdata */}
-                  <div className="flex flex-col items-start gap-3 mb-2">
-                    <div className="flex items-center gap-1">
-                      <span className="text-primary">●</span>
-                      <span itemProp="reviewCount">
-                        {doctor.reviews} Reviews
-                      </span>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center bg-amber-100 text-amber-800 text-sm font-semibold px-2 py-1 rounded-full dark:bg-amber-900 dark:text-amber-300">
+                      <Star className="w-4 h-4 fill-amber-500 text-amber-500 mr-1" />
+                      {doctor?.averageRating || 0}
                     </div>
-
-                    <div>
-                      <span className="text-primary">● </span>
-                      <span itemProp="yearsExperience">
-                        {doctor.yearsExperience} + Years of Experience
-                      </span>
-                    </div>
-
-                    <div>
-                      <span className="text-primary">●</span>
-                      <span
-                        itemProp="location"
-                        itemScope
-                        itemType="https://schema.org/Place"
-                      >
-                        <span itemProp="address"> {doctor.location}</span>
-                      </span>
-                    </div>
+                    <span className="text-sm text-gray-600 dark:text-gray-400">
+                      ({doctor?.reviewsCount || 0} reviews)
+                    </span>
                   </div>
+                </div>
 
-                  {/* Action buttons */}
-                  <div className="mt-auto pt-4 border-t border-default-100 dark:border-default-700">
-                    <div className="pt-2 flex gap-2 sm:gap-8 justify-between items-center">
-                      <Button
-                        variant="outline"
-                        color="primary"
-                        size="sm"
-                        className="w-fit"
-                        asChild
+                {/* Action buttons */}
+                <div className="mt-auto pt-4 border-t border-default-100 dark:border-default-700">
+                  <div className="pt-2 flex gap-2 sm:gap-8 justify-between items-center">
+                    <Button
+                      variant="outline"
+                      color="primary"
+                      size="sm"
+                      className="w-fit"
+                      asChild
+                    >
+                      <Link
+                        href={`/doctors/${doctor.id}#website`}
+                        aria-label={`Visit ${doctor.user?.name}'s website`}
                       >
-                        <Link
-                          href={`/doctors/${doctor.id}#website`}
-                          aria-label={`Visit ${doctor.name}'s website`}
-                        >
-                          Website
-                        </Link>
-                      </Button>
-                      <Button
-                        variant="outline"
-                        color="primary"
-                        size="sm"
-                        className="w-fit"
-                        asChild
+                        Website
+                      </Link>
+                    </Button>
+                    <Button color="primary" size="sm" className="w-fit" asChild>
+                      <Link
+                        href={`/doctors/${doctor?.id}#chambers`}
+                        aria-label={`View ${doctor.user?.name}'s chambers`}
                       >
-                        <Link
-                          href={`/doctors/${doctor.id}#chambers`}
-                          aria-label={`View ${doctor.name}'s chambers`}
-                        >
-                          Chambers
-                        </Link>
-                      </Button>
-                    </div>
+                        Chambers
+                      </Link>
+                    </Button>
                   </div>
                 </div>
               </motion.article>

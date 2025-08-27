@@ -66,7 +66,7 @@ export async function createUserAndClinicAction(
   } catch (error: any) {
     console.error("❌ createUserAndClinicAction error:", error);
     return serverActionErrorResponse(
-      error.message || "Failed to create user and clinic"
+      error || "Failed to create user and clinic"
     );
   }
 }
@@ -127,7 +127,7 @@ export async function updateUserAndClinicAction(
   } catch (error: any) {
     console.error("❌ updateUserAndPatientAction error:", error);
     return serverActionErrorResponse(
-      error.message || "Failed to update or create patient"
+      error || "Failed to update or create patient"
     );
   }
 }

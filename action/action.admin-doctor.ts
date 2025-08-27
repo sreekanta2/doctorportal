@@ -65,6 +65,13 @@ export async function adminDoctorCreate(data: CreateDoctorInput) {
         specialization: validatedData.specialization,
       },
     });
+    const name =
+      validatedData.specialization.charAt(0).toUpperCase() +
+      validatedData.specialization.slice(1).toLowerCase();
+    await prisma.specialization.update({
+      where: { name: name },
+      data: { totalDoctors: { increment: 1 } },
+    });
 
     // ✅ Revalidate doctors page
     revalidatePath("/admin/doctors");
@@ -181,7 +188,7 @@ export async function updateAdminDoctorReviewAction(
     });
 
     if (!existingReview) {
-      return serverActionErrorResponse("Review not found");
+      throw new AppError("Review not found", 404);
     }
 
     // Update review

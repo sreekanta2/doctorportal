@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
+import { useEffect, useState, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -24,11 +24,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { DOCTOR_SPECIALTIES } from "@/lib/utils/utils";
 
 export default function DoctorDialogAdd() {
   const [isPending, startTransition] = useTransition();
-
+  const [specialties, setSpecialties] = useState([]);
   const form = useForm<CreateDoctorInput>({
     resolver: zodResolver(createDoctorSchema),
     defaultValues: {
@@ -47,7 +46,39 @@ export default function DoctorDialogAdd() {
       gender: undefined,
     },
   });
+  useEffect(() => {
+    let isMounted = true; // prevent state update after unmount
 
+    const fetchData = async () => {
+      try {
+        const fetchSpecialties = async () => {
+          const response = await fetch("/api/specialties");
+          const data = await response.json();
+          return data?.data || [];
+        };
+        fetchSpecialties().then((specialtiesData) => {
+          if (isMounted) {
+            setSpecialties(specialtiesData?.data || []);
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // cleanup
+    };
+  }, []);
+
+  const mappedCities = specialties?.map(
+    (city: { id: string; name: string }) => ({
+      value: city.name.toLowerCase(),
+      label: city.name,
+    })
+  );
   const onSubmit: SubmitHandler<DoctorFormValues> = (data) => {
     startTransition(async () => {
       try {
@@ -71,8 +102,7 @@ export default function DoctorDialogAdd() {
       <DialogTrigger asChild>
         <Button>Add New Doctor</Button>
       </DialogTrigger>
-
-      <DialogContent className="w-full h-[95vh] overflow-y-auto">
+      <DialogContent className="w-full h-[95vh] overflow-y-auto   ">
         <DialogHeader>
           <DialogTitle>Add New Doctor</DialogTitle>
         </DialogHeader>
@@ -114,7 +144,6 @@ export default function DoctorDialogAdd() {
                   name="gender"
                   label="Gender"
                   options={[
-                    { value: "", label: "Select Gender" },
                     { value: "MALE", label: "Male" },
                     { value: "FEMALE", label: "Female" },
                     { value: "OTHER", label: "Other" },
@@ -137,13 +166,27 @@ export default function DoctorDialogAdd() {
                   placeholder="MBBS, MD"
                   required
                 />
-                <CustomFormField
-                  fieldType={FormFieldType.SELECT}
-                  control={form.control}
-                  name="specialization"
-                  label="Specialization"
-                  options={DOCTOR_SPECIALTIES}
-                />
+                <div className="w-full">
+                  <label
+                    htmlFor="specialization"
+                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
+                  >
+                    Specialization
+                  </label>
+                  <select
+                    id="specialization"
+                    {...form.register("specialization")}
+                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
+                  >
+                    <option value="">Select Specialization</option>
+                    {mappedCities?.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}

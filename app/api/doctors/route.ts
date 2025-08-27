@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       minRating,
       maxRating,
       sortBy = "createdAt",
-      sortOrder = "asc",
+      sortOrder = "desc",
       page = "1",
       limit = "10",
     } = params;

@@ -91,7 +91,7 @@ export async function deleteUserByEmail(email: string, path: string) {
     });
   } catch (error: any) {
     console.error("❌ deleteUserByEmail error:", error);
-    return serverActionErrorResponse(error.message || "Failed to delete user");
+    return serverActionErrorResponse(error || "Failed to delete user");
   }
 }
 

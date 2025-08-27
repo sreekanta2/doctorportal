@@ -169,24 +169,25 @@ export default async function ClinicsPage({
 
                   <div className="flex flex-col md:flex-row">
                     {/* Clinic Image */}
-                    <div className="w-full md:w-64 flex-shrink-0 relative">
+                    <div className="w-full md:w-64 flex-shrink-0 relative h-64">
                       <div className="absolute top-3 left-3 z-10">
                         <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/90 text-primary-700 text-sm font-medium shadow-sm">
                           <CheckCircle className="w-4 h-4 mr-1" />
                           Verified
                         </span>
                       </div>
+
                       {clinic?.user?.image ? (
                         <Image
                           src={clinic?.user?.image}
                           alt={`${clinic?.user?.name} clinic`}
-                          width={256}
-                          height={192}
-                          className="w-full h-64 object-cover"
+                          fill // ✅ makes it fill the parent div
+                          className="object-cover rounded-lg"
+                          sizes="(max-width: 768px) 100vw, 256px"
                           itemProp="image"
                         />
                       ) : (
-                        <div className="w-full h-48 bg-gradient-to-r from-primary-500 to-primary-700 flex items-center justify-center">
+                        <div className="w-full h-full bg-gradient-to-r from-primary-500 to-primary-700 flex items-center justify-center rounded-lg">
                           <Building2 className="w-16 h-16 text-white" />
                         </div>
                       )}

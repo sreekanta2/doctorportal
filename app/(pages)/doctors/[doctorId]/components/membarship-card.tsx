@@ -45,7 +45,7 @@ const ClinicMembershipCard = ({
       <div className="flex flex-col md:flex-row">
         {/* Clinic Image Section */}
         <div className="md:w-1/3 relative">
-          <div className="h-56 md:h-full relative overflow-hidden">
+          <div className=" w-full h-72 md:h-full relative overflow-hidden">
             {membership?.clinic?.user?.image ||
             membership?.doctor?.user?.image ? (
               <Image

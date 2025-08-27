@@ -154,11 +154,20 @@ export const adminConfig: MenuItemProps[] = [
     href: "patients",
     icon: Receipt,
   },
-
   {
     title: "Reviews",
     href: "reviews",
     icon: MessageSquare,
+  },
+  {
+    title: "Specialties",
+    href: "specialties",
+    icon: Receipt,
+  },
+  {
+    title: "Cities",
+    href: "cities",
+    icon: Receipt,
   },
 ];
 // export const pharmacyConfig: MenuItemProps[] = [

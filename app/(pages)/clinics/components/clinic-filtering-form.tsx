@@ -1,13 +1,12 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
 import { Form } from "@/components/ui/form";
-import { BANGLADESH_DISTRICTS } from "@/lib/utils/utils";
 
 // Schema definition for filtering form
 const formSchema = z.object({
@@ -18,6 +17,7 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const ClinicFilterForm = () => {
+  const [cities, setCities] = useState([]);
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFirstRender = useRef(true);
@@ -51,6 +51,39 @@ const ClinicFilterForm = () => {
     const newUrl = `${currentUrl.pathname}?${params.toString()}`;
     router.push(newUrl);
   }, [watchedValues, router]);
+  useEffect(() => {
+    let isMounted = true; // prevent state update after unmount
+
+    const fetchData = async () => {
+      try {
+        const fetchCities = async () => {
+          const response = await fetch("/api/cities");
+          const data = await response.json();
+
+          return data?.data?.data || [];
+        };
+        fetchCities().then((citiesData) => {
+          if (isMounted) {
+            setCities(citiesData || []);
+          }
+        });
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+
+    return () => {
+      isMounted = false; // cleanup
+    };
+  }, []);
+  console.log(cities);
+  const mappedCities = cities?.map((city: { id: string; name: string }) => ({
+    value: city.name.toLowerCase(),
+    label: city.name,
+  }));
+
   return (
     <Form {...form}>
       <form className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-md mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -70,7 +103,7 @@ const ClinicFilterForm = () => {
           placeholder="Select City"
           className="w-full"
           label="City"
-          options={BANGLADESH_DISTRICTS}
+          options={mappedCities}
         />
       </form>
     </Form>

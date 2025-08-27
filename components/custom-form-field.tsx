@@ -1,4 +1,5 @@
 /* eslint-disable no-unused-vars */
+import { Portal } from "@radix-ui/react-portal";
 import { E164Number } from "libphonenumber-js/core";
 import Image from "next/image";
 import ReactDatePicker from "react-datepicker";
@@ -469,20 +470,23 @@ const RenderInput = ({
                   placeholder={`Select ${props?.label ?? "Options"}`}
                 />
               </SelectTrigger>
-              <SelectContent className="z-[9999] max-h-60 overflow-y-auto">
-                <SelectGroup>
-                  {props.options?.map((option) => (
-                    <SelectItem
-                      key={option.value}
-                      value={option.value.toString()}
-                      disabled={option.disabled}
-                      className="hover:bg-accent focus:bg-accent"
-                    >
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectGroup>
-              </SelectContent>
+              <Portal>
+                <SelectContent className="z-[9999] max-h-60 overflow-y-auto">
+                  <SelectGroup>
+                    <SelectItem value="">All</SelectItem>
+                    {props.options?.map((option) => (
+                      <SelectItem
+                        key={option?.value}
+                        value={option?.value?.toString()}
+                        disabled={option.disabled}
+                        className="hover:bg-accent focus:bg-accent"
+                      >
+                        {option?.label}
+                      </SelectItem>
+                    ))}
+                  </SelectGroup>
+                </SelectContent>
+              </Portal>
             </Select>
           </FormControl>
         </div>
