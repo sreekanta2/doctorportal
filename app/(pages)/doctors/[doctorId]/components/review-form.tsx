@@ -1,44 +1,94 @@
 "use client";
+import {
+  createDoctorReviewAction,
+  updateDoctorReviewAction,
+} from "@/action/action.doctor-review";
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
 import { User } from "@/components/svg";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { Rating } from "@/components/ui/rating";
-import { avatar } from "@/config/site";
 import {
-  DoctorReviewCreateType,
+  DoctorReviewCreateInput,
   DoctorReviewSchema,
 } from "@/zod-validation/doctor-review-scema";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { DoctorReview } from "@prisma/client";
 import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
 import Image from "next/image";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 
 interface ReviewFormProps {
-  doctorId: string;
+  doctorId?: string;
+  review?: DoctorReview;
+  setEditingReview?: (review: DoctorReview | null) => void;
 }
 
-export default function ReviewForm({ doctorId }: ReviewFormProps) {
+export default function ReviewForm({
+  doctorId,
+  review,
+  setEditingReview,
+}: ReviewFormProps) {
   const [isPending, startTransition] = useTransition();
+  const user = useSession();
 
-  const session = true;
-
-  const form = useForm<DoctorReviewCreateType>({
+  const form = useForm<DoctorReviewCreateInput>({
     resolver: zodResolver(DoctorReviewSchema),
     defaultValues: {
-      comment: "",
-      doctorId: doctorId,
-      patientId: "",
-      rating: undefined,
+      comment: review?.comment || "",
+      doctorId,
+      reviewerId: "", // start empty, fill after session is ready
+      rating: review?.rating ?? undefined,
+      status: review?.status || "pending",
+      id: review?.id,
     },
   });
 
-  const currentRating = form.watch("rating");
+  useEffect(() => {
+    if (user?.data?.user?.id) {
+      form.reset({
+        comment: review?.comment || "",
+        doctorId,
+        reviewerId: user.data.user.id,
+        rating: review?.rating ?? undefined,
+      });
+    }
+  }, [user?.data?.user?.id, review, doctorId, form]);
 
-  const onSubmit: SubmitHandler<DoctorReviewCreateType> = (data) => {
-    // Handle form submission
+  const currentRating = form.watch("rating");
+  const onSubmit: SubmitHandler<DoctorReviewCreateInput> = (data) => {
+    startTransition(async () => {
+      try {
+        let result;
+        if (review) {
+          // Update existing review
+          result = await updateDoctorReviewAction(review.id, {
+            ...data,
+            id: review?.id,
+          });
+        } else {
+          // Create new review
+          result = await createDoctorReviewAction(data);
+        }
+
+        if (!result?.success) {
+          toast.error(result?.errors?.[0]?.message || "Operation failed");
+        } else {
+          toast.success(
+            review ? "Your review has been updated" : "Your review is pending"
+          );
+          form.reset();
+          setEditingReview?.(null);
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Something went wrong");
+      }
+    });
   };
 
   return (
@@ -51,10 +101,10 @@ export default function ReviewForm({ doctorId }: ReviewFormProps) {
           <div className="flex items-start gap-4">
             {/* User Avatar */}
             <figure className="flex-shrink-0">
-              {session ? (
+              {user.data?.user?.image ? (
                 <Image
-                  src={avatar}
-                  alt={`${"User"} profile picture`}
+                  src={user.data.user.image}
+                  alt={`${user.data.user.name} profile picture`}
                   width={48}
                   height={48}
                   className="rounded-full object-cover"
@@ -66,6 +116,8 @@ export default function ReviewForm({ doctorId }: ReviewFormProps) {
                 </div>
               )}
             </figure>
+
+            {/* Rating */}
             <fieldset className="space-y-2">
               <legend className="text-base font-medium text-default-700 mb-1">
                 Your Rating
@@ -84,9 +136,8 @@ export default function ReviewForm({ doctorId }: ReviewFormProps) {
               )}
             </fieldset>
           </div>
-          <div className="flex-1 space-y-4">
-            {/* Rating Section */}
 
+          <div className="flex-1 space-y-4">
             {/* Comment Section */}
             <div className="w-full">
               <CustomFormField
@@ -96,6 +147,7 @@ export default function ReviewForm({ doctorId }: ReviewFormProps) {
                 label="Write a detailed review"
                 placeholder="Share your experience with this doctor..."
                 aria-label="Review comment"
+                required
               />
             </div>
 
@@ -106,13 +158,15 @@ export default function ReviewForm({ doctorId }: ReviewFormProps) {
                 variant="outline"
                 disabled={isPending}
                 className="min-w-[120px]"
-                aria-label="Submit review"
+                aria-label={review ? "Update review" : "Submit review"}
               >
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Submitting...
+                    {review ? "Updating..." : "Submitting..."}
                   </>
+                ) : review ? (
+                  "Update Review"
                 ) : (
                   "Submit Review"
                 )}

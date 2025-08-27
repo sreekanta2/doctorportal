@@ -2,25 +2,15 @@ import DoctorFilterForm from "@/components/doctor-filter-form";
 import { Hero } from "@/components/hero";
 import { NotFound } from "@/components/not-found";
 import Pagination from "@/components/PaginationComponents";
-import { User } from "@/components/svg";
-import { Button } from "@/components/ui/button";
-import { Rating } from "@/components/ui/rating";
 import { getAllDoctors } from "@/config/doctor/doctors";
 import { DoctorWithRelations } from "@/types";
 
 import { Gender } from "@/types/common";
 
-import {
-  BadgeCheck,
-  Bookmark,
-  Building2,
-  Globe,
-  GraduationCap,
-  Stethoscope,
-} from "lucide-react";
 import { Metadata } from "next";
-import Image from "next/image";
-import Link from "next/link";
+import { Suspense } from "react";
+import DoctorCard from "./components/doctor-card";
+import DoctorCardSkeleton from "./components/doctor-card-skeleton";
 
 // Structured Data Component
 function StructuredData({ data }: { data: any }) {
@@ -38,8 +28,8 @@ export async function generateMetadata({
 }: {
   searchParams: { [key: string]: string };
 }): Promise<Metadata> {
-  const specialty = searchParams.specialty || "";
-  const location = searchParams.location || "";
+  const specialty = searchParams.specialization || "";
+  const location = searchParams.city || "";
 
   return {
     title: `${specialty ? specialty + " " : ""}Doctors Near ${
@@ -151,153 +141,9 @@ export default async function DoctorsPage({
 
             <div className="my-4 space-y-4">
               {doctors.map((doctor: DoctorWithRelations) => (
-                <article
-                  key={doctor.id}
-                  className="border bg-white rounded-xl shadow-sm overflow-hidden transition-all hover:shadow-md dark:bg-gray-900 dark:border-gray-800"
-                  itemScope
-                  itemType="https://schema.org/Physician"
-                >
-                  <meta
-                    itemProp="@id"
-                    content={`${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctor.id}`}
-                  />
-                  <meta
-                    itemProp="medicalSpecialty"
-                    content={doctor.specialization || "General Practice"}
-                  />
-
-                  <div className="p-5">
-                    <div className="flex flex-col sm:flex-row gap-5">
-                      {/* Doctor Image */}
-                      <div className="relative h-28 w-28 min-w-[112px] rounded-lg border border-gray-200 dark:border-gray-700 overflow-hidden">
-                        {doctor?.user?.image ? (
-                          <Image
-                            src={doctor?.user?.image}
-                            alt={`Dr. ${doctor?.user?.name}`}
-                            fill
-                            className="object-cover"
-                            sizes="(max-width: 768px) 100vw, 112px"
-                          />
-                        ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-                            <User className="  text-gray-400 dark:text-gray-500" />
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Doctor Info */}
-                      <div className="flex-1 space-y-3">
-                        <div className="flex items-center gap-2">
-                          <h2
-                            className="text-xl font-semibold text-gray-900 dark:text-white"
-                            itemProp="name"
-                          >
-                            <Link
-                              href={`/doctors/${doctor?.id}`}
-                              className="hover:text-primary hover:underline"
-                              itemProp="url"
-                            >
-                              {doctor?.user?.name}
-                            </Link>
-                          </h2>
-                          <BadgeCheck className="w-5 h-5 text-blue-500" />
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <Stethoscope className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          <p
-                            className="text-gray-700 dark:text-gray-300"
-                            itemProp="description"
-                          >
-                            {doctor.specialization ||
-                              "MBBS, BCS (Health), MS (Ortho)"}
-                          </p>
-                        </div>
-
-                        <div className="flex items-center gap-2">
-                          <GraduationCap className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                          <p
-                            className="text-gray-700 dark:text-gray-300"
-                            itemProp="affiliation"
-                          >
-                            {doctor.hospital ||
-                              "Mymensingh Medical College & Hospital"}
-                          </p>
-                        </div>
-
-                        {/* {doctor.languages && (
-                          <div className="flex items-center gap-2 pt-1">
-                            <Languages className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {doctor.languages}
-                            </span>
-                          </div>
-                        )} */}
-
-                        <div className="pt-2 flex gap-3">
-                          <Button
-                            asChild
-                            variant="outline"
-                            size="sm"
-                            className="gap-1.5"
-                          >
-                            <Link href="#">
-                              <Globe className="w-4 h-4" />
-                              Website
-                            </Link>
-                          </Button>
-                          <Button
-                            asChild
-                            variant="outline"
-                            size="sm"
-                            className="gap-1.5"
-                          >
-                            <Link href={`/doctors/${doctor?.id}`}>
-                              <Building2 className="w-4 h-4" />
-                              Chambers
-                            </Link>
-                          </Button>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Footer */}
-                  <div className="border-t px-5 py-3 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-800">
-                    <div className="flex flex-wrap items-center justify-between gap-3">
-                      <div className="flex items-center flex-wrap gap-3">
-                        <div className="flex items-center gap-1.5">
-                          <Rating
-                            value={doctor.averageRating || 4}
-                            readOnly
-                            className="gap-x-1 max-w-[110px]"
-                          />
-                          <span className="text-sm text-gray-600 dark:text-gray-400">
-                            Reviews ({43})
-                          </span>
-                        </div>
-
-                        {/* {doctor.experience && (
-                          <div className="flex items-center gap-1.5">
-                            <Briefcase className="w-4 h-4 text-gray-500 dark:text-gray-400" />
-                            <span className="text-sm text-gray-600 dark:text-gray-400">
-                              {doctor.experience}+ years
-                            </span>
-                          </div>
-                        )} */}
-                      </div>
-
-                      <Button
-                        variant="soft"
-                        size="sm"
-                        className="text-gray-500 dark:text-gray-400"
-                      >
-                        <Bookmark className="w-4 h-4 mr-2" />
-                        Save
-                      </Button>
-                    </div>
-                  </div>
-                </article>
+                <Suspense key={doctor.id} fallback={<DoctorCardSkeleton />}>
+                  <DoctorCard doctor={doctor} profileButton />
+                </Suspense>
               ))}
 
               {/* {doctorsResponse?.pagination?.totalRecords >

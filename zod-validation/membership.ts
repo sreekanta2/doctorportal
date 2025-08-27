@@ -7,8 +7,10 @@ export const baseClinicMembership = z.object({
 
   maxAppointments: z.coerce
     .number()
+
     .int("Max appointments must be an integer")
-    .min(0, "Max appointments must be a positive integer"),
+    .min(0, "Max appointments must be a positive integer")
+    .optional(),
   fee: z.coerce
     .number()
     .int("Fee must be an integer")
@@ -17,7 +19,8 @@ export const baseClinicMembership = z.object({
   discount: z.coerce
     .number()
     .int("Discount must be an integer")
-    .min(0, "Discount must be a positive integer"),
+    .min(0, "Discount must be a positive integer")
+    .optional(),
 });
 
 export const createClinicMembershipSchema = baseClinicMembership;

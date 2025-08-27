@@ -3,7 +3,7 @@ import { createSuccessResponse, errorResponse } from "@/lib/api/api-response";
 import prisma from "@/lib/db";
 import { createClinicMembershipSchema } from "@/zod-validation/membership";
 import { NextRequest } from "next/server";
-
+export const dynamic = "force-dynamic";
 export async function POST(req: NextRequest) {
   const body = await req.json();
   try {

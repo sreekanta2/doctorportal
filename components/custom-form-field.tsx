@@ -13,9 +13,9 @@ import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
 import { Checkbox } from "./ui/checkbox";
 
-import { avatar } from "@/config/site";
-import { Eye, EyeOff, Upload } from "lucide-react";
-import { useState } from "react";
+import { deleteImage, uploadImage } from "@/action/action.file-upload";
+import { Eye, EyeOff } from "lucide-react";
+import { useRef, useState } from "react";
 import {
   FormControl,
   FormField,
@@ -74,6 +74,7 @@ interface CustomProps {
     name?: string;
     disabled?: boolean;
   }[];
+  file?: boolean;
   size?: "sm" | "md" | "lg" | "xl" | null | undefined;
   min?: number | string;
   max?: number | string;
@@ -170,70 +171,199 @@ const RenderInput = ({
           </FormControl>
         </div>
       );
-    case FormFieldType.FILE_UPLOAD:
+    case FormFieldType.FILE_UPLOAD: {
+      const [preview, setPreview] = useState<string | null>(
+        typeof field.value === "string" ? field.value : null
+      );
+
+      const [loading, setLoading] = useState(false);
+      const [error, setError] = useState<string | null>(null);
+
+      const fileInputRef = useRef<HTMLInputElement>(null);
+
+      const handleFileSelection = async (file: File) => {
+        if (!file) return;
+
+        const allowedTypes = ["image/jpeg", "image/png", "image/svg+xml"];
+        const maxSize = 3 * 1024 * 1024;
+
+        if (!allowedTypes.includes(file.type)) {
+          setError("Only JPG, PNG, and SVG files are allowed.");
+
+          return;
+        }
+        if (file.size > maxSize) {
+          setError("File size must not exceed 3MB.");
+
+          return;
+        }
+
+        setError(null);
+        setLoading(true);
+
+        // Create a preview for the image
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          setPreview(e.target?.result as string);
+        };
+        reader.readAsDataURL(file);
+
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+
+          const result = await uploadImage(formData); // ✅ call server action
+
+          setPreview(result.secure_url);
+          field.onChange(result.secure_url);
+        } catch (err) {
+          console.error("Upload error:", err);
+          setError("Upload failed. Please try again.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
+      const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          handleFileSelection(file);
+        }
+      };
+
+      const handleRemove = async () => {
+        if (!preview) return;
+        setLoading(true);
+        try {
+          // extract Cloudinary public_id from URL
+          const parts = preview.split("/");
+          const publicIdWithExt = parts[parts.length - 1];
+          const publicId = publicIdWithExt.split(".")[0];
+
+          await deleteImage(`uploads/${publicId}`);
+
+          setPreview(null);
+          field.onChange("");
+          if (fileInputRef.current) fileInputRef.current.value = "";
+        } catch (err) {
+          console.error("Delete error:", err);
+          setError("Failed to delete image.");
+        } finally {
+          setLoading(false);
+        }
+      };
+
       return (
         <FormControl>
-          <div className="max-w-[250px] flex flex-col space-y-2">
-            {/* Use a label to trigger the file input */}
-            <label
-              htmlFor={props.name}
-              className="cursor-pointer w-full inline-flex items-center justify-center px-4 py-2 border   rounded-md bg-background hover:bg-accent"
-            >
-              <Upload className="mr-2 h-4 w-4" /> Choose File
-            </label>
+          <div className="flex flex-col gap-4">
+            <div className="flex flex-col items-center gap-4 sm:flex-row sm:items-start">
+              {/* Preview Image */}
 
-            {/* Hidden file input */}
-            <Input
-              type="file"
-              id={props.name}
-              className="hidden "
-              accept="image/png, image/jpeg, image/jpg, image/svg+xml"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-
-                if (!file) return;
-
-                if (file.size > 1 * 1024 * 1024) {
-                  props.setError?.(props.name, {
-                    type: "manual",
-                    message: "File size must be below 1MB",
-                  });
-                  return;
-                }
-
-                // Clear any previous errors
-                props.setError?.(props.name, {});
-
-                // Update the field value
-                field.onChange(file);
-              }}
-            />
-
-            {/* Display the selected file name and a remove button */}
-            {field.value && (
-              <div className="flex items-center gap-2">
-                <Image
-                  src={avatar}
-                  alt="Uploaded file"
-                  width={50}
-                  height={50}
-                  className="rounded-md"
-                />
-                <button
-                  type="button"
-                  onClick={() => {
-                    field.onChange(null);
-                    props.setError?.(props.name, {}); // Clear errors when file is removed
-                  }}
-                  className="text-destructive"
+              <>
+                {" "}
+                <div
+                  className={`${
+                    !props?.file
+                      ? "w-32 h-32 rounded-full"
+                      : "w-full border-dashed rounded-md"
+                  }  overflow-hidden border-2 border-gray-200 flex items-center justify-center bg-gray-100`}
                 >
-                  Remove
-                </button>
+                  {loading ? (
+                    <div className="flex flex-col items-center gap-2 p-4">
+                      <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-500 rounded-full animate-spin"></div>
+                      <span className="text-xs text-gray-500">
+                        Uploading...
+                      </span>
+                    </div>
+                  ) : preview ? (
+                    <img
+                      src={preview}
+                      alt="Profile preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center text-gray-400 p-4">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-10 w-10"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                        />
+                      </svg>
+                      <span className="text-xs mt-1">No image</span>
+                    </div>
+                  )}
+                </div>
+                {/* Upload Controls */}
+                <div className="flex flex-col gap-3">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    ref={fileInputRef}
+                    className="hidden"
+                    onChange={handleFileChange}
+                    disabled={loading}
+                  />
+
+                  {!preview && (
+                    <button
+                      type="button"
+                      onClick={() => fileInputRef.current?.click()}
+                      disabled={loading}
+                      className="inline-flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                    >
+                      {!props?.file ? "Upload Picture" : "Choose File"}
+                    </button>
+                  )}
+
+                  {preview && !loading && (
+                    <button
+                      type="button"
+                      onClick={handleRemove}
+                      className="inline-flex items-center justify-center px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-colors"
+                    >
+                      Remove
+                    </button>
+                  )}
+
+                  <p className="text-xs text-gray-500">
+                    JPG, PNG, WebP, or GIF. Max 3MB.
+                  </p>
+                </div>
+              </>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="rounded-md bg-red-50 p-3 mt-2">
+                <div className="flex items-center">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-5 w-5 text-red-400 mr-2"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="text-sm text-red-700">{error}</p>
+                </div>
               </div>
             )}
           </div>
         </FormControl>
       );
+    }
     case FormFieldType.TEXTAREA:
       return (
         <FormControl>

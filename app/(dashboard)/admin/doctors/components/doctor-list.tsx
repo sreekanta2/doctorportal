@@ -12,16 +12,20 @@ import {
 } from "@/components/ui/table";
 
 import { adminDoctorDelete } from "@/action/action.admin-doctor";
+import Pagination from "@/components/PaginationComponents";
 import { DoctorWithRelations } from "@/types";
-import { DeleteIcon } from "lucide-react";
+import { PaginationMeta } from "@/types/common";
+import { Trash } from "lucide-react";
 import { startTransition } from "react";
 import toast from "react-hot-toast";
 import DoctorDialogEdit from "./doctor-edit-dialog";
 
 export default function DoctorList({
   doctors,
+  pagination,
 }: {
   doctors: DoctorWithRelations[];
+  pagination?: PaginationMeta;
 }) {
   const handleDelete = (email: string) => {
     startTransition(async () => {
@@ -90,7 +94,7 @@ export default function DoctorList({
                     className="h-7 w-7"
                     onClick={() => handleDelete(doctor?.user.email || "")}
                   >
-                    <DeleteIcon className="h-4 w-4" />
+                    <Trash className="h-4 w-4" />
                   </Button>
                 </div>
               </TableCell>
@@ -98,14 +102,13 @@ export default function DoctorList({
           ))}
         </TableBody>
       </Table>
-
-      {/* Pagination
+      {/* Pagination? */}
       {pagination && pagination.totalPages > 1 && (
         <Pagination
           currentPage={pagination.page}
           totalPages={pagination.totalPages}
         />
-      )} */}
+      )}
     </>
   );
 }

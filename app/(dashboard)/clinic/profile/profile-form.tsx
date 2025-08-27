@@ -1,17 +1,15 @@
 "use client";
 
-import { createOrUpdateUserAndClinicAction } from "@/action/action.clinics";
+import { updateUserAndClinicAction } from "@/action/action.clinics";
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
 import SubmitButton from "@/components/submit-button";
 import { Form } from "@/components/ui/form";
-import { avatar } from "@/config/site";
-import { ClinicWithRelations } from "@/types";
+import { ClinicWithUser } from "@/types";
 
 import { UpdateClinicInput, updateClinicSchema } from "@/zod-validation/clinic";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import Image from "next/image";
 import { useEffect, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -19,63 +17,51 @@ import toast from "react-hot-toast";
 export default function ClinicProfileForm({
   clinic,
 }: {
-  clinic: ClinicWithRelations;
+  clinic: ClinicWithUser | null;
 }) {
   const [isPending, startTransition] = useTransition();
   const user = useSession();
-
   const form = useForm<UpdateClinicInput>({
     resolver: zodResolver(updateClinicSchema),
     defaultValues: {
-      name: user?.data?.user?.name || clinic?.user?.name || "",
-      email: user?.data?.user?.email || clinic?.user?.email || "",
-      password: "Srikanto3@#",
-      image: clinic?.user?.image || "",
-      description: clinic?.description || "",
-      phoneNumber: clinic?.phoneNumber || "",
-      street: clinic?.street || "",
       role: "clinic",
-      city: clinic?.city || "",
-      zipCode: clinic?.zipCode || "",
-      country: clinic?.country || "",
-      openingHour: clinic?.openingHour || "",
-      establishedYear: clinic?.establishedYear || new Date().getFullYear(),
+      image: clinic?.image || "",
     },
   });
+
   useEffect(() => {
-    if (user?.data?.user) {
+    if (clinic || user) {
       form.reset({
-        name: user?.data?.user?.name || clinic?.user?.name || "",
-        email: user?.data?.user?.email || clinic?.user?.email || "",
-        password: "Srikanto3@#",
-        image: clinic?.user?.image || "",
-        description: clinic?.description || "",
-        phoneNumber: clinic?.phoneNumber || "",
-        street: clinic?.street || "",
+        email: user?.data?.user?.email || clinic?.email,
+        name: clinic?.name,
+        image: clinic?.image || "",
+        description: clinic?.clinic?.description || "",
+        phoneNumber: clinic?.clinic?.phoneNumber || "",
+        street: clinic?.clinic?.street || "",
         role: "clinic",
-        city: clinic?.city || "",
-        zipCode: clinic?.zipCode || "",
-        country: clinic?.country || "",
-        openingHour: clinic?.openingHour || "",
-        establishedYear: clinic?.establishedYear || new Date().getFullYear(),
+        city: clinic?.clinic?.city || "",
+        zipCode: clinic?.clinic?.zipCode || "",
+        country: clinic?.clinic?.country || "",
+        openingHour: clinic?.clinic?.openingHour || "",
+        establishedYear:
+          clinic?.clinic?.establishedYear || new Date().getFullYear(),
       });
     }
-  }, [user?.data?.user, clinic, form]);
+  }, [clinic, user, form]);
+
   const onSubmit: SubmitHandler<UpdateClinicInput> = async (data) => {
-    console.log(data);
     startTransition(async () => {
       try {
-        const result = await createOrUpdateUserAndClinicAction(
-          data,
-          "/clinic/profile"
-        );
-        console.log(result);
+        const result = await updateUserAndClinicAction(data, "/admin/clinics");
+
         if (!result?.success) {
           toast.error(
             result?.errors?.[0]?.message || "Something went wrong. Try again."
           );
         } else {
           toast.success("Clinic updated successfully!");
+
+          form.reset(); // reset after success
         }
       } catch (error) {
         console.error("Form submission error:", error);
@@ -93,13 +79,6 @@ export default function ClinicProfileForm({
         {/* Clinic Image Section */}
         <div className="flex flex-col   gap-8 items-start">
           <div className="w-full flex gap-8  space-y-4">
-            <Image
-              src={form.watch("image") || avatar}
-              alt="Clinic Image"
-              className="rounded-full object-cover"
-              width={150}
-              height={150}
-            />
             <CustomFormField
               fieldType={FormFieldType.FILE_UPLOAD}
               control={form.control}
@@ -159,6 +138,7 @@ export default function ClinicProfileForm({
             placeholder="contact@clinic.com"
             type="email"
             className="bg-white"
+            disabled
           />
 
           <CustomFormField

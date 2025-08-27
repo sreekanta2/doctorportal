@@ -119,19 +119,19 @@ export const PastAppointmentCard = ({
             </div>
             <div>
               <Link
-                href={`/doctors/${1}`}
+                href={`/doctors/${medicalRecords?.doctor?.id}`}
                 className="font-medium text-gray-800 dark:text-white hover:text-blue-600 dark:hover:text-blue-400 transition-colors"
               >
-                {medicalRecords.doctor?.user?.name}
+                {medicalRecords?.doctor?.user?.name}
               </Link>
               <p className="text-base text-gray-600 dark:text-gray-300">
-                {medicalRecords.doctor?.specialization}
+                {medicalRecords?.doctor?.specialization}
               </p>
               <div className="flex items-center gap-2 mt-1 text-xs text-gray-500 dark:text-gray-400">
                 <Calendar className="w-3 h-3" />
                 <span>
                   Booking Date •{" "}
-                  {new Date(medicalRecords.createdAt).toLocaleDateString(
+                  {new Date(medicalRecords?.createdAt).toLocaleDateString(
                     "en-GB",
                     {
                       year: "numeric",

@@ -18,7 +18,7 @@ export async function GET(request: Request) {
       minRating,
       maxRating,
       sortBy = "createdAt",
-      sortOrder = "desc",
+      sortOrder = "asc",
       page = "1",
       limit = "10",
     } = params;
@@ -88,6 +88,14 @@ export async function GET(request: Request) {
               createdAt: true,
             },
           },
+          // memberships: {
+          //   select: {
+          //     id: true,
+          //     maxAppointments: true,
+          //     fee: true,
+          //     discount: true,
+          //   },
+          // },
         },
       }),
       prisma.doctor.count({ where }),

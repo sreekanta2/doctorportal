@@ -9,7 +9,6 @@ import {
 } from "@/components/ui/table";
 
 import { NotFound } from "@/components/not-found";
-import { Badge } from "@/components/ui/badge";
 import { PatientWithRelations } from "@/types";
 
 const PatientsList = async ({
@@ -27,8 +26,7 @@ const PatientsList = async ({
           <TableHead className="font-semibold">Patient Name</TableHead>
 
           <TableHead>Phone </TableHead>
-          <TableHead>Last Visit</TableHead>
-          <TableHead>Status</TableHead>
+          <TableHead>Age</TableHead>
         </TableRow>
       </TableHeader>
 
@@ -38,29 +36,17 @@ const PatientsList = async ({
             <TableCell className="font-medium text-card-foreground/80">
               <div className="flex gap-3 items-center">
                 <Avatar className="rounded-full">
-                  <AvatarImage src={patient?.image} />
+                  <AvatarImage src={patient?.user?.image} />
                   <AvatarFallback>AB</AvatarFallback>
                 </Avatar>
                 <span className="text-base text-card-foreground">
-                  {patient?.name || "patient name"}
+                  {patient?.user?.name || "patient name"}
                 </span>
               </div>
             </TableCell>
 
             <TableCell>{patient?.phoneNumber || "012451"}</TableCell>
-            <TableCell>
-              {patient?.lastVisit ? patient?.lastVisit : "N/A"}
-            </TableCell>
-
-            <TableCell>
-              <Badge
-                variant="soft"
-                color={(patient?.isActive && "success") || "destructive"}
-                className=" capitalize"
-              >
-                {patient?.isActive ? "active" : "inactive"}
-              </Badge>
-            </TableCell>
+            <TableCell>{patient?.age ? patient?.age : "N/A"}</TableCell>
           </TableRow>
         ))}
       </TableBody>

@@ -6,62 +6,46 @@ import {
   serverActionErrorResponse,
   serverActionSuccessResponse,
 } from "@/lib/actions/server-actions-response";
+
 import prisma from "@/lib/db";
+
+import { AppError } from "@/lib/actions/actions-error-response";
 import {
   baseClinicSchema,
   CreateClinicInput,
   UpdateClinicInput,
+  updateClinicSchema,
 } from "@/zod-validation/clinic";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
-export async function createOrUpdateUserAndClinicAction(
-  data: CreateClinicInput | UpdateClinicInput,
+// ✅ CREATE
+export async function createUserAndClinicAction(
+  data: CreateClinicInput,
   path: string | null = null
 ) {
   try {
     const validatedData = baseClinicSchema.parse(data);
-    // Hash password if provided
-    let hashedPassword: string | undefined;
-    if (validatedData.password) {
-      hashedPassword = await bcrypt.hash(validatedData.password, 10);
-    }
 
-    // Run transaction
+    // Hash password or fallback to default
+    const hashedPassword =
+      validatedData.password || (await bcrypt.hash("Default@123", 10));
+
     const result = await prisma.$transaction(async (tx) => {
-      // 👉 Upsert User
-      const user = await tx.user.upsert({
-        where: { email: validatedData.email },
-        update: {
+      // Create user
+      const user = await tx.user.create({
+        data: {
           name: validatedData.name,
           email: validatedData.email,
-          ...(hashedPassword && { password: hashedPassword }),
-          role: validatedData.role,
-          image: validatedData.image,
-        },
-        create: {
-          name: validatedData.name,
-          email: validatedData.email,
-          password: hashedPassword || (await bcrypt.hash("Default@123", 10)),
+          password: await bcrypt.hash(hashedPassword, 10),
           role: validatedData.role,
           image: validatedData.image,
         },
       });
 
-      // 👉 Upsert Clinic
-      const clinic = await tx.clinic.upsert({
-        where: { userId: user.id },
-        update: {
-          phoneNumber: validatedData.phoneNumber,
-          description: validatedData.description,
-          openingHour: validatedData.openingHour,
-          establishedYear: validatedData.establishedYear,
-          street: validatedData.street,
-          city: validatedData.city,
-          country: validatedData.country,
-          zipCode: validatedData.zipCode,
-        },
-        create: {
+      // Create clinic
+      const clinic = await tx.clinic.create({
+        data: {
           phoneNumber: validatedData.phoneNumber,
           description: validatedData.description,
           openingHour: validatedData.openingHour,
@@ -78,15 +62,76 @@ export async function createOrUpdateUserAndClinicAction(
     });
 
     revalidatePath(path || "/clinics");
-
-    return serverActionCreatedResponse(result);
+    return serverActionSuccessResponse(result);
   } catch (error: any) {
-    console.error("❌ createOrUpdateUserAndClinicAction error:", error);
+    console.error("❌ createUserAndClinicAction error:", error);
     return serverActionErrorResponse(
-      error.message || "Failed to create or update user and clinic"
+      error.message || "Failed to create user and clinic"
     );
   }
 }
+
+// ✅ UPDATE
+export async function updateUserAndClinicAction(
+  data: UpdateClinicInput,
+  path: string | null
+) {
+  try {
+    if (!data.email) {
+      throw new AppError("Patient email is required for update", 400);
+    }
+    const validatedData = updateClinicSchema.parse(data);
+    const result = await prisma.$transaction(async (tx) => {
+      // Update User
+      const user = await tx.user.update({
+        where: { email: data.email },
+        data: {
+          name: data.name,
+          email: data.email,
+          role: data.role,
+          image: data.image,
+        },
+      });
+
+      // Upsert Patient (update if exists, else create)
+      const clinic = await prisma.clinic.upsert({
+        where: { userId: user.id },
+        update: {
+          phoneNumber: validatedData.phoneNumber,
+          description: validatedData.description,
+          openingHour: validatedData.openingHour,
+          establishedYear: validatedData.establishedYear,
+          street: validatedData.street,
+          city: validatedData.city,
+          country: validatedData.country,
+          zipCode: validatedData.zipCode,
+        },
+        create: {
+          userId: user.id,
+          phoneNumber: validatedData.phoneNumber || "",
+          description: validatedData.description,
+          openingHour: validatedData.openingHour,
+          establishedYear: validatedData.establishedYear,
+          street: validatedData.street,
+          city: validatedData.city,
+          country: validatedData.country,
+          zipCode: validatedData.zipCode,
+        },
+      });
+      return { clinic };
+    });
+
+    revalidatePath(path || "/");
+
+    return serverActionCreatedResponse(result);
+  } catch (error: any) {
+    console.error("❌ updateUserAndPatientAction error:", error);
+    return serverActionErrorResponse(
+      error.message || "Failed to update or create patient"
+    );
+  }
+}
+
 export async function deleteClinic(email: string) {
   try {
     // Validate incoming data

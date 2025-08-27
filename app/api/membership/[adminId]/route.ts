@@ -44,7 +44,11 @@ export async function GET(
     const memberships = await prisma.clinicMembership.findMany({
       where: { clinicId },
       include: {
-        doctor: true,
+        doctor: {
+          include: {
+            user: true,
+          },
+        },
         schedules: true,
       },
       skip,

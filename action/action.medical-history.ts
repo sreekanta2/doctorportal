@@ -65,14 +65,12 @@ export async function createMedicalHistory(values: unknown) {
   }
 }
 
-export async function updateMedicalHistory(id: string, values: unknown) {
+export async function updateMedicalHistory(values: unknown) {
   try {
-    if (!id) return serverActionErrorResponse("ID is required");
-
     const data = medicalHistoryUpdateSchema.parse(values);
 
     const history = await prisma.medicalHistory.update({
-      where: { id },
+      where: { id: data?.id },
       data,
     });
 
@@ -97,7 +95,7 @@ export async function deleteMedicalHistory(id: string) {
       where: { id },
     });
 
-    revalidatePath("/patient/medical-history");
+    revalidatePath("/patient/dashboard");
     return serverActionSuccessResponse(null);
   } catch (error: any) {
     return serverActionErrorResponse(

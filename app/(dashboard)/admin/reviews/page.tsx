@@ -2,6 +2,7 @@ import LimitSelect from "@/components/limit-select";
 import Pagination from "@/components/PaginationComponents";
 import SearchInput from "@/components/SearchInput";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import { getAllDoctorsReviews } from "@/config/doctor-review/doctor-review";
 import ReviewsList from "./components/reviews-list";
 
 export default async function AdminPatientPage({
@@ -9,14 +10,17 @@ export default async function AdminPatientPage({
 }: {
   searchParams: { [key: string]: string };
 }) {
-  // If searchParams is a plain object, get the page param
-  const page = parseInt(searchParams.page || "1", 10);
-  const limit = parseInt(searchParams.limit || "10", 10);
+  const page = String(searchParams?.page || 1);
+  const limit = String(searchParams?.limit || 10);
+  const search = searchParams?.search as string | undefined;
 
-  // Fetch doctors data based on page and limit
-  const reviewsResponse: any = [];
-  // const reviewsResponse = await getReviews({ page, limit });
-
+  // Fetch doctors
+  const result = await getAllDoctorsReviews({
+    page,
+    limit,
+    search,
+  });
+  const reviewsResponse = result;
   return (
     <div className="border p-6 bg-card rounded-md space-y-4">
       <h1 className="text-2xl font-bold   bg-card/50 text-default-600   ">

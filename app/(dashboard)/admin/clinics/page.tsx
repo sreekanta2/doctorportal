@@ -1,11 +1,10 @@
 import { NotFound } from "@/components/not-found";
 
-import ClinicFilterForm from "@/components/clinic-filter-from";
-
+import ClinicFilterForm from "@/app/(pages)/clinics/components/clinic-filtering-form";
 import { getAllClinics } from "@/config/clinic/clinic";
 import { ClinicWithRelations } from "@/types";
 import ClinicList from "./components/clinics-list";
-import ClinicCreateDialog from "./components/profile-form";
+import ClinicCreateDialog from "./components/create-clinic-dialog";
 
 interface ClinicPageProps {
   searchParams?: { [key: string]: string | string[] | undefined };
@@ -18,7 +17,7 @@ export default async function ClinicPage({ searchParams }: ClinicPageProps) {
   const city = searchParams?.city as string | undefined;
 
   // Fetch clinics
-  const result = await getAllClinics({
+  const result = await getAllClinics("admin/clinics", {
     page,
     limit,
     search,

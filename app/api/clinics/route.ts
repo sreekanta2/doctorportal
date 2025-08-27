@@ -1,9 +1,10 @@
+import { AppError } from "@/lib/actions/actions-error-response";
 import {
   errorResponse,
   successPaginationResponse,
 } from "@/lib/api/api-response";
 import prisma from "@/lib/db";
-
+export const dynamic = "force-dynamic";
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -53,29 +54,56 @@ export async function GET(request: Request) {
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const skip = (pageNum - 1) * limitNum;
-
     const [clinics, totalCount] = await Promise.all([
       prisma.clinic.findMany({
         where,
         orderBy,
         skip,
         take: limitNum,
-        include: {
+        select: {
+          id: true,
+          averageRating: true,
+          city: true,
+          country: true,
+          street: true,
+          phoneNumber: true,
+          openingHour: true,
           user: {
             select: {
               id: true,
               name: true,
-              email: true,
               image: true,
+              email: true,
+              emailVerified: true,
               createdAt: true,
+            },
+          },
+          memberships: {
+            select: {
+              id: true,
+              doctor: {
+                select: {
+                  id: true,
+                  specialization: true,
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      image: true,
+                      createdAt: true,
+                    },
+                  },
+                },
+              },
             },
           },
         },
       }),
       prisma.clinic.count({ where }),
     ]);
+
     if (!clinics || clinics.length === 0) {
-      return errorResponse("No clinics found");
+      throw new AppError("No clinics found", 404);
     }
 
     return successPaginationResponse(clinics, {

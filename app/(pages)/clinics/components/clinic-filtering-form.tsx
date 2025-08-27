@@ -1,120 +1,80 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useRef } from "react";
+import { useForm, useWatch } from "react-hook-form";
+import { z } from "zod";
 
-const locations = [
-  "New York, NY",
-  "Los Angeles, CA",
-  "Chicago, IL",
-  "Houston, TX",
-  "Phoenix, AZ",
-  "Philadelphia, PA",
-  "San Antonio, TX",
-  "San Diego, CA",
-];
+import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
+import { Form } from "@/components/ui/form";
+import { BANGLADESH_DISTRICTS } from "@/lib/utils/utils";
 
-export default function FilterForm() {
+// Schema definition for filtering form
+const formSchema = z.object({
+  search: z.string().optional(),
+  city: z.string().optional(),
+});
+
+type FormData = z.infer<typeof formSchema>;
+
+const ClinicFilterForm = () => {
   const router = useRouter();
-  const pathname = usePathname();
   const searchParams = useSearchParams();
+  const isFirstRender = useRef(true);
 
-  const [filters, setFilters] = useState({
-    name: searchParams.get("name") || "",
-    branch: searchParams.get("branch") || "",
+  const form = useForm<FormData>({
+    defaultValues: {
+      search: searchParams.get("search") || "",
+      city: searchParams.get("city") || "",
+    },
   });
 
-  // Sync state with URL params
+  const watchedValues = useWatch({ control: form.control });
+
   useEffect(() => {
-    setFilters({
-      name: searchParams.get("name") || "",
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
 
-      branch: searchParams.get("branch") || "",
-    });
-  }, [searchParams]);
-
-  const handleChange = (name: string, value: string) => {
-    setFilters((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    applyFilters();
-  };
-
-  const applyFilters = () => {
+    const currentUrl = new URL(window.location.href);
     const params = new URLSearchParams();
 
-    if (filters.name) params.set("name", filters.name);
+    // Only set the current watched values (replaces all previous filters)
+    for (const key in watchedValues) {
+      const value = watchedValues[key as keyof FormData];
+      if (value) {
+        params.set(key, value);
+      }
+    }
 
-    if (filters.branch) params.set("branch", filters.branch);
-
-    router.push(`${pathname}?${params.toString()}`);
-  };
-
-  const handleReset = () => {
-    setFilters({ name: "", branch: "" });
-    router.push(pathname);
-  };
-
+    const newUrl = `${currentUrl.pathname}?${params.toString()}`;
+    router.push(newUrl);
+  }, [watchedValues, router]);
   return (
-    <div className="bg-card rounded-md  ">
-      <form onSubmit={handleSubmit} className=" space-y-6 dark:p-4  dark:mb-4">
-        <div className="flex flex-col md:flex-row gap-4  ">
-          {/* Name Field */}
-          <div className="flex-1 min-w-[200px]">
-            <Input
-              name="name"
-              value={filters.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              placeholder="Doctor name"
-              className="w-full h-10 placeholder:text-sm md:text-base "
-            />
-          </div>
+    <Form {...form}>
+      <form className="bg-white dark:bg-gray-900 p-4 rounded-lg shadow-md mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <CustomFormField
+          fieldType={FormFieldType.INPUT}
+          name="search"
+          control={form.control}
+          placeholder="Search by name"
+          className="w-full"
+          label="Search"
+        />
 
-          {/* branch Field */}
-          <div className="flex-1 min-w-[150px]">
-            <Select
-              value={filters.branch}
-              onValueChange={(value) => handleChange("branch", value)}
-            >
-              <SelectTrigger className="h-10">
-                <SelectValue placeholder="brach" />
-              </SelectTrigger>
-              <SelectContent className="bg-background">
-                <SelectItem value="">Branch</SelectItem>
-                {locations.map((location) => (
-                  <SelectItem key={location} value={location}>
-                    {location}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex justify-end gap-3 pb-4">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={handleReset}
-              className="h-9 px-4"
-            >
-              Clear Filters
-            </Button>
-            <Button type="submit" className="h-9 px-4">
-              Apply Filters
-            </Button>
-          </div>
-        </div>
+        <CustomFormField
+          fieldType={FormFieldType.SELECT}
+          name="city"
+          control={form.control}
+          placeholder="Select City"
+          className="w-full"
+          label="City"
+          options={BANGLADESH_DISTRICTS}
+        />
       </form>
-    </div>
+    </Form>
   );
-}
+};
+
+export default ClinicFilterForm;

@@ -49,7 +49,7 @@ export default async function DoctorPage({ searchParams }: DoctorPageProps) {
       {doctors?.length === 0 ? (
         <NotFound title="No Doctors Found" />
       ) : (
-        <DoctorList doctors={doctors} />
+        <DoctorList doctors={doctors} pagination={pagination} />
       )}
     </div>
   );

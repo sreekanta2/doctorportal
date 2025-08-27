@@ -1,94 +1,76 @@
 import { siteConfig } from "@/config/site";
 import AuthProvider from "@/provider/auth.provicer";
+import { Metadata } from "next";
 import { Poppins } from "next/font/google";
 import Script from "next/script";
 import { Toaster } from "react-hot-toast";
 import "./assets/scss/globals.scss";
 
-// Font configuration
+/* -----------------------------
+   ✅ Font Configuration
+----------------------------- */
 const poppins = Poppins({
   subsets: ["latin"],
-  weight: ["600", "700", "800"],
+  weight: ["400", "500", "600", "700", "800"],
   variable: "--font-poppins",
+  display: "swap", // ⚡ Improves CLS & Core Web Vitals
 });
 
-// Metadata configuration
-export const metadata = {
+/* -----------------------------
+   ✅ Global Metadata (applies everywhere)
+----------------------------- */
+export const metadata: Metadata = {
   metadataBase: new URL(siteConfig.url),
   title: {
     default: siteConfig.name,
-    template: `%s | ${siteConfig.name}`,
+    template: `%s | ${siteConfig.siteName}`,
   },
   description: siteConfig.description,
-  keywords: siteConfig.keywords || [],
-  authors: [
-    {
-      name: siteConfig.author || "Your Company",
-      url: siteConfig.url,
-    },
-  ],
-  creator: siteConfig.author || "Your Company",
+  keywords: siteConfig.keywords,
+  authors: [{ name: siteConfig.author }],
+  alternates: {
+    canonical: siteConfig.url,
+  },
   openGraph: {
     type: "website",
-    locale: "en_US",
     url: siteConfig.url,
-    siteName: siteConfig.name,
     title: siteConfig.name,
     description: siteConfig.description,
+    siteName: siteConfig.siteName,
     images: [
       {
-        url: siteConfig.ogImage || `${siteConfig.url}/og-image.jpg`,
+        url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: siteConfig.siteName,
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: siteConfig.name,
-    description: siteConfig.description,
-    images: [siteConfig.ogImage || `${siteConfig.url}/og-image.jpg`],
-    creator: siteConfig.twitterHandle || "@yourhandle",
+    site: siteConfig.twitterHandle,
+    creator: siteConfig.twitterHandle,
+    images: [siteConfig.ogImage],
+  },
+  verification: {
+    google: siteConfig.googleSiteVerification,
+    other: {
+      ahrefs: siteConfig.ahrefsVerification,
+    },
   },
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      "max-image-preview": "large",
-      "max-snippet": -1,
-    },
-  },
-  icons: {
-    icon: [
-      { url: "/favicon.ico" },
-      { url: "/icons/icon-192x192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icons/icon-256x256.png", sizes: "256x256", type: "image/png" },
-    ],
-    shortcut: ["/favicon-16x16.png"],
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-  },
-  manifest: "/manifest.json", // Changed from site.webmanifest to manifest.json
-  alternates: {
-    canonical: siteConfig.url,
-  },
-  verification: {
-    google:
-      siteConfig.googleSiteVerification || "your-google-verification-code",
-  },
-  category: "Healthcare",
-  other: {
-    "ahrefs-site-verification":
-      siteConfig.ahrefsVerification || "your-ahrefs-code",
+    "max-snippet": -1,
+    "max-image-preview": "large",
+    "max-video-preview": -1,
   },
 };
 
-// Structured data configuration
-
+/* -----------------------------
+   ✅ Structured Data (Org level)
+   ⚡ Future: Extend with dynamic Doctor/Clinic schema inside each layout
+----------------------------- */
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "MedicalOrganization",
@@ -109,14 +91,16 @@ const structuredData = {
       "@type": "ContactPoint",
       telephone: siteConfig.contact?.phone || "+1-555-123-4567",
       contactType: "Customer Support",
-      areaServed: "US",
-      availableLanguage: "en",
+      areaServed: "BD",
+      availableLanguage: ["en", "bn"], // ⚡ Local SEO (English + Bengali)
     },
   ],
   medicalSpecialty: "Healthcare",
 };
 
-// Google Analytics script component
+/* -----------------------------
+   ✅ Google Analytics (Production only)
+----------------------------- */
 const GoogleAnalytics = () => {
   if (process.env.NODE_ENV !== "production" || !siteConfig.googleAnalyticsId) {
     return null;
@@ -143,6 +127,10 @@ const GoogleAnalytics = () => {
   );
 };
 
+/* -----------------------------
+   ✅ Root Layout
+   - Handles global SEO + Analytics + Theme + PWA
+----------------------------- */
 export default function RootLayout({
   children,
 }: {
@@ -156,17 +144,20 @@ export default function RootLayout({
       className={poppins.variable}
     >
       <head>
+        {/* Progressive Web App (PWA) Setup */}
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#ffffff" />
-        <link rel="manifest" href="/manifest.json" />{" "}
-        {/* Added manifest link */}
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
       </head>
+
       <AuthProvider>
         <body className={poppins.className}>
           {children}
           <Toaster />
 
-          {/* Structured Data */}
+          {/* ✅ Global Structured Data */}
           <Script
             id="structured-data"
             type="application/ld+json"
@@ -176,6 +167,7 @@ export default function RootLayout({
             strategy="afterInteractive"
           />
 
+          {/* ✅ Analytics */}
           <GoogleAnalytics />
         </body>
       </AuthProvider>

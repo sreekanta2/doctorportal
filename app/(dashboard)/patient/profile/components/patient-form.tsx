@@ -2,7 +2,6 @@
 
 import { updateUserAndPatientAction } from "@/action/action.patient";
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
-import ImageUpload from "@/components/image-upload";
 import ResetButton from "@/components/reset-button";
 import SubmitButton from "@/components/submit-button";
 import { Form } from "@/components/ui/form";
@@ -13,7 +12,7 @@ import {
 } from "@/zod-validation/patient";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSession } from "next-auth/react";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import "react-phone-number-input/style.css";
@@ -24,32 +23,30 @@ export default function PatientForm({
   patient: PatientWithRelations;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [image, setImage] = useState<string | null>(null);
   const user = useSession();
-
   const form = useForm<UpdatePatientInput>({
     resolver: zodResolver(UpdatePatientSchema),
     defaultValues: {
-      name: user?.data?.user?.name || "",
-      image: user?.data?.user?.image || image || "",
-      email: user?.data?.user?.email || patient?.user?.email || "",
-      phoneNumber: patient?.phoneNumber || "",
-      age: patient?.age || 0,
-      gender: patient?.gender || undefined,
-      bloodGroup: patient?.bloodGroup || undefined,
-      street: patient?.street || "",
-      country: patient?.country || "",
-      city: patient?.city || "",
-      zipCode: patient?.zipCode || "",
-      userId: user?.data?.user?.id || "",
-      id: user?.data?.user?.id || patient?.userId || "",
+      name: "",
+      image: patient?.user?.image || "",
+      email: "",
+      phoneNumber: "",
+      age: undefined,
+      gender: undefined,
+      bloodGroup: undefined,
+      street: "",
+      country: "",
+      city: "",
+      zipCode: "",
+      userId: "",
+      id: "",
     },
   });
   useEffect(() => {
-    if (user?.data?.user || patient) {
+    if (patient || user) {
       form.reset({
         name: user?.data?.user?.name || "",
-        image: user?.data?.user?.image || image || "",
+        image: user?.data?.user?.image || patient?.user?.image || "",
         email: user?.data?.user?.email || patient?.user?.email || "",
         phoneNumber: patient?.phoneNumber || "",
         age: patient?.age || 0,
@@ -63,7 +60,7 @@ export default function PatientForm({
         id: user?.data?.user?.id || patient?.userId || "",
       });
     }
-  }, [user?.data?.user, patient, image, form]);
+  }, [user?.data?.user, patient, form]);
 
   const onSubmit: SubmitHandler<UpdatePatientInput> = (formData) => {
     startTransition(async () => {
@@ -90,23 +87,13 @@ export default function PatientForm({
       >
         {/* Profile Section */}
         <div className="space-y-6">
-          <div className="border p-4 rounded-md flex gap-4">
-            <ImageUpload
-              setImage={setImage}
-              initialImage={patient?.user?.image ?? ""}
-            />
-
-            <div className="flex flex-col justify-center">
-              <h2 className="text-xl font-semibold">
-                {user?.data?.user?.name || "Patient Name"}
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {typeof user?.data?.user?.email === "string"
-                  ? user?.data?.user?.email
-                  : user?.data?.user?.email || ""}{" "}
-              </p>
-            </div>
-          </div>
+          <CustomFormField
+            fieldType={FormFieldType.FILE_UPLOAD}
+            control={form.control}
+            name="image"
+            label="Profile Picture"
+            required
+          />
 
           {/* Personal Information Section */}
           <div className="border p-4 rounded-md space-y-4">

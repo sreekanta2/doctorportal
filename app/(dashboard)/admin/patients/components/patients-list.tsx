@@ -1,7 +1,7 @@
 "use client";
 
+import { deletePatient } from "@/action/action.patient";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -18,16 +18,35 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { PatientWithRelations } from "@/types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
-const PatientsList = ({ patients = [] }: { patients: any }) => {
+const PatientsList = ({
+  patients = [],
+}: {
+  patients: PatientWithRelations[];
+}) => {
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [currentPatient, setCurrentPatient] = useState<any>(null);
+  const [currentPatient, setCurrentPatient] =
+    useState<PatientWithRelations | null>(null);
 
-  const handleViewPatient = (patient: any) => {
+  const handleViewPatient = (patient: PatientWithRelations) => {
     setCurrentPatient(patient);
     setIsViewModalOpen(true);
+  };
+  const handleDeletePatient = async (email: string) => {
+    const confirmed = confirm("Are you sure you want to delete this patient?");
+    if (confirmed) {
+      // Call the delete patient action
+      const response = await deletePatient(email);
+      if (response.success) {
+        toast.success("Patient deleted successfully");
+      } else {
+        toast.error("Failed to delete patient");
+      }
+    }
   };
 
   return (
@@ -38,41 +57,29 @@ const PatientsList = ({ patients = [] }: { patients: any }) => {
             <TableHead className="font-semibold">Patient Name</TableHead>
 
             <TableHead>Phone </TableHead>
-            <TableHead>Last Visit</TableHead>
-            <TableHead>Status</TableHead>
+            <TableHead>Age</TableHead>
+
             <TableHead>Action</TableHead>
           </TableRow>
         </TableHeader>
 
         <TableBody>
-          {patients.map((patient: any) => (
+          {patients.map((patient) => (
             <TableRow key={patient.id} className="hover:bg-muted">
               <TableCell className="font-medium text-card-foreground/80">
                 <div className="flex gap-3 patients-center">
                   <Avatar className="rounded-full">
-                    <AvatarImage src={patient.image} />
+                    <AvatarImage src={patient?.user?.image || ""} />
                     <AvatarFallback>AB</AvatarFallback>
                   </Avatar>
                   <span className="text-base text-card-foreground">
-                    {patient.name}
+                    {patient?.user?.name || "patient name"}
                   </span>
                 </div>
               </TableCell>
 
-              <TableCell>{patient.phoneNumber}</TableCell>
-              <TableCell>
-                {patient.lastVisit ? patient.lastVisit : "N/A"}
-              </TableCell>
-
-              <TableCell>
-                <Badge
-                  variant="soft"
-                  color={(patient?.isActive && "success") || "destructive"}
-                  className=" capitalize"
-                >
-                  {patient?.isActive ? "active" : "inactive"}
-                </Badge>
-              </TableCell>
+              <TableCell>{patient?.phoneNumber}</TableCell>
+              <TableCell>{patient?.age}</TableCell>
 
               <TableCell>
                 <div className="flex gap-3">
@@ -90,6 +97,7 @@ const PatientsList = ({ patients = [] }: { patients: any }) => {
                     variant="outline"
                     className="h-7 w-7"
                     color="destructive"
+                    onClick={() => handleDeletePatient(patient?.user?.email)}
                   >
                     <Icon icon="heroicons:trash" className="h-4 w-4" />
                   </Button>
@@ -110,25 +118,18 @@ const PatientsList = ({ patients = [] }: { patients: any }) => {
             <div className="space-y-4">
               <div className="flex items-center gap-4">
                 <Avatar className="h-16 w-16">
-                  <AvatarImage src={currentPatient.image} />
+                  <AvatarImage src={currentPatient?.user?.image || ""} />
                   <AvatarFallback>
-                    {currentPatient.name
+                    {currentPatient?.user?.name
                       .split(" ")
                       .map((n: string) => n[0])
                       .join("")}
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="text-lg font-medium">{currentPatient.name}</h3>
-                  <Badge
-                    variant="soft"
-                    color={
-                      (currentPatient?.isActive && "success") || "destructive"
-                    }
-                    className="mt-1 capitalize"
-                  >
-                    {currentPatient?.isActive ? "active" : "inactive"}
-                  </Badge>
+                  <h3 className="text-lg font-medium">
+                    {currentPatient?.user?.name}
+                  </h3>
                 </div>
               </div>
 
@@ -138,8 +139,8 @@ const PatientsList = ({ patients = [] }: { patients: any }) => {
                   <p>{currentPatient.phoneNumber}</p>
                 </div>
                 <div>
-                  <Label className="text-muted-foreground">Last Visit</Label>
-                  <p>{currentPatient.lastVisit || "N/A"}</p>
+                  <Label className="text-muted-foreground">Age</Label>
+                  <p>{currentPatient.age || "N/A"}</p>
                 </div>
               </div>
 

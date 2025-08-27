@@ -70,13 +70,13 @@ export function AddDoctorMembership({
       doctorId: "",
       clinicId: user?.data?.user?.id || "",
       isActive: true,
-      maxAppointments: 0,
-      discount: 0,
+      maxAppointments: undefined,
+      discount: undefined,
       search: "",
       specialization: "",
       city: "",
       gender: "",
-      fee: 0,
+      fee: undefined,
     },
   });
 
@@ -370,7 +370,6 @@ export function AddDoctorMembership({
                 control={form.control}
                 placeholder="0"
                 type="number"
-                required
               />
 
               <CustomFormField
@@ -380,7 +379,6 @@ export function AddDoctorMembership({
                 control={form.control}
                 placeholder="0"
                 type="number"
-                required
               />
 
               <CustomFormField

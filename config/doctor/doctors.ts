@@ -28,10 +28,14 @@ export const getAllDoctors = async (filterOptions?: SearchParams) => {
     return error;
   }
 };
-export const getSingleDoctor = async (id: string) => {
+export const getSingleDoctor = async (
+  id: string,
+  page?: number,
+  limit?: number
+) => {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/doctors/${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/doctors/${id}?page=${page}&limit=${limit}`,
 
       {
         method: "GET",

@@ -12,22 +12,26 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { avatar } from "@/config/site";
+import { ReviewWithUser } from "@/types";
 import { Icon } from "@iconify/react";
 import { useState } from "react";
 import UpdateReviewModal from "./update-modal";
 
-export default function ReviewsList({ reviews = [] }: { reviews: any[] }) {
+export default function ReviewsList({
+  reviews = [],
+}: {
+  reviews: ReviewWithUser[];
+}) {
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedReview, setSelectedReview] = useState<any>(null);
   const [reviewList, setReviewList] = useState(reviews);
 
-  const handleOpenModal = (review: any) => {
+  const handleOpenModal = (review: ReviewWithUser) => {
     setSelectedReview(review);
     setModalOpen(true);
   };
 
-  const handleUpdateReview = (updatedReview: any) => {
+  const handleUpdateReview = (updatedReview: ReviewWithUser) => {
     setReviewList((prev) =>
       prev.map((r) => (r.id === updatedReview.id ? updatedReview : r))
     );
@@ -54,20 +58,22 @@ export default function ReviewsList({ reviews = [] }: { reviews: any[] }) {
               <TableCell>
                 <div className="flex gap-3 items-center">
                   <Avatar>
-                    <AvatarImage src={review?.patient?.avatar || avatar} />
+                    <AvatarImage src={review?.reviewer?.image || ""} />
                     <AvatarFallback>AB</AvatarFallback>
                   </Avatar>
-                  {review?.patient?.name || "Patient"}
+                  {review?.reviewer?.name || "Patient"}
                 </div>
               </TableCell>
 
               <TableCell>
                 <div className="flex gap-3 items-center">
                   <Avatar>
-                    <AvatarImage src={review?.doctor?.avatar || avatar} />
+                    <AvatarImage
+                      src={review?.doctor?.user?.image || "avatar"}
+                    />
                     <AvatarFallback>AB</AvatarFallback>
                   </Avatar>
-                  {review?.doctor?.name || "Doctor"}
+                  {review?.doctor?.user?.name || "Doctor"}
                 </div>
               </TableCell>
 
@@ -79,11 +85,13 @@ export default function ReviewsList({ reviews = [] }: { reviews: any[] }) {
                 />
               </TableCell>
 
-              <TableCell>
-                {review.content?.length > 42
-                  ? review.content.slice(0, 42) + "..."
-                  : review.content}
-              </TableCell>
+              {review?.comment && (
+                <TableCell>
+                  {review?.comment?.length > 42
+                    ? review?.comment?.slice(0, 42) + "..."
+                    : review.comment}
+                </TableCell>
+              )}
               <TableCell>
                 {review.createdAt
                   ? new Date(review.createdAt).toLocaleDateString("en-GB")

@@ -102,19 +102,23 @@ model User {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  doctorReview DoctorReview[]
+  clinicReview ClinicReview[]
 }
 
 model Doctor {
-  id             String                   @id @default(cuid())
-  degree         String
-  gender         Gender?
-  hospital       String?
-  street         String?
-  state          String?
-  city           String?
-  country        String?
-  zipCode        String?
-  averageRating  Float                    @default(0.0)
+  id            String  @id @default(cuid())
+  degree        String
+  gender        Gender?
+  hospital      String?
+  street        String?
+  state         String?
+  city          String?
+  country       String?
+  zipCode       String?
+  averageRating Float   @default(0.0)
+
   reviewsCount   Int?
   specialization String
   searchVector   Unsupported("tsvector")? @map("_search")
@@ -145,6 +149,8 @@ model Clinic {
   description     String? @db.Text
   openingHour     String?
   establishedYear Int?
+  averageRating   Float   @default(0.0)
+  reviewsCount    Int?
   street          String?
   city            String?
   country         String?
@@ -156,7 +162,7 @@ model Clinic {
   userId       String             @unique
   user         User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   reviews      ClinicReview[]
-  members      ClinicMembership[]
+  memberships  ClinicMembership[]
   subscription Subscription?
 
   createdAt DateTime @default(now())
@@ -188,8 +194,6 @@ model Patient {
   userId    String   @unique
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  doctorReviews   DoctorReview[]
-  clinicReviews   ClinicReview[]
   pastAppointment PastAppointment[]
   medicalHistory  MedicalHistory[]
 
@@ -268,39 +272,41 @@ model MedicalHistory {
 }
 
 model DoctorReview {
-  id        String  @id @default(cuid())
-  patientId String
-  doctorId  String
-  rating    Int     @default(1)
-  comment   String? @db.Text
+  id         String  @id @default(cuid())
+  reviewerId String
+  doctorId   String
+  rating     Int     @default(1)
+  comment    String? @db.Text
+  status     String  @default("pending")
 
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  doctor  Doctor  @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  reviewer User   @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  doctor   Doctor @relation(fields: [doctorId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([patientId, doctorId])
   @@index([doctorId])
   @@index([rating])
+  @@index([reviewerId])
 }
 
 model ClinicReview {
-  id        String  @id @default(cuid())
-  patientId String
-  clinicId  String
-  rating    Int     @default(1)
-  comment   String? @db.Text
+  id         String  @id @default(cuid())
+  reviewerId String
+  clinicId   String
+  rating     Int     @default(1)
+  comment    String? @db.Text
+  status     String  @default("pending")
 
-  patient Patient @relation(fields: [patientId], references: [id], onDelete: Cascade)
-  clinic  Clinic  @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  reviewer User   @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+  clinic   Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([patientId, clinicId])
   @@index([clinicId])
   @@index([rating])
+  @@index([reviewerId])
 }
 
 model Subscription {

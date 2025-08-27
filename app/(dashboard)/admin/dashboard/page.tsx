@@ -15,11 +15,15 @@ import {
 import PatientsList from "./components/patients-list";
 
 export default async function AdminDashboardPage() {
-  const result = await getAllDoctors({ page: "1", limit: "5" });
+  const result = await getAllDoctors({ page: "1", limit: "10" });
+
   const doctors: DoctorWithRelations[] = result.data;
   const patientResults = await getAllPatients({ page: "1", limit: "5" });
   const patients: PatientWithRelations[] = patientResults.data;
-  const clinicResults = await getAllClinics({ page: "1", limit: "5" });
+  const clinicResults = await getAllClinics("/admin", {
+    page: "1",
+    limit: "10",
+  });
   const clinics: ClinicWithRelations[] = clinicResults.data;
 
   return (

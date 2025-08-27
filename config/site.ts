@@ -1,22 +1,3 @@
-// export const siteConfig = {
-//   name: "DCare",
-//   description: null,
-//   theme: "violet",
-//   layout: "vertical",
-//   // semi-box, horizontal, vertical
-//   hideSideBar: false,
-//   sidebarType: "module",
-//   // popover, classic, module
-//   sidebarColor: null,
-//   navbarType: "sticky",
-//   // sticky, floating, static
-//   footerType: "static",
-//   // sticky,  static, hidden
-//   sidebarBg: "none",
-//   radius: 0.5,
-// };
-// config/site.ts
-// config/site.ts
 import avatar from "@/public/images/avatar/avatar-11.jpg";
 export { avatar };
 export const siteConfig = {
@@ -53,7 +34,6 @@ export const siteConfig = {
     email: "support@Doccare.com",
   },
 
-  // Social Links
   socialLinks: [
     { name: "Facebook", url: "https://facebook.com/Doccare" },
     { name: "Twitter", url: "https://twitter.com/DoccareApp" },

@@ -2,13 +2,12 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 import { z } from "zod";
 
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
-import ImageUpload from "@/components/image-upload";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,35 +30,38 @@ export default function MedicalRecordsUpdateDialog({
   medicalHistory,
 }: MedicalRecordsUpdateDialogProps) {
   const [isPending, startTransition] = useTransition();
-  const [image, setImage] = useState<string | null>(
-    medicalHistory?.document || null
-  );
 
   const form = useForm<z.infer<typeof medicalHistoryUpdateSchema>>({
     resolver: zodResolver(medicalHistoryUpdateSchema),
     defaultValues: {
-      title: medicalHistory?.title,
-      description: medicalHistory?.description || "",
-      date: new Date(medicalHistory?.date),
-      document: medicalHistory?.document || "",
-      patientId: medicalHistory?.patientId,
-      id: medicalHistory?.id,
+      title: "",
+      description: "",
+      date: new Date(),
+      document: "",
+      patientId: "",
+      id: "",
     },
   });
 
   useEffect(() => {
-    form.setValue("document", image || "");
-  }, [image, form]);
+    if (!medicalHistory) return;
+
+    form.reset({
+      id: medicalHistory.id,
+      title: medicalHistory.title || "",
+      description: medicalHistory.description || "",
+      date: new Date(medicalHistory.date),
+      document: medicalHistory.document || "",
+      patientId: medicalHistory.patientId,
+    });
+  }, [medicalHistory, form]);
 
   const onSubmit: SubmitHandler<z.infer<typeof medicalHistoryUpdateSchema>> = (
     data
   ) => {
     startTransition(async () => {
       try {
-        const result = await updateMedicalHistory(medicalHistory.id, {
-          ...data,
-          document: image || undefined,
-        });
+        const result = await updateMedicalHistory(data);
 
         if (result?.success) {
           toast.success("Medical record updated successfully");
@@ -109,11 +111,12 @@ export default function MedicalRecordsUpdateDialog({
               type="date"
               label="Date"
             />
-
-            <ImageUpload
-              setImage={setImage}
-              initialImage={image || ""}
-              medicalRecordId={medicalHistory?.id}
+            <CustomFormField
+              fieldType={FormFieldType.FILE_UPLOAD}
+              name="document"
+              control={form.control}
+              label="Document"
+              file
             />
 
             <div className="flex justify-end gap-4 pt-4">

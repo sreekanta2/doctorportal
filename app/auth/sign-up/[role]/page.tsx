@@ -121,8 +121,8 @@ const RegForm = ({ params: { role } }: RegFormProps) => {
       try {
         const result = await verifyOtp(userEmail, otpCode);
         if (result?.success) {
-          toast.success("Email verified successfully! 🎉", { duration: 4000 });
-          setTimeout(() => router.push("/auth/sign-in"), 2000);
+          toast.success("Email verified successfully! 🎉");
+          router.push("/auth/sign-in");
         } else {
           toast.error(result?.message || "Invalid OTP");
           resetOTPState();

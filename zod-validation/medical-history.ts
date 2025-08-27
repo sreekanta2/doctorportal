@@ -26,7 +26,9 @@ const medicalHistoryBase = z.object({
     .max(new Date(), "Date cannot be in the future"),
 
   // Store uploaded file URL (e.g., Cloudinary secure_url)
-  document: z.string().optional(),
+  document: z
+    .string({ required_error: "Document  is required" })
+    .url("Invalid document URL"),
   doctorId: z.string().cuid("Invalid doctor id"),
   patientId: z.string().cuid("Invalid patient id"),
 });

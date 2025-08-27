@@ -1,24 +1,19 @@
 import { z } from "zod";
 
 export const DoctorReviewSchema = z.object({
-  patientId: z.string({
-    required_error: "Patient ID is required",
+  id: z.string().optional(), // for updates
+  reviewerId: z.string({
+    required_error: "Reviewer ID is required",
   }),
   doctorId: z.string({
     required_error: "Doctor ID is required",
   }),
-  rating: z
-    .number({
-      required_error: "Rating is required",
-      invalid_type_error: "Rating must be a number",
-    })
-    .min(1, "Rating must be at least 1")
-    .max(5, "Rating cannot be more than 5")
-    .default(1),
-  comment: z.string().optional().nullable(),
-  createdAt: z.date().optional(),
-  updatedAt: z.date().optional(),
+  rating: z.number().min(1).max(5),
+  status: z.string().default("pending"),
+  comment: z.string(),
 });
+
+export const CreateDoctorReviewSchema = DoctorReviewSchema;
 
 // For update: make all fields optional except `id`
 export const UpdateDoctorReviewSchema = DoctorReviewSchema.partial().extend({
@@ -26,7 +21,7 @@ export const UpdateDoctorReviewSchema = DoctorReviewSchema.partial().extend({
     required_error: "Review ID is required for update",
   }),
 });
-export type DoctorReviewCreateType = z.infer<typeof DoctorReviewSchema>;
+export type DoctorReviewCreateInput = z.infer<typeof DoctorReviewSchema>;
 
 // Type for updating a doctor review
-export type DoctorReviewUpdateType = z.infer<typeof UpdateDoctorReviewSchema>;
+export type DoctorReviewUpdateInput = z.infer<typeof UpdateDoctorReviewSchema>;

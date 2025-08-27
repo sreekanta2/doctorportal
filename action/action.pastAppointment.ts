@@ -26,7 +26,7 @@ export async function createPastAppointment(values: unknown) {
     });
 
     if (!exitingPatient?.patient) {
-      throw new AppError("Unauthorized user");
+      throw new AppError("Setup patient information first");
     }
     let pastAppointment = await prisma.pastAppointment.findFirst({
       where: {
@@ -48,7 +48,7 @@ export async function createPastAppointment(values: unknown) {
     return serverActionCreatedResponse(pastAppointment);
   } catch (error: any) {
     return serverActionErrorResponse(
-      error.message || "Failed to create medical history"
+      error || "Failed to create medical history"
     );
   }
 }

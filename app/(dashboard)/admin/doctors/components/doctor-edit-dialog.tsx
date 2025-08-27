@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -28,26 +28,47 @@ interface DoctorDialogEditProps {
 
 export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
   const [isPending, startTransition] = useTransition();
-
   const form = useForm<UpdateDoctorInput>({
     resolver: zodResolver(updateDoctorSchema),
     defaultValues: {
-      name: doctor?.user.name || "",
-      email: doctor?.user?.email || "",
+      name: "",
+      email: "",
       password: "",
-      image: doctor?.user?.image || "",
-      degree: doctor?.degree || "",
-      specialization: doctor?.specialization || "",
-      city: doctor?.city || "",
-      state: doctor?.state || "",
-      country: doctor?.country || "",
-      zipCode: doctor?.zipCode || "",
-      street: doctor?.street || "",
-      hospital: doctor?.hospital || "",
-      gender: doctor?.gender || undefined,
-      id: doctor.id,
+      image: "",
+      degree: "",
+      specialization: "",
+      city: "",
+      state: "",
+      country: "",
+      zipCode: "",
+      street: "",
+      hospital: "",
+      gender: undefined,
+      id: "",
     },
   });
+
+  // Update form values when doctor data is loaded
+  useEffect(() => {
+    if (!doctor) return;
+
+    form.reset({
+      name: doctor.user?.name ?? "",
+      email: doctor.user?.email ?? "",
+      password: "",
+      image: doctor.user?.image ?? "",
+      degree: doctor.degree ?? "",
+      specialization: doctor.specialization ?? "",
+      city: doctor.city ?? "",
+      state: doctor.state ?? "",
+      country: doctor.country ?? "",
+      zipCode: doctor.zipCode ?? "",
+      street: doctor.street ?? "",
+      hospital: doctor.hospital ?? "",
+      gender: doctor.gender ?? undefined,
+      id: doctor.id ?? "",
+    });
+  }, [doctor, form]);
 
   const onSubmit: SubmitHandler<UpdateDoctorInput> = (data) => {
     startTransition(async () => {

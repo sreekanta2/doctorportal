@@ -18,6 +18,7 @@ import {
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -88,7 +89,8 @@ export default function DoctorDialogAdd() {
                   fieldType={FormFieldType.FILE_UPLOAD}
                   control={form.control}
                   name="image"
-                  label="Upload Image"
+                  required
+                  className="bg-white"
                 />
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
@@ -198,12 +200,8 @@ export default function DoctorDialogAdd() {
 
             {/* Submit */}
             <div className="flex justify-end gap-4 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => form.reset()}
-              >
-                Reset
+              <Button type="button" variant="outline">
+                <DialogClose>Cancel</DialogClose>
               </Button>
               <Button type="submit" disabled={isPending}>
                 {isPending ? "Creating..." : "Create Doctor"}

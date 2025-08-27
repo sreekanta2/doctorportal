@@ -1,5 +1,7 @@
 "use client";
 
+import { updateAdminDoctorReviewAction } from "@/action/action.admin-doctor";
+import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -9,23 +11,31 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import { Form } from "@/components/ui/form";
+import { Rating } from "@/components/ui/rating";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Textarea } from "@/components/ui/textarea";
-import axios from "axios";
-import { useEffect, useState } from "react";
+  DoctorReviewUpdateInput,
+  UpdateDoctorReviewSchema,
+} from "@/zod-validation/doctor-review-scema";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import { useEffect, useTransition } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 
 interface UpdateReviewDialogProps {
   isOpen: boolean;
   onClose: () => void;
-  review: any;
-  onUpdate: (updatedReview: any) => void;
+  review: {
+    id: string;
+    comment: string;
+    doctorId: string;
+    reviewerId?: string;
+    rating: number;
+    status: string;
+  };
+  onUpdate?: (updatedReview: any) => void;
 }
 
 export default function UpdateReviewDialog({
@@ -34,35 +44,59 @@ export default function UpdateReviewDialog({
   review,
   onUpdate,
 }: UpdateReviewDialogProps) {
-  const [content, setContent] = useState("");
-  const [rating, setRating] = useState(0);
-  const [status, setStatus] = useState("pending");
-  const [loading, setLoading] = useState(false);
+  const { data: session } = useSession();
+  const [isPending, startTransition] = useTransition();
+
+  const form = useForm<DoctorReviewUpdateInput>({
+    resolver: zodResolver(UpdateDoctorReviewSchema),
+    defaultValues: {
+      id: review.id,
+      comment: review.comment,
+      doctorId: review.doctorId,
+      reviewerId: session?.user.id || "",
+      rating: review.rating,
+      status: review.status,
+    },
+  });
 
   useEffect(() => {
-    if (review) {
-      setContent(review.content || "");
-      setRating(review.rating || 0);
-      setStatus(review.status || "pending");
-    }
-  }, [review]);
-
-  const handleUpdate = async () => {
-    setLoading(true);
-    try {
-      const res = await axios.patch(`/api/reviews/${review.id}`, {
-        content,
-        rating,
-        status,
+    if (session?.user.id) {
+      form.reset({
+        id: review.id,
+        comment: review.comment,
+        doctorId: review.doctorId,
+        reviewerId: session.user.id,
+        rating: review.rating,
+        status: review.status,
       });
-      onUpdate(res.data);
-      toast.success("Review updated successfully!");
-      onClose();
-    } catch (error: any) {
-      toast.error(error.response?.data?.error || "Failed to update review");
-    } finally {
-      setLoading(false);
     }
+  }, [session?.user.id, review, form]);
+
+  const currentRating = form.watch("rating");
+
+  const onSubmit: SubmitHandler<DoctorReviewUpdateInput> = (data) => {
+    if (!data.id) {
+      toast.error("Review ID is required");
+      return;
+    }
+
+    startTransition(async () => {
+      try {
+        const result = await updateAdminDoctorReviewAction(data);
+
+        if (!result?.success) {
+          toast.error(result?.errors?.[0]?.message || "Operation failed");
+        } else {
+          toast.success("Review updated successfully!");
+          form.reset(data);
+          onUpdate?.(result.data);
+          onClose();
+        }
+      } catch (error) {
+        console.error(error);
+        toast.error("Something went wrong");
+      }
+    });
   };
 
   return (
@@ -75,41 +109,71 @@ export default function UpdateReviewDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4 mt-2">
-          <div>
-            <label className="block text-sm font-medium mb-1">Rating</label>
-            {/* <Rating value={rating} onValueChange={(v) => setRating(v)} /> */}
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Content</label>
-            <Textarea
-              value={content}
-              //   onChange={(e) => setContent(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Status</label>
-            <Select value={status} onValueChange={(v) => setStatus(v)}>
-              <SelectTrigger>
-                <SelectValue placeholder="Select status" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending">Pending</SelectItem>
-                <SelectItem value="approved">Approved</SelectItem>
-                <SelectItem value="rejected">Rejected</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="space-y-6 mt-2"
+          >
+            <fieldset className="space-y-2">
+              <legend className="text-base font-medium text-default-700 mb-1">
+                Your Rating
+              </legend>
+              <Rating
+                value={currentRating || 0}
+                onChange={(value: number) => form.setValue("rating", value)}
+                className="gap-x-1.5 max-w-[125px]"
+                error={form.formState.errors.rating?.message}
+                aria-label="Rate your experience from 1 to 5 stars"
+                readOnly
+              />
+              {form.formState.errors.rating && (
+                <p className="text-base text-red-500">
+                  {form.formState.errors.rating.message}
+                </p>
+              )}
+            </fieldset>
 
-        <DialogFooter className="flex justify-end gap-2 mt-4">
-          <Button variant="outline" onClick={onClose} disabled={loading}>
-            Cancel
-          </Button>
-          <Button onClick={handleUpdate} disabled={loading}>
-            Update
-          </Button>
-        </DialogFooter>
+            <CustomFormField
+              fieldType={FormFieldType.SELECT}
+              control={form.control}
+              name="status"
+              label="Review Status"
+              placeholder="Select the status"
+              required
+              options={[
+                { value: "pending", label: "Pending" },
+                { value: "approved", label: "Approved" },
+                { value: "rejected", label: "Rejected" },
+              ]}
+            />
+
+            <CustomFormField
+              fieldType={FormFieldType.TEXTAREA}
+              control={form.control}
+              name="comment"
+              label="Write a detailed review"
+              placeholder="Share your experience..."
+              required
+              disabled
+            />
+
+            <DialogFooter className="flex justify-end gap-2 mt-4">
+              <Button variant="outline" onClick={onClose} disabled={isPending}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Updating...
+                  </>
+                ) : (
+                  "Update Review"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );

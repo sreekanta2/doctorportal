@@ -4,14 +4,14 @@ import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 import { createMedicalHistory } from "@/action/action.medical-history";
-import ImageUpload from "@/components/image-upload";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -28,7 +28,6 @@ export default function MedicalRecordsAddDialog({
   doctorId: string;
 }) {
   const [isPending, startTransition] = useTransition();
-  const [image, setImage] = useState<string | null>(null);
   const user = useSession();
   const form = useForm<z.infer<typeof medicalHistoryCreateSchema>>({
     resolver: zodResolver(medicalHistoryCreateSchema),
@@ -36,26 +35,28 @@ export default function MedicalRecordsAddDialog({
       title: "",
       description: "",
       date: new Date(),
-      document: image || "",
+      document: "",
       doctorId,
       patientId: user?.data?.user?.id || "",
     },
   });
 
+  // ✅ Reset safely when dependencies change
   useEffect(() => {
-    form.setValue("document", image || "");
-    form.setValue("patientId", user?.data?.user?.id || "");
-    form.setValue("doctorId", doctorId || "");
-  }, [image, form]);
+    if (!doctorId && !user?.data?.user?.id) return;
+
+    form.reset({
+      doctorId,
+      patientId: user?.data?.user?.id || "",
+    });
+  }, [doctorId, user?.data?.user?.id, form]);
+
   const onSubmit: SubmitHandler<z.infer<typeof medicalHistoryCreateSchema>> = (
     data
   ) => {
     startTransition(async () => {
       try {
-        const result = await createMedicalHistory({
-          ...data,
-          document: image || undefined,
-        });
+        const result = await createMedicalHistory(data);
 
         if (result?.success) {
           toast.success("Doctor created successfully");
@@ -89,7 +90,7 @@ export default function MedicalRecordsAddDialog({
                 name="title"
                 control={form.control}
                 placeholder="e.g. Diabetes Checkup"
-                label="Title"
+                label="Report Title"
               />
               <CustomFormField
                 fieldType={FormFieldType.TEXTAREA}
@@ -105,11 +106,19 @@ export default function MedicalRecordsAddDialog({
                 type="date"
                 label="Date"
               />
-              <ImageUpload setImage={setImage} />
+              <CustomFormField
+                fieldType={FormFieldType.FILE_UPLOAD}
+                name="document"
+                control={form.control}
+                placeholder="e.g. Diabetes Checkup"
+                label="Document"
+                file
+                required
+              />
 
               <div className="flex justify-end gap-4 pt-4">
                 <Button type="button" variant="outline">
-                  Cancel
+                  <DialogClose>Cancel</DialogClose>
                 </Button>
                 <Button type="submit" disabled={isPending}>
                   {isPending && (

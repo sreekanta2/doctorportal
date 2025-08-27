@@ -13,6 +13,10 @@ import {
   UpdateDoctorInput,
   updateDoctorSchema,
 } from "@/zod-validation/doctor";
+import {
+  DoctorReviewUpdateInput,
+  UpdateDoctorReviewSchema,
+} from "@/zod-validation/doctor-review-scema";
 import bcrypt, { hash } from "bcryptjs";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
@@ -40,6 +44,7 @@ export async function adminDoctorCreate(data: CreateDoctorInput) {
         email: validatedData.email,
         name: validatedData.name,
         role: "doctor",
+        image: validatedData.image || "",
         password: hashedPassword,
         emailVerified: new Date(),
       },
@@ -163,5 +168,54 @@ export async function adminDoctorDelete(email: string) {
     });
   } catch (error) {
     return serverActionErrorResponse(error);
+  }
+}
+export async function updateAdminDoctorReviewAction(
+  data: DoctorReviewUpdateInput
+) {
+  try {
+    const validatedData = UpdateDoctorReviewSchema.parse(data);
+
+    const existingReview = await prisma.doctorReview.findUnique({
+      where: { id: validatedData.id },
+    });
+
+    if (!existingReview) {
+      return serverActionErrorResponse("Review not found");
+    }
+
+    // Update review
+    const updatedReview = await prisma.doctorReview.update({
+      where: { id: validatedData.id },
+      data: {
+        comment: validatedData.comment,
+        rating: validatedData.rating,
+        status: validatedData.status,
+      },
+    });
+
+    // Recalculate the doctor's average rating & review count
+    const aggregation = await prisma.doctorReview.aggregate({
+      where: { doctorId: validatedData.doctorId },
+      _avg: { rating: true },
+      _count: { id: true },
+    });
+
+    const newAverageRating = aggregation._avg.rating || 0;
+    const newReviewCount = aggregation._count.id;
+
+    await prisma.doctor.update({
+      where: { id: validatedData.doctorId },
+      data: {
+        averageRating: newAverageRating,
+        reviewsCount: newReviewCount,
+      },
+    });
+
+    revalidatePath(`/admin/dashboard`);
+    return serverActionSuccessResponse(updatedReview);
+  } catch (error: any) {
+    console.error("❌ updateDoctorReviewAction error:", error);
+    return serverActionErrorResponse(error || "Failed to update doctor review");
   }
 }

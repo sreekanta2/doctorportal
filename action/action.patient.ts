@@ -68,3 +68,24 @@ export async function updateUserAndPatientAction(
     );
   }
 }
+
+export async function deletePatient(email: string) {
+  try {
+    if (!email) {
+      throw new AppError("Patient email is required for deletion", 400);
+    }
+
+    await prisma.user.delete({
+      where: { email: email },
+    });
+    revalidatePath("/admin/patients");
+    return serverActionCreatedResponse({
+      message: "Patient deleted successfully",
+    });
+  } catch (error: any) {
+    console.error("❌ deletePatient error:", error);
+    return serverActionErrorResponse(
+      error.message || "Failed to delete patient"
+    );
+  }
+}

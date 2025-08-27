@@ -36,7 +36,7 @@ export async function uploadImage(formData: FormData) {
         })
         .end(buffer);
     });
-    console.log(result.public_id);
+
     return { url: result.secure_url, publicId: result.public_id };
   } catch (error) {
     console.error("Cloudinary upload error:", error);

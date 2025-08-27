@@ -1,6 +1,6 @@
 "use client";
 
-import { createOrUpdateUserAndClinicAction } from "@/action/action.clinics";
+import { updateUserAndClinicAction } from "@/action/action.clinics";
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
 import SubmitButton from "@/components/submit-button";
 import {
@@ -11,14 +11,12 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { avatar } from "@/config/site";
 import { ClinicWithRelations } from "@/types";
 import { UpdateClinicInput, updateClinicSchema } from "@/zod-validation/clinic";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Pencil, Plus } from "lucide-react";
-import Image from "next/image";
-import { useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
@@ -28,32 +26,37 @@ export default function ClinicEditDialog({
   clinic: ClinicWithRelations;
 }) {
   const [isPending, startTransition] = useTransition();
+
   const form = useForm<UpdateClinicInput>({
     resolver: zodResolver(updateClinicSchema),
     defaultValues: {
-      email: clinic.user.email,
-      name: clinic.user.name,
-      password: "Srikanto3@#",
-      image: clinic.user.image || "",
-      description: clinic?.description || "",
-      phoneNumber: clinic.phoneNumber || "",
-      street: clinic.street || "",
       role: "clinic",
-      city: clinic.city || "",
-      zipCode: clinic.zipCode || "",
-      country: clinic.country || "",
-      openingHour: clinic.openingHour || "",
-      establishedYear: clinic.establishedYear || new Date().getFullYear(),
     },
   });
+
+  useEffect(() => {
+    if (clinic) {
+      form.reset({
+        email: clinic.user.email,
+        name: clinic.user.name,
+        image: clinic.user.image || "",
+        description: clinic.description || "",
+        phoneNumber: clinic.phoneNumber || "",
+        street: clinic.street || "",
+        role: "clinic",
+        city: clinic.city || "",
+        zipCode: clinic.zipCode || "",
+        country: clinic.country || "",
+        openingHour: clinic.openingHour || "",
+        establishedYear: clinic.establishedYear || new Date().getFullYear(),
+      });
+    }
+  }, [clinic, form]);
 
   const onSubmit: SubmitHandler<UpdateClinicInput> = async (data) => {
     startTransition(async () => {
       try {
-        const result = await createOrUpdateUserAndClinicAction(
-          data,
-          "/admin/clinics"
-        );
+        const result = await updateUserAndClinicAction(data, "/admin/clinics");
 
         if (!result?.success) {
           toast.error(
@@ -98,20 +101,19 @@ export default function ClinicEditDialog({
             {/* Clinic Image Section */}
             <div className="flex flex-col   gap-8 items-start">
               <div className="w-full flex gap-8  space-y-4">
-                <Image
-                  src={form.watch("image") || avatar}
-                  alt="Clinic Image"
-                  className="rounded-full object-cover"
-                  width={150}
-                  height={150}
-                />
+                {/* <AdminImageUpload
+                  setImage={setImage}
+                  initialImage={clinic.user.image || ""}
+                  email={clinic.user.email}
+                /> */}
                 <CustomFormField
                   fieldType={FormFieldType.FILE_UPLOAD}
                   control={form.control}
                   name="image"
-                  label="Upload Image"
-                  placeholder="Clinic Image"
-                  className="w-full"
+                  label="Clinic Name"
+                  placeholder="City Medical Center"
+                  required
+                  className="bg-white"
                 />
               </div>
 

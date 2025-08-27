@@ -1,6 +1,6 @@
 "use client";
 
-import { createOrUpdateUserAndClinicAction } from "@/action/action.clinics";
+import { createUserAndClinicAction } from "@/action/action.clinics";
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
 import SubmitButton from "@/components/submit-button";
 import {
@@ -11,12 +11,10 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
-import { avatar } from "@/config/site";
 import { CreateClinicInput, createClinicSchema } from "@/zod-validation/clinic";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
-import Image from "next/image";
 import { useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
@@ -29,7 +27,7 @@ export default function ClinicCreateDialog() {
     defaultValues: {
       email: "",
       name: "",
-      password: "Srikanto3@#", // hidden in real-world
+      password: "Srikanto3@#",
       image: "",
       description: "",
       phoneNumber: "",
@@ -46,9 +44,7 @@ export default function ClinicCreateDialog() {
   const onSubmit: SubmitHandler<CreateClinicInput> = async (data) => {
     startTransition(async () => {
       try {
-        let result;
-
-        result = await createOrUpdateUserAndClinicAction(data);
+        const result = await createUserAndClinicAction(data);
 
         if (!result?.success) {
           toast.error(
@@ -93,23 +89,13 @@ export default function ClinicCreateDialog() {
           >
             {/* Clinic Image Section */}
             <div className="flex flex-col   gap-8 items-start">
-              <div className="w-full flex gap-8  space-y-4">
-                <Image
-                  src={form.watch("image") || avatar}
-                  alt="Clinic Image"
-                  className="rounded-full object-cover"
-                  width={150}
-                  height={150}
-                />
-                <CustomFormField
-                  fieldType={FormFieldType.FILE_UPLOAD}
-                  control={form.control}
-                  name="image"
-                  label="Upload Image"
-                  placeholder="Clinic Image"
-                  className="w-full"
-                />
-              </div>
+              <CustomFormField
+                fieldType={FormFieldType.FILE_UPLOAD}
+                control={form.control}
+                name="image"
+                required
+                className="bg-white"
+              />
 
               {/* Basic Information */}
               <div className="w-full   space-y-6">
