@@ -152,6 +152,7 @@ model Clinic {
   averageRating   Float   @default(0.0)
   reviewsCount    Int?
   street          String?
+  state           String?
   city            String?
   country         String?
   zipCode         String?

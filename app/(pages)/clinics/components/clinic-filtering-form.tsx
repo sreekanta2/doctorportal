@@ -78,7 +78,7 @@ const ClinicFilterForm = () => {
       isMounted = false; // cleanup
     };
   }, []);
-  console.log(cities);
+
   const mappedCities = cities?.map((city: { id: string; name: string }) => ({
     value: city.name.toLowerCase(),
     label: city.name,

@@ -66,6 +66,10 @@ export async function generateMetadata({
       ...(specialty ? [specialty + " near me"] : []),
       ...(location ? ["doctors in " + location] : []),
     ],
+    robots: {
+      index: true,
+      follow: true,
+    },
   };
 }
 
@@ -125,7 +129,7 @@ export default async function DoctorsPage({
                 </span>{" "}
                 Doctors Matching Your Criteria
               </h1>
-              <p className="text-base text-default-600 mt-1">
+              <h1 className="text-base text-default-600 mt-1">
                 {specialization && (
                   <span>
                     Specialty: <strong>{specialization}</strong>{" "}
@@ -136,7 +140,7 @@ export default async function DoctorsPage({
                     Location: <strong>{city}</strong>
                   </span>
                 )}
-              </p>
+              </h1>
             </header>
 
             <div className="my-4 space-y-4">
@@ -167,42 +171,65 @@ export default async function DoctorsPage({
             </div>
           </article>
 
-          <StructuredData
-            data={{
-              "@context": "https://schema.org",
-              "@type": "ItemList",
-              itemListElement: doctors.map((doctor: DoctorWithRelations) => {
-                return {
-                  "@type": "ListItem",
-                  position: 1,
-                  item: {
-                    "@type": "Physician",
-                    name: ` ${doctor?.user?.name}`,
-                    url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctor?.id}`,
-                    image: `${
-                      doctor?.user?.image || process.env.NEXT_PUBLIC_API_URL
-                    }/default-doctor.png`,
-                    medicalSpecialty:
-                      doctor?.specialization || "General Practice",
-                    hospitalAffiliation: doctor?.hospital || "",
-                    address: {
-                      "@type": "PostalAddress",
-                      addressLocality: `${doctor?.city}` || "",
-                      addressRegion: `${doctor?.state}` || "",
-                      addressCountry: `${doctor?.country}` || "",
-                      streetAddress: doctor?.street,
-                    },
-                    aggregateRating: {
-                      "@type": "AggregateRating",
-                      ratingValue: doctor?.averageRating || 0,
-                      reviewCount: doctor?.reviewsCount || 0,
-                      bestRating: "5",
-                    },
-                  },
-                };
-              }),
-            }}
-          />
+          {/* Optimized Structured Data */}
+          {doctors.length > 0 && (
+            <StructuredData
+              data={{
+                "@context": "https://schema.org",
+                "@type": "ItemList",
+                mainEntityOfPage: {
+                  "@type": "WebPage",
+                  "@id": `${process.env.NEXT_PUBLIC_API_URL}/doctors${
+                    new URLSearchParams(
+                      searchParams as Record<string, string>
+                    ).toString()
+                      ? `?${new URLSearchParams(
+                          searchParams as Record<string, string>
+                        ).toString()}`
+                      : ""
+                  }`,
+                },
+                itemListElement: doctors.map(
+                  (doctor: DoctorWithRelations, index: number) => {
+                    return {
+                      "@type": "ListItem",
+                      position:
+                        ((pagination?.page || 1) - 1) *
+                          (pagination?.limit || 10) +
+                        index +
+                        1,
+                      item: {
+                        "@type": "Physician",
+                        name: `Dr. ${doctor?.user?.name}`,
+                        url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctor?.id}`,
+                        image:
+                          doctor?.user?.image ||
+                          `${process.env.NEXT_PUBLIC_API_URL}/default-doctor.png`,
+                        medicalSpecialty: doctor?.specialization,
+                        hospitalAffiliation: doctor?.hospital || undefined,
+                        address: {
+                          "@type": "PostalAddress",
+                          addressLocality: doctor?.city || undefined,
+                          addressRegion: doctor?.state || undefined,
+                          addressCountry: doctor?.country || undefined,
+                          streetAddress: doctor?.street || undefined,
+                        },
+                        aggregateRating: {
+                          "@type": "AggregateRating",
+                          ratingValue: doctor?.averageRating || 0,
+                          reviewCount: doctor?.reviewsCount || 0,
+                          bestRating: "5",
+                          worstRating: "1",
+                        },
+
+                        gender: doctor?.gender,
+                      },
+                    };
+                  }
+                ),
+              }}
+            />
+          )}
         </div>
       </section>
     </div>

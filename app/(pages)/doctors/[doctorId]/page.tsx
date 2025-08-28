@@ -217,32 +217,26 @@ export default async function DoctorPage({
         data={{
           "@context": "https://schema.org",
           "@type": "Physician",
-          "@id": `${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctorId}`,
-          name: doctorName,
+          name: doctor.user?.name,
+          url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctor.id}`,
           image:
-            doctor?.user?.image ||
+            doctor.user?.image ||
             `${process.env.NEXT_PUBLIC_API_URL}/default-doctor.png`,
-          url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctorId}`,
+          medicalSpecialty: doctor.specialization || "General Practice",
+          hospitalAffiliation: doctor.hospital || "",
           address: {
             "@type": "PostalAddress",
-            addressLocality: doctor?.city,
-            addressRegion: doctor?.state,
-            postalCode: doctor?.zipCode,
-            streetAddress: doctor?.street,
+            streetAddress: doctor.street || "",
+            addressLocality: doctor.city || "",
+            addressRegion: doctor.state || "",
+            addressCountry: doctor.country || "",
           },
-          medicalSpecialty: specialties,
-          alumniOf: hospital,
-          description: `${doctorName} is a ${specialties} at ${hospital}`,
           aggregateRating: {
             "@type": "AggregateRating",
-            ratingValue: doctor?.averageRating || 0,
-            ratingCount: doctor?.reviewsCount || 0,
+            ratingValue: doctor.averageRating || 0,
+            reviewCount: doctor.reviewsCount || 0,
             bestRating: "5",
           },
-          sameAs: [
-            "https://twitter.com/doctor",
-            "https://linkedin.com/in/doctor",
-          ],
         }}
       />
     </div>

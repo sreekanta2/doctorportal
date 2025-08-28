@@ -10,6 +10,15 @@ import Link from "next/link";
 import ClinicMembershipCard from "../../doctors/[doctorId]/components/membarship-card";
 import PatientReviewForm from "./components/review-form";
 import ReviewPage from "./components/review-page";
+function StructuredData({ data }: { data: any }) {
+  return (
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+    />
+  );
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -20,15 +29,18 @@ export async function generateMetadata({
 
   if (!clinic) {
     return {
-      title: "Clinic Not Found",
-      description: "The requested clinic does not exist",
+      title: "Clinic Not Found | [Your Site Name]",
+      description:
+        "The requested clinic does not exist. Browse our list of medical clinics and hospitals to find the right care for you.",
     };
   }
 
-  const title = `${clinic.user.name} - Clinic Profile`;
-  const description = `Visit ${clinic.user.name} clinic. ${
+  const title = `${clinic.user.name} - ${clinic.city} | Book an Appointment`;
+  const description = `Visit ${clinic.user.name} in ${
+    clinic.city
+  }. We offer comprehensive care with our team of ${
     clinic.memberships?.length || 0
-  } specialists, reviews, address, and contact info.`;
+  } specialists. Read patient reviews, get directions, and contact us to schedule your visit today.`;
 
   return {
     title,
@@ -38,6 +50,14 @@ export async function generateMetadata({
       description,
       url: `${process.env.NEXT_PUBLIC_API_URL}/clinics/${clinic.id}`,
       images: clinic.user.image ? [{ url: clinic.user.image }] : [],
+    },
+    // Add canonical link to prevent duplicate content issues
+    alternates: {
+      canonical: `${process.env.NEXT_PUBLIC_API_URL}/clinics/${clinic.id}`,
+    },
+    robots: {
+      index: true,
+      follow: true,
     },
   };
 }
@@ -55,48 +75,6 @@ export default async function ClinicPage({
 
   const reviews = result?.reviews?.reviews || [];
 
-  const structuredData = {
-    "@context": "https://schema.org",
-    "@type": "MedicalClinic",
-    name: clinic?.user?.name || "",
-    image: clinic?.user?.image || undefined,
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: clinic?.street || "",
-      addressLocality: clinic?.city || "",
-      addressCountry: clinic?.country || "",
-      postalCode: clinic?.zipCode || "",
-    },
-    telephone: clinic?.phoneNumber || "",
-    email: clinic?.user?.email || "",
-    medicalSpecialty: clinic?.memberships?.map(
-      (d: { doctor: { specialization: string } }) =>
-        d.doctor.specialization || "General Practice"
-    ),
-    review: reviews?.map(
-      (r: {
-        reviewer: { name: string };
-        comment: string;
-        rating: number;
-        updatedAt: string;
-      }) => ({
-        "@type": "Review",
-        author: {
-          "@type": "Person",
-          name: r.reviewer.name,
-        },
-        reviewBody: r.comment,
-        reviewRating: {
-          "@type": "Rating",
-          ratingValue: r.rating,
-          bestRating: "5",
-          worstRating: "1",
-        },
-        datePublished: r.updatedAt,
-      })
-    ),
-    sameAs: `${process.env.NEXT_PUBLIC_API_URL}/clinics/${clinic?.id}`,
-  };
   if (!clinic) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -117,11 +95,6 @@ export default async function ClinicPage({
   }
   return (
     <div className="bg-background">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
-      />
-
       <Hero
         title={<span className="text-primary">{clinic?.user?.name}</span>}
         breadcrumbs={[
@@ -321,6 +294,52 @@ export default async function ClinicPage({
           </div>
         </div>
       </main>
+      <StructuredData
+        data={{
+          "@context": "https://schema.org",
+          "@type": "MedicalClinic", // Correct type for a clinic
+          name: clinic.user?.name,
+          url: `${process.env.NEXT_PUBLIC_API_URL}/clinics/${clinic.id}`,
+          image:
+            clinic.user?.image ||
+            `${process.env.NEXT_PUBLIC_API_URL}/default-clinic.png`,
+          description: `Visit ${clinic.user?.name} clinic in ${clinic.city}, ${
+            clinic.state
+          }. We offer services with our team of ${
+            clinic.memberships?.length || 0
+          } specialists.`,
+          telephone: clinic.phoneNumber,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: clinic.street || "",
+            addressLocality: clinic.city || "",
+            addressRegion: clinic.state || "",
+            addressCountry: clinic.country || "",
+            postalCode: clinic.zipCode || "",
+          },
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: clinic.averageRating || 0,
+            reviewCount: clinic.reviewsCount || 0,
+            bestRating: "5",
+            worstRating: "1",
+          },
+
+          medicalSpecialty: clinic.memberships
+            ?.map((m) => m.doctor?.specialization)
+            .filter(Boolean),
+
+          hasPart: clinic.memberships?.map((m) => ({
+            "@type": "Physician",
+            name: `Dr. ${m?.doctor?.user?.name}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${m?.doctor?.id}`,
+            medicalSpecialty: m?.doctor?.specialization,
+            image:
+              m?.doctor?.user?.image ||
+              `${process.env.NEXT_PUBLIC_API_URL}/default-doctor.png`,
+          })),
+        }}
+      />
     </div>
   );
 }

@@ -1,12 +1,8 @@
 "use client";
 import { Button } from "@/components/ui/button";
-import darkImage from "@/public/images/error/dark-401.png";
 import lightImage from "@/public/images/error/light-401.png";
-import { useTheme } from "next-themes";
 import Image from "next/image";
 const ErrorPage = () => {
-  const { theme } = useTheme();
-
   const reset = () => {
     window.location.reload();
   };
@@ -15,7 +11,7 @@ const ErrorPage = () => {
       <div className="w-full flex flex-col items-center">
         <div className="max-w-[542px]">
           <Image
-            src={theme === "dark" ? darkImage : lightImage}
+            src={lightImage}
             alt="error image"
             className="w-full h-64 object-cover"
           />

@@ -22,12 +22,80 @@ import Link from "next/link";
 import { Hero } from "../../../components/hero";
 import ClinicFilterForm from "./components/clinic-filtering-form";
 
-// Structured Data Component
-function StructuredData({ data }: { data: any }) {
+function ClinicsStructuredData({
+  clinics,
+}: {
+  clinics: ClinicWithRelations[];
+}) {
+  const schema = {
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${process.env.NEXT_PUBLIC_API_URL}/clinics`,
+    },
+    itemListElement: clinics?.map((clinic, index) => {
+      // Get a list of unique specialties from the doctors in the clinic
+      const specialties = Array.from(
+        new Set(
+          clinic.memberships
+            ?.map((m) => m.doctor?.specialization)
+            .filter(Boolean)
+        )
+      );
+
+      return {
+        "@type": "ListItem",
+        position: index + 1,
+        item: {
+          "@type": "MedicalClinic",
+          name: clinic?.user?.name || "Unknown Clinic",
+          url: `${process.env.NEXT_PUBLIC_API_URL}/clinics/${clinic.id}`,
+          image: clinic?.user?.image,
+          telephone: clinic?.phoneNumber,
+          address: {
+            "@type": "PostalAddress",
+            streetAddress: clinic?.street || "",
+            addressLocality: clinic?.city || "",
+            addressRegion: clinic?.state || "", // Add state for more detail
+            addressCountry: clinic?.country || "",
+            postalCode: clinic?.zipCode || "",
+          },
+          aggregateRating: clinic?.reviewsCount
+            ? {
+                "@type": "AggregateRating",
+                ratingValue: clinic?.averageRating || 0,
+                reviewCount: clinic?.reviewsCount,
+                bestRating: "5",
+                worstRating: "1",
+              }
+            : undefined,
+          // Use the 'medicalSpecialty' property to describe the clinic's services
+          medicalSpecialty:
+            specialties.length > 0 ? specialties : ["General Practice"],
+          // Optionally, list the doctors using 'hasPart'
+          hasPart: clinic.memberships?.map((m) => ({
+            "@type": "Physician",
+            name: `Dr. ${m?.doctor?.user?.name}`,
+            url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${m?.doctor?.id}`,
+            image: m?.doctor?.user?.image,
+            medicalSpecialty: m?.doctor?.specialization,
+          })),
+          // Add opening hours
+          openingHours: `Mo-Su ${
+            clinic?.openingHour
+              ? "9:00 AM-" + clinic.openingHour
+              : "9:00 AM-8:00 PM"
+          }`,
+        },
+      };
+    }),
+  };
+
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: JSON.stringify(schema, null, 2) }}
     />
   );
 }
@@ -347,52 +415,7 @@ export default async function ClinicsPage({
               )}
             </div>
           </article>
-
-          {/* Structured Data */}
-          <StructuredData
-            data={{
-              "@context": "https://schema.org",
-              "@type": "ItemList",
-              itemListElement: clinics?.map((clinic, index) => ({
-                "@type": "ListItem",
-                position: index + 1,
-                item: {
-                  "@type": "MedicalClinic",
-                  "@id": `${process.env.NEXT_PUBLIC_API_URL}/clinics/${clinic.id}`,
-                  url: `${process.env.NEXT_PUBLIC_API_URL}/clinics/${clinic.id}`,
-                  name: clinic?.user?.name || "Unknown Clinic",
-                  image: clinic?.user?.image,
-                  telephone: clinic?.phoneNumber,
-                  address: {
-                    "@type": "PostalAddress",
-                    streetAddress: clinic?.street || "",
-                    addressLocality: clinic?.city || "",
-                    addressCountry: clinic?.country || "",
-                    postalCode: clinic?.zipCode || "",
-                  },
-                  aggregateRating: clinic?.reviewsCount
-                    ? {
-                        "@type": "AggregateRating",
-                        ratingValue: clinic?.averageRating || 0,
-                        reviewCount: clinic?.reviewsCount,
-                        bestRating: "5",
-                        worstRating: "1",
-                      }
-                    : undefined,
-                  medicalSpecialty:
-                    clinic?.memberships?.[0]?.doctor?.specialization ||
-                    "General Practice",
-                  department: clinic?.memberships?.map((m) => ({
-                    "@type": "Physician",
-                    name: `Dr. ${m?.doctor?.user?.name}`,
-                    image: m?.doctor?.user?.image,
-                    medicalSpecialty: m?.doctor?.specialization,
-                    url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${m?.doctor?.id}`,
-                  })),
-                },
-              })),
-            }}
-          />
+          <ClinicsStructuredData clinics={clinics} />
         </div>
       </section>
     </div>
