@@ -33,7 +33,7 @@ export async function createOrUpdateSubscription(
     });
 
     if (!clinicUser) {
-      throw new AppError("Clinic not found for provided email", 404);
+      throw new AppError("Only for Clinic user!", 404);
     }
 
     if (!clinicUser.clinic?.id) {
