@@ -24,6 +24,13 @@ enum Gender {
   OTHER
 }
 
+enum SubscriptionStatus {
+  ACTIVE
+  INACTIVE
+  EXPIRED
+  CANCELED
+}
+
 enum NotificationType {
   REMINDER
   SYSTEM
@@ -31,11 +38,10 @@ enum NotificationType {
   MESSAGE
 }
 
-enum SubscriptionPlan {
+enum PricingPlanType {
   FREE
   BASIC
   PREMIUM
-  ENTERPRISE
 }
 
 model Account {
@@ -328,21 +334,37 @@ model ClinicReview {
 }
 
 model Subscription {
-  id                   String           @id @default(cuid())
-  clinicId             String           @unique
-  plan                 SubscriptionPlan
-  startDate            DateTime
-  endDate              DateTime
-  status               String           @default("active")
-  stripeCustomerId     String?          @unique
-  stripeSubscriptionId String?          @unique
+  id            String             @id @default(cuid())
+  clinicId      String             @unique
+  pricePlanId   String
+  status        SubscriptionStatus
+  startDate     DateTime
+  endDate       DateTime
+  transactionId String?            @unique
+  bkashNumber   String
 
-  clinic Clinic @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  pricePlan PricePlan @relation(fields: [pricePlanId], references: [id], onDelete: Cascade)
+  clinic    Clinic    @relation(fields: [clinicId], references: [id], onDelete: Cascade)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@unique([clinicId, pricePlanId])
   @@index([status])
+  @@index([pricePlanId, clinicId])
+}
+
+model PricePlan {
+  id         String          @id @default(cuid())
+  plan       PricingPlanType
+  price      Float
+  maxDoctors Int
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  subscription Subscription[]
+
+  @@unique([plan])
   @@index([plan])
 }
 

@@ -2,7 +2,6 @@
 import { NotFound } from "@/components/not-found";
 
 import { Button } from "@/components/ui/button";
-import { PaginationOptions } from "@/types/common";
 
 import { deleteMembership } from "@/action/action.membarsip";
 import { deleteSchedule } from "@/action/action.schedules";
@@ -18,6 +17,7 @@ import Image from "next/image";
 
 import { User } from "@/components/svg";
 import { MembershipWithRelations } from "@/types";
+import { PaginationMeta } from "@/types/common";
 import { Schedule } from "@prisma/client";
 import { format } from "date-fns";
 import { useState, useTransition } from "react";
@@ -29,7 +29,7 @@ export default function DoctorPageView({
   membershipDoctors,
 }: {
   membershipDoctors: MembershipWithRelations[];
-  pagination: PaginationOptions | undefined;
+  pagination: PaginationMeta | undefined;
 }) {
   const [isCreating, setIsCreating] = useState(false);
 

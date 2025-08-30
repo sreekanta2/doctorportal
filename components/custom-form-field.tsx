@@ -436,15 +436,8 @@ const RenderInput = ({
 
           <FormControl>
             <ReactDatePicker
-              selected={field.value}
-              onChange={(
-                date: Date | null,
-                event?:
-                  | React.MouseEvent<HTMLElement>
-                  | React.KeyboardEvent<HTMLElement>
-              ) => {
-                field.onChange(date);
-              }}
+              selected={field.value ? new Date(field.value) : null} // ✅ ensure it's Date
+              onChange={(date: Date | null) => field.onChange(date)}
               placeholderText={props.placeholder}
               dateFormat={props.dateFormat ?? "MM/dd/yyyy"}
               wrapperClassName="date-picker   "
@@ -563,7 +556,7 @@ const CustomFormField = (props: CustomProps) => {
             )}
             <RenderInput
               field={field}
-              props={{ ...props, setError }} // Pass setError and trigger as props
+              props={{ ...props, setError }}
               fieldState={fieldState}
             />
             {/* Display error message */}

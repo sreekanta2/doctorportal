@@ -155,6 +155,11 @@ export const adminConfig: MenuItemProps[] = [
     icon: Receipt,
   },
   {
+    title: "Subscriptions",
+    href: "subscriptions",
+    icon: Receipt,
+  },
+  {
     title: "Reviews",
     href: "reviews",
     icon: MessageSquare,

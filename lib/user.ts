@@ -1,120 +1,114 @@
-// import { Prisma, PrismaClient, User } from "@prisma/client";
+// // middleware.ts
+// import { withAuth } from "next-auth/middleware";
+// import { NextResponse } from "next/server";
+// import { UserRole } from "./types/common";
 
-// const prisma = new PrismaClient();
+// const DASHBOARDS: Record<UserRole, string> = {
+//   patient: "/patient/dashboard",
+//   admin: "/admin/dashboard",
+//   clinic: "/clinic/dashboard",
+//   doctor: "/doctor/dashboard",
+// };
 
-// export async function createUser(user: Omit<User, "id">): Promise<User> {
-//   try {
-//     const newUser = await prisma.user.create({
-//       data: user,
-//     });
+// const PUBLIC_ROUTES = [
+//   "/",
+//   "/auth",
+//   "/doctors",
+//   "/clinics",
+//   "/about",
+//   "/contact",
+//   "/services",
+// ];
 
-//     return newUser;
-//   } catch (error) {
-//     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-//       // P2002: Unique constraint violation (e.g., email or id already exists)
-//       if (error.code === "P2002") {
-//         const target = Array.isArray(error.meta?.target)
-//           ? error.meta.target.join(", ")
-//           : error.meta?.target;
-//         console.error(
-//           `Database Error: A user with the provided ${
-//             target || "unique field(s)"
-//           } already exists.`,
-//           error.message
-//         );
-//         throw new Error(
-//           `User creation failed: A user with this ${
-//             target || "unique field(s)"
-//           } already exists.`
-//         );
-//       }
-//       // Handle other known Prisma errors if necessary
-//       console.error(
-//         `Prisma Known Error creating user (Code: ${error.code}):`,
-//         error.message
+// // Define all protected route patterns
+// const PROTECTED_ROUTE_PATTERNS = [
+//   "/patient/",
+//   "/admin/",
+//   "/clinic/",
+//   "/doctor/",
+// ];
+
+// const isPublicRoute = (pathname: string) =>
+//   PUBLIC_ROUTES.some((route) => pathname.startsWith(route));
+
+// const isProtectedRoute = (pathname: string) =>
+//   PROTECTED_ROUTE_PATTERNS.some((route) => pathname.startsWith(route));
+
+// export default withAuth(
+//   async function middleware(req) {
+//     const { pathname } = req.nextUrl;
+//     const { token } = req.nextauth;
+
+//     // Redirect authenticated users away from auth pages
+//     if (token && pathname.startsWith("/auth")) {
+//       return NextResponse.redirect(
+//         new URL(DASHBOARDS[token.role as UserRole], req.url)
 //       );
-//       throw new Error(`Database error creating user: ${error.code}`);
 //     }
-//     // Handle unexpected/unknown errors
-//     console.error("Unknown Error creating user:", error);
-//     throw new Error("An unexpected error occurred while creating the user.");
-//   }
-// }
 
-// export async function updateUser(
-//   id: string,
-//   updates: Partial<User>
-// ): Promise<User | null> {
-//   try {
-//     const updatedUser = await prisma.user.update({
-//       where: { id },
-//       data: updates,
-//     });
+//     // Handle protected routes (including all patient routes)
+//     if (isProtectedRoute(pathname)) {
+//       if (!token) {
+//         const signInUrl = new URL("/auth/sign-in", req.url);
+//         signInUrl.searchParams.set("callbackUrl", pathname);
+//         return NextResponse.redirect(signInUrl);
+//       }
 
-//     return updatedUser;
-//   } catch (error) {
-//     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-//       // P2025: Record to update not found
-//       if (error.code === "P2025") {
-//         console.warn(
-//           `Database Warning: User with id '${id}' not found for update.`
-//         );
-//         return null; // Explicitly return null if no user was found to update
-//       }
-//       // P2002: Unique constraint violation (e.g., trying to update email to an existing one)
-//       if (error.code === "P2002") {
-//         const target = Array.isArray(error.meta?.target)
-//           ? error.meta.target.join(", ")
-//           : error.meta?.target;
-//         console.error(
-//           `Database Error: Update for user '${id}' would violate unique constraint on ${
-//             target || "field(s)"
-//           }.`,
-//           error.message
-//         );
-//         throw new Error(
-//           `User update failed: The update would result in a duplicate unique entry.`
-//         );
-//       }
-//       console.error(
-//         `Prisma Known Error updating user (Code: ${error.code}):`,
-//         error.message
+//       // Check if user is trying to access their appropriate dashboard
+//       const isDashboardRoute = Object.values(DASHBOARDS).some((path) =>
+//         pathname.startsWith(path)
 //       );
-//       throw new Error(`Database error updating user: ${error.code}`);
-//     }
-//     // Handle unexpected/unknown errors
-//     console.error("Unknown Error updating user:", error);
-//     throw new Error("An unexpected error occurred while updating the user.");
-//   }
-// }
 
-// export async function deleteUser(id: string): Promise<User | null> {
-//   if (!id) {
-//     console.error("No id provided for deletion.");
-//     throw new Error("id is required for deletion.");
-//   }
-//   try {
-//     const deletedUser = await prisma.user.delete({
-//       where: { id },
-//     });
-//     return deletedUser;
-//   } catch (error) {
-//     if (error instanceof Prisma.PrismaClientKnownRequestError) {
-//       // P2025: Record to delete not found
-//       if (error.code === "P2025") {
-//         console.warn(
-//           `Database Warning: User with id '${id}' not found for deletion.`
-//         );
-//         return null; // Explicitly return null if no user was found to delete
+//       if (isDashboardRoute) {
+//         const userDashboard = DASHBOARDS[token.role as UserRole];
+//         if (!pathname.startsWith(userDashboard)) {
+//           return NextResponse.redirect(new URL(userDashboard, req.url));
+//         }
 //       }
-//       console.error(
-//         `Prisma Known Error deleting user (Code: ${error.code}):`,
-//         error.message
-//       );
-//       throw new Error(`Database error deleting user: ${error.code}`);
+
+//       // Additional role-based access control for protected routes
+//       if (pathname.startsWith("/patient") && token.role !== "patient") {
+//         return NextResponse.redirect(
+//           new URL(DASHBOARDS[token.role as UserRole], req.url)
+//         );
+//       }
+
+//       if (pathname.startsWith("/admin") && token.role !== "admin") {
+//         return NextResponse.redirect(
+//           new URL(DASHBOARDS[token.role as UserRole], req.url)
+//         );
+//       }
+
+//       if (pathname.startsWith("/clinic") && token.role !== "clinic") {
+//         return NextResponse.redirect(
+//           new URL(DASHBOARDS[token.role as UserRole], req.url)
+//         );
+//       }
+
+//       if (pathname.startsWith("/doctor") && token.role !== "doctor") {
+//         return NextResponse.redirect(
+//           new URL(DASHBOARDS[token.role as UserRole], req.url)
+//         );
+//       }
 //     }
-//     // Handle unexpected/unknown errors
-//     console.error("Unknown Error deleting user:", error);
-//     throw new Error("An unexpected error occurred while deleting the user.");
+
+//     return NextResponse.next();
+//   },
+//   {
+//     callbacks: {
+//       authorized: ({ token, req }) => {
+//         // Allow public routes, require auth for protected routes
+//         return (
+//           isPublicRoute(req.nextUrl.pathname) ||
+//           (isProtectedRoute(req.nextUrl.pathname) && !!token)
+//         );
+//       },
+//     },
 //   }
-// }
+// );
+
+// export const config = {
+//   matcher: [
+//     "/((?!api/auth|_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|css|js)$).*)",
+//   ],
+// };

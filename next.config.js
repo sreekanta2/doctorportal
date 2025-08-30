@@ -52,7 +52,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "img.clerk.com",
+        hostname: "sandbox.sslcommerz.com",
         port: "",
       },
     ],

@@ -22,18 +22,16 @@ export enum Gender {
   FEMALE = "FEMALE",
   OTHER = "OTHER",
 }
-export enum SubscriptionPlan {
+export enum PricingPlanStatus {
   FREE,
   BASIC,
   PREMIUM,
-  ENTERPRISE,
 }
-
-export interface PaginationOptions {
-  page?: number;
-  limit?: number;
-  sortBy?: "firstName" | "lastName" | "createdAt";
-  sortOrder?: "asc" | "desc";
+export enum SubscriptionStatus {
+  ACTIVE,
+  INACTIVE,
+  EXPIRED,
+  CANCELED,
 }
 
 export type PaginationMeta = {

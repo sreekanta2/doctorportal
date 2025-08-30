@@ -1,6 +1,6 @@
 "use client";
 
-import { createClinicMembershipAction } from "@/action/action.membarsip";
+import { createClinicMembershipCheckSubscription } from "@/action/action.membarsip";
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
 import { Building, User } from "@/components/svg";
 import { Badge } from "@/components/ui/badge";
@@ -173,7 +173,7 @@ export function AddDoctorMembership({
     // REMOVE: setIsLoading(true); // Remove this line
     startTransition(async () => {
       try {
-        const result = await createClinicMembershipAction({
+        const result = await createClinicMembershipCheckSubscription({
           doctorId: data.doctorId,
           clinicId: data.clinicId,
           isActive: data.isActive,

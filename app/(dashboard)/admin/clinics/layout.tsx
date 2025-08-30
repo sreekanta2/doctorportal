@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Doctors",
+  title: "Clinics",
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => {

@@ -17,7 +17,13 @@ export const WeekDaySchema = z.enum([
   "SATURDAY",
   "SUNDAY",
 ]);
-
+export const SubscriptionStatus = z.enum([
+  "ACTIVE",
+  "INACTIVE",
+  "EXPIRED",
+  "CANCELED",
+]);
+export const UserRole = z.enum(["admin", "doctor", "clinic", "patient"]);
 export type WeekDayType = z.infer<typeof WeekDaySchema>;
 
 export const Gender = z.enum(["MALE", "FEMALE", "OTHER"]);

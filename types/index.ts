@@ -100,3 +100,14 @@ export type DoctorReviewWithRelations = Prisma.DoctorReviewGetPayload<{
     reviewer?: true;
   };
 }>;
+
+export type SubscriptionWithRelations = Prisma.SubscriptionGetPayload<{
+  include: {
+    clinic: {
+      include: {
+        user: true; // ✅ include clinic owner user
+      };
+    };
+    pricePlan: true; // ✅ include pricing plan
+  };
+}>;
