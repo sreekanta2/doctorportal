@@ -73,7 +73,7 @@ const ClinicMembershipCard = ({
                   </div>
                   <p className="text-gray-500 dark:text-gray-400 text-sm">
                     {membership?.clinic?.user?.name ||
-                      membership?.doctor?.user?.name}
+                      ` Dr.${membership?.doctor?.user?.name}`}
                   </p>
                 </div>
               </div>
@@ -98,7 +98,7 @@ const ClinicMembershipCard = ({
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {membership?.clinic?.user?.name ||
-                  membership?.doctor?.user?.name}
+                  ` Dr. ${membership?.doctor?.user?.name}`}
               </h2>
               {membership?.clinic?.street && (
                 <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 ">

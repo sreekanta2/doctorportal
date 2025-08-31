@@ -21,7 +21,13 @@ export async function GET(
 
   try {
     const clinic = await prisma.clinic.findUnique({
-      where: { id: clinicId },
+      where: {
+        id: clinicId,
+        subscription: {
+          endDate: { gte: new Date() },
+          status: "ACTIVE",
+        },
+      },
       include: {
         memberships: {
           include: {
@@ -52,10 +58,10 @@ export async function GET(
     });
 
     if (!clinic) {
-      throw new AppError("Clinic not found");
+      throw new AppError("Clinic not found or subscription expired");
     }
 
-    // Fetch paginated reviews separately
+    // Fetch paginated reviews separately (only for valid clinic)
     const reviews = await prisma.clinicReview.findMany({
       where: { clinicId, status: "approved" },
       skip,
@@ -74,13 +80,12 @@ export async function GET(
     });
 
     const totalReviews = await prisma.clinicReview.count({
-      where: { clinicId },
+      where: { clinicId, status: "approved" },
     });
 
     return NextResponse.json(
       {
         clinic,
-
         reviews: {
           reviews,
           pagination: {

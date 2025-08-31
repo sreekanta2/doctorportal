@@ -62,7 +62,7 @@ export default function UpdateSubscriptionDialog({
       });
     }
   }, [subscription, form, session?.user]);
-  console.log(form.formState.errors);
+
   const onSubmit: SubmitHandler<UpdateSubscriptionInput> = (data) => {
     if (!data.id) {
       toast.error("Subscription ID is required");

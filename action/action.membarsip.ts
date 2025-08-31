@@ -8,6 +8,7 @@ import {
 } from "@/lib/actions/server-actions-response";
 import prisma from "@/lib/db";
 import { createClinicMembershipSchema } from "@/zod-validation/membership";
+import { SubscriptionStatus } from "@prisma/client";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
@@ -43,22 +44,37 @@ export const createClinicMembershipCheckSubscription = async (
 
     const count = uniqueDoctorCount.length;
 
-    if (!subscription && count === 3) {
-      throw new AppError(
-        "You hit the free plan upgrade the plan to add doctor "
-      );
+    if (!subscription && count === 0) {
+      const pricingPlan = await prisma.pricePlan.findUnique({
+        where: { plan: "PREMIUM" },
+      });
+      if (!pricingPlan) {
+        throw new AppError("something went wrong try again ", 500);
+      }
+      const subscriptionData = {
+        clinicId,
+        pricePlanId: pricingPlan?.id,
+        status: SubscriptionStatus.ACTIVE,
+        bkashNumber: "",
+        endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+        transactionId: undefined,
+        startDate: new Date(),
+      };
+      await prisma.subscription.create({
+        data: subscriptionData,
+      });
     }
     if (subscription) {
       if (subscription.status === "INACTIVE") {
         throw new AppError("Your order is pending!");
       }
+      if (subscription?.endDate < new Date()) {
+        throw new AppError("You  subscription plan expire !");
+      }
       if (subscription?.endDate > new Date()) {
         if (count >= subscription?.pricePlan?.maxDoctors) {
           throw new AppError("You added  max doctor upgrade the plan !");
         }
-      }
-      if (subscription?.endDate < new Date()) {
-        throw new AppError("You  subscription plan expire !");
       }
     }
 

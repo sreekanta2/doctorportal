@@ -144,7 +144,6 @@ export default async function DoctorPage({
   const { doctorId } = params;
   const result = await getSingleDoctor(doctorId, page, limit);
   const doctor: DoctorWithRelations = result?.doctor;
-
   const reviews: DoctorReview[] = result?.reviews?.reviews || [];
   const reviewsPagination: PaginationMeta = result?.reviews?.pagination || {};
 

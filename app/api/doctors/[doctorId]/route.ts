@@ -24,6 +24,15 @@ export async function GET(
       where: { id: doctorId },
       include: {
         memberships: {
+          where: {
+            clinic: {
+              subscription: {
+                // subscription must exist and be valid
+                endDate: { gte: new Date() },
+                status: "ACTIVE",
+              },
+            },
+          },
           select: {
             id: true,
             fee: true,

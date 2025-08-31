@@ -7,7 +7,7 @@ export default function FailPage({
 }) {
   const tran_id = searchParams?.tran_id || null;
   const plan = searchParams?.plan || null;
-  console.log(tran_id, plan);
+
   return (
     <div className="flex items-center justify-center h-screen bg-red-50">
       <div className="bg-white p-8 rounded-2xl shadow-lg max-w-md text-center">

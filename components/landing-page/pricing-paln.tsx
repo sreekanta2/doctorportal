@@ -16,22 +16,6 @@ type SubscriptionPlan = {
 
 const plans: SubscriptionPlan[] = [
   {
-    name: "FREE",
-    price: "0 ৳",
-    description:
-      "Start small — add a few doctors and manage basic patient care.",
-    features: [
-      { name: "Add up to 3 doctors per month", included: true },
-      { name: "Basic patient management", included: true },
-      { name: "Email support", included: true },
-      { name: "Analytics dashboard", included: false },
-      { name: "Priority support", included: false },
-      { name: "Unlimited appointments", included: false },
-    ],
-    buttonText: "",
-    buttonVariant: "outline",
-  },
-  {
     name: "BASIC",
     price: "1500 ৳",
     description:
@@ -82,7 +66,7 @@ export default function PlansPage() {
         Clinic Subscription Plan
       </h1>
 
-      <div className="max-w-6xl mx-auto grid md:grid-cols-3 gap-8">
+      <div className="max-w-4xl mx-auto grid md:grid-cols-2 gap-8">
         {plans.map((plan) => (
           <div
             key={plan.name}

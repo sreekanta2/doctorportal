@@ -32,15 +32,11 @@ export async function createOrUpdateSubscription(
       },
     });
 
-    if (!clinicUser) {
+    if (!clinicUser?.clinic?.id) {
       throw new AppError("Only for Clinic user!", 404);
     }
 
-    if (!clinicUser.clinic?.id) {
-      throw new AppError("User is not linked to a clinic", 400);
-    }
-
-    const clinicId = clinicUser.clinic.id;
+    const clinicId = clinicUser?.clinic?.id;
 
     // ✅ Handle subscription in a transaction to prevent race conditions
     const subscription = await prisma.$transaction(async (tx) => {
@@ -63,21 +59,6 @@ export async function createOrUpdateSubscription(
         return tx.subscription.update({
           where: { id: existingSubscription?.id },
           data: subscriptionData,
-        });
-      } else {
-        // Create new subscription
-        return tx.subscription.create({
-          data: {
-            clinicId,
-            pricePlanId: validatedData.pricePlanId,
-            status: "INACTIVE",
-            bkashNumber: validatedData.bkashNumber,
-            startDate: new Date(),
-            endDate:
-              validatedData?.endDate ||
-              new Date(Date.now() + 30 * 24 * 60 * 60 * 1000), // 30 days
-            transactionId: validatedData.transactionId,
-          },
         });
       }
     });
