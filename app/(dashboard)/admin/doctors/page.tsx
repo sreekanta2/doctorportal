@@ -1,7 +1,7 @@
 import DoctorFilterForm from "@/components/doctor-filter-form";
 import { NotFound } from "@/components/not-found";
-import { getAllDoctors } from "@/config/doctor/doctors";
 
+import { getAllAdminDoctors } from "@/config/admin";
 import { DoctorWithRelations } from "@/types";
 import { Gender } from "@/types/common";
 import { default as DoctorDialogAdd } from "./components/doctor-add-dialog";
@@ -20,7 +20,7 @@ export default async function DoctorPage({ searchParams }: DoctorPageProps) {
   const specialization = searchParams?.specialization as string | undefined;
 
   // Fetch doctors
-  const result = await getAllDoctors({
+  const result = await getAllAdminDoctors({
     page,
     limit,
     search,

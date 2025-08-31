@@ -1,14 +1,14 @@
 import { Hero } from "@/components/hero";
-import { Mail, MapPin, Phone, Star, Users } from "lucide-react";
+import { Mail, MapPin, Phone, Users } from "lucide-react";
 
 import { Rating } from "@/components/ui/rating";
 
+import { Building } from "@/components/svg";
 import { getClinicProfileById } from "@/config/clinic/clinic";
 import { ClinicWithRelations } from "@/types";
 import Image from "next/image";
 import Link from "next/link";
 import ClinicMembershipCard from "../../doctors/[doctorId]/components/membarship-card";
-import PatientReviewForm from "./components/review-form";
 import ReviewPage from "./components/review-page";
 function StructuredData({ data }: { data: any }) {
   return (
@@ -110,23 +110,20 @@ export default async function ClinicPage({
           <div className="bg-card/70 rounded-xl shadow-md overflow-hidden mb-8">
             <div className="flex flex-col md:flex-row gap-6 p-6">
               {/* Clinic Image */}
-              <div className="w-full md:w-1/3 lg:w-1/4">
-                <div className="relative aspect-square rounded-xl overflow-hidden shadow-lg">
+              <div className="relative  w-64 h-64      min-w-[128px] rounded-xl border-2 border-white shadow-md overflow-hidden group-hover:scale-105 transition-transform duration-300">
+                {clinic?.user?.image ? (
                   <Image
-                    src={clinic?.user?.image || ""}
-                    alt={clinic?.user?.name || ""}
+                    src={clinic?.user?.image}
+                    alt={`Dr. ${clinic?.user?.name}`}
                     fill
                     className="object-cover"
-                    priority
-                    sizes="(max-width: 768px) 100vw, 25vw"
+                    sizes="(max-width: 768px) 100vw, 128px"
                   />
-                  {clinic?.user?.emailVerified && (
-                    <div className="absolute top-3 left-3 z-10 bg-gradient-to-r from-amber-500 to-amber-600 text-white px-3 py-1 rounded-full text-xs font-bold flex items-center">
-                      <Star className="w-3 h-3 mr-1 fill-white" />
-                      PREMIUM
-                    </div>
-                  )}
-                </div>
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700">
+                    <Building className="w-20 h-20 text-gray-400 dark:text-gray-500" />
+                  </div>
+                )}
               </div>
 
               {/* Clinic Info */}
@@ -139,7 +136,10 @@ export default async function ClinicPage({
 
                 <div className="flex items-center gap-2 mb-4">
                   <div className="flex items-center">
-                    <Rating className="gap-x-1 max-w-[100px]" value={4} />
+                    <Rating
+                      className="gap-x-1 max-w-[100px]"
+                      value={clinic?.averageRating || 0}
+                    />
                   </div>
                   <span className="text-default-600">
                     {clinic?.averageRating} ({clinic?.reviewsCount} reviews)
@@ -148,7 +148,9 @@ export default async function ClinicPage({
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="flex items-start gap-3">
-                    <MapPin className="w-5 h-5 text-default-500 mt-0.5 flex-shrink-0" />
+                    <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                      <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </div>
                     <div>
                       <h3 className="font-medium text-default-900">Address</h3>
                       <p className="text-default-600">{clinic?.street}</p>
@@ -156,7 +158,9 @@ export default async function ClinicPage({
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <Phone className="w-5 h-5 text-default-500 mt-0.5 flex-shrink-0" />
+                    <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                      <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </div>
                     <div>
                       <h3 className="font-medium text-default-900">Phone</h3>
                       <p className="text-default-600">{clinic?.phoneNumber}</p>
@@ -164,7 +168,9 @@ export default async function ClinicPage({
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <Mail className="w-5 h-5 text-default-500 mt-0.5 flex-shrink-0" />
+                    <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                      <Mail className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </div>
                     <div>
                       <h3 className="font-medium text-default-900">Email</h3>
                       <p className="text-default-600">{clinic?.user?.email}</p>
@@ -172,7 +178,9 @@ export default async function ClinicPage({
                   </div>
 
                   <div className="flex items-start gap-3">
-                    <Users className="w-5 h-5 text-default-500 mt-0.5 flex-shrink-0" />
+                    <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                      <Users className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </div>
                     <div>
                       <h3 className="font-medium text-default-900">
                         Specialists
@@ -266,8 +274,6 @@ export default async function ClinicPage({
               <ReviewPage reviews={reviews} clinicId={clinic?.id} />
 
               {/* Add Review Section */}
-
-              <PatientReviewForm clinicId={clinic?.id} />
             </div>
 
             {/* Right Column - Sidebar */}

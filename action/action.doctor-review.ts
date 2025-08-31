@@ -2,6 +2,7 @@
 import prisma from "@/lib/db";
 import { DoctorReviewUpdateInput } from "./../zod-validation/doctor-review-scema";
 
+import { AppError } from "@/lib/actions/actions-error-response";
 import {
   serverActionCreatedResponse,
   serverActionErrorResponse,
@@ -23,11 +24,11 @@ export async function createDoctorReviewAction(data: DoctorReviewCreateInput) {
     });
 
     if (!existingUser) {
-      return serverActionErrorResponse("Reviewer not found");
+      throw new AppError("Please logged in first", 401);
     }
 
     if (existingUser?.doctor?.id === validatedData.doctorId) {
-      return serverActionErrorResponse("You cannot review your own profile");
+      throw new AppError("You cannot review your own profile", 403);
     }
 
     // Create the review
@@ -89,13 +90,12 @@ export async function updateDoctorReviewAction(
       where: { id: validatedData.reviewerId },
       include: { doctor: true },
     });
-
     if (!existingUser) {
-      return serverActionErrorResponse("Reviewer not found");
+      throw new AppError("Please logged in ", 401);
     }
 
     if (existingUser?.doctor?.id === validatedData.doctorId) {
-      return serverActionErrorResponse("You cannot review your own profile");
+      throw new AppError("You cannot review your own profile", 403);
     }
 
     // Update review

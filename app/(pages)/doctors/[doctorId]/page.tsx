@@ -4,7 +4,7 @@ import { getSingleDoctor } from "@/config/doctor/doctors";
 import { DoctorWithRelations } from "@/types";
 import { PaginationMeta } from "@/types/common";
 import { DoctorReview } from "@prisma/client";
-import DoctorCard from "../components/doctor-card";
+import DoctorCard from "../components/search-doctor-card";
 import ClinicMembershipCard from "./components/membarship-card";
 import ReviewPage from "./components/review-page";
 
@@ -139,18 +139,14 @@ export default async function DoctorPage({
   searchParams,
 }: DoctorPageProps) {
   const page = Number(searchParams?.page || 1);
-  const limit = Number(searchParams?.limit || 10);
+  const limit = Number(searchParams?.limit || 5);
 
   const { doctorId } = params;
   const result = await getSingleDoctor(doctorId, page, limit);
-
   const doctor: DoctorWithRelations = result?.doctor;
+
   const reviews: DoctorReview[] = result?.reviews?.reviews || [];
   const reviewsPagination: PaginationMeta = result?.reviews?.pagination || {};
-
-  const doctorName = ` ${doctor?.user?.name}  `;
-  const specialties = doctor?.specialization;
-  const hospital = doctor?.hospital;
 
   return (
     <div className="bg-background">
@@ -201,15 +197,6 @@ export default async function DoctorPage({
               doctorId={doctorId}
             />
           </section>
-
-          <section aria-labelledby="add-review-heading">
-            <h2
-              id="add-review-heading"
-              className="font-semibold text-xl text-default-800 mb-4"
-            >
-              Share Your Experience
-            </h2>
-          </section>
         </div>
       </main>
 
@@ -217,24 +204,24 @@ export default async function DoctorPage({
         data={{
           "@context": "https://schema.org",
           "@type": "Physician",
-          name: doctor.user?.name,
-          url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctor.id}`,
+          name: doctor?.user?.name,
+          url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctor?.id}`,
           image:
-            doctor.user?.image ||
+            doctor?.user?.image ||
             `${process.env.NEXT_PUBLIC_API_URL}/default-doctor.png`,
-          medicalSpecialty: doctor.specialization || "General Practice",
-          hospitalAffiliation: doctor.hospital || "",
+          medicalSpecialty: doctor?.specialization || "General Practice",
+          hospitalAffiliation: doctor?.hospital || "",
           address: {
             "@type": "PostalAddress",
-            streetAddress: doctor.street || "",
-            addressLocality: doctor.city || "",
-            addressRegion: doctor.state || "",
-            addressCountry: doctor.country || "",
+            streetAddress: doctor?.street || "",
+            addressLocality: doctor?.city || "",
+            addressRegion: doctor?.state || "",
+            addressCountry: doctor?.country || "",
           },
           aggregateRating: {
             "@type": "AggregateRating",
-            ratingValue: doctor.averageRating || 0,
-            reviewCount: doctor.reviewsCount || 0,
+            ratingValue: doctor?.averageRating || 0,
+            reviewCount: doctor?.reviewsCount || 0,
             bestRating: "5",
           },
         }}

@@ -1,73 +1,21 @@
-export { default as HorizontalSvg } from "./layout/horizontal.svg";
-export { default as SemiBoxSvg } from "./layout/semibox.svg";
-export { default as VerticalSvg } from "./layout/vertical.svg";
-
-//  dual tone icon
-
-export { default as ProductIcon1 } from "@/components/svg/pharmacy/product-icon-01.svg";
-export { default as ProductIcon2 } from "@/components/svg/pharmacy/product-icon-02.svg";
-export { default as ProductIcon3 } from "@/components/svg/pharmacy/product-icon-03.svg";
-export { default as ProductIcon4 } from "@/components/svg/pharmacy/product-icon-04.svg";
-export { default as Work1 } from "././home/work-01.svg";
-export { default as Work2 } from "././home/work-02.svg";
-export { default as Work3 } from "././home/work-03.svg";
-export { default as Work4 } from "././home/work-04.svg";
-export { default as Urology } from "./category/category-01.svg";
-export { default as Orthopedic } from "./category/category-02.svg";
-export { default as Cardiology } from "./category/category-03.svg";
-export { default as Dentist } from "./category/category-04.svg";
-export { default as Neurology } from "./category/category-05.svg";
-export { default as Medicine } from "./category/category-06.svg";
-export { default as Authentication } from "./duel-tone/authentication.svg";
 export { default as Bell } from "./duel-tone/bell.svg";
-// export { default as Book } from "./duel-tone/book.svg";
-export { default as Building } from "./duel-tone/building.svg";
+
 export { default as Calendar } from "./duel-tone/calendar.svg";
-export { default as CalenderCheck } from "./duel-tone/calender-check.svg";
-export { default as ClipBoard } from "./duel-tone/clip-board.svg";
-export { default as Components } from "./duel-tone/components.svg";
+
 export { default as DashBoard } from "./duel-tone/dashboard.svg";
-export { default as DocsArrow } from "./duel-tone/docs-arrow.svg";
-export { default as DocsCheck } from "./duel-tone/docs-check.svg";
-export { default as DSearch } from "./duel-tone/dsearch.svg";
-export { default as Envelope } from "./duel-tone/envelope.svg";
+
+export { default as Building } from "./duel-tone/building.svg";
+export { default as CupBar } from "./duel-tone/cup-bar.svg";
 export { default as Error } from "./duel-tone/error.svg";
 export { default as Expand } from "./duel-tone/expand.svg";
-export { default as Files } from "./duel-tone/files.svg";
-export { default as Google } from "./duel-tone/google.svg";
-export { default as Icons } from "./duel-tone/icons.svg";
-export { default as Location } from "./duel-tone/location.svg";
 export { default as SiteLogo } from "./duel-tone/logo.svg";
-export { default as Messages } from "./duel-tone/message.svg";
-export { default as Moon } from "./duel-tone/moon.svg";
 export { default as NoteIcon } from "./duel-tone/note.svg";
-export { default as Phone } from "./duel-tone/phone.svg";
-export { default as Settings } from "./duel-tone/settings.svg";
-export { default as Sun } from "./duel-tone/sun.svg";
-export { default as User } from "./duel-tone/user.svg";
-export { default as CheckMark } from "./home/check-mark.svg";
-export { default as CheckShape } from "./home/check-shape.svg";
-export { default as CupBar } from "./home/cup-bar.svg";
-export { default as Cup } from "./home/cup.svg";
-export { default as Docs } from "./home/docs.svg";
-export { default as Eye } from "./home/eye.svg";
-export { default as Increase } from "./home/increase.svg";
-export { default as Home } from "./home/price-icon2.svg";
-export { default as Session } from "./home/session.svg";
-export { default as Spam } from "./home/spam.svg";
-export { default as Users } from "./home/users.svg";
-
 export { default as BlankVector } from "./man-vector.svg";
-export { default as Partners1 } from "./partnerts/company-01.svg";
-export { default as Partners2 } from "./partnerts/company-02.svg";
-export { default as Partners3 } from "./partnerts/company-03.svg";
-export { default as Partners4 } from "./partnerts/company-04.svg";
-export { default as Partners5 } from "./partnerts/company-05.svg";
-export { default as Partners6 } from "./partnerts/company-06.svg";
-export { default as Partners7 } from "./partnerts/company-07.svg";
-export { default as Partners8 } from "./partnerts/company-08.svg";
-export { default as CreditCard } from "./pharmacy/credit-card.svg";
-export { default as Dolar } from "./pharmacy/dolar.svg";
 
-// sidebar icon
-export { default as FolderTree } from "./home/foldertree.svg";
+export { default as Phone } from "./duel-tone/phone.svg";
+
+export { default as CheckMark } from "./duel-tone/check-mark.svg";
+export { default as CheckShape } from "./duel-tone/check-shape.svg";
+export { default as User } from "./duel-tone/user.svg";
+
+export { default as Users } from "./duel-tone/users.svg";

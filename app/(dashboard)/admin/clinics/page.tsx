@@ -1,7 +1,5 @@
-import { NotFound } from "@/components/not-found";
-
 import ClinicFilterForm from "@/app/(pages)/clinics/components/clinic-filtering-form";
-import { getAllClinics } from "@/config/clinic/clinic";
+import { getAllAdminClinics } from "@/config/admin";
 import { ClinicWithRelations } from "@/types";
 import ClinicList from "./components/clinics-list";
 import ClinicCreateDialog from "./components/create-clinic-dialog";
@@ -17,7 +15,7 @@ export default async function ClinicPage({ searchParams }: ClinicPageProps) {
   const city = searchParams?.city as string | undefined;
 
   // Fetch clinics
-  const result = await getAllClinics("admin/clinics", {
+  const result = await getAllAdminClinics({
     page,
     limit,
     search,
@@ -40,11 +38,8 @@ export default async function ClinicPage({ searchParams }: ClinicPageProps) {
       <ClinicFilterForm />
 
       {/* Doctor Table */}
-      {clinics?.length === 0 ? (
-        <NotFound title="No clinics Found" />
-      ) : (
-        <ClinicList clinics={clinics} pagination={pagination} />
-      )}
+
+      <ClinicList clinics={clinics} pagination={pagination} />
     </div>
   );
 }

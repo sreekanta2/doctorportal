@@ -24,7 +24,7 @@ export async function createClinicReviewAction(data: ClinicReviewCreateInput) {
     });
 
     if (!existingUser) {
-      throw new AppError("Reviewer not found", 404);
+      throw new AppError("Please login first", 404);
     }
 
     if (existingUser?.clinic?.id === validatedData.clinicId) {

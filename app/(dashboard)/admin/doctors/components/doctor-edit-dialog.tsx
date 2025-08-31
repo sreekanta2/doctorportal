@@ -5,11 +5,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Form } from "@/components/ui/form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
-
-import { UpdateDoctorInput, updateDoctorSchema } from "@/zod-validation/doctor";
 
 import { adminDoctorUpdate } from "@/action/action.admin-doctor";
 import {
@@ -19,7 +17,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import { useFetchOptions } from "@/hooks/useFetchCities";
 import { DoctorWithRelations } from "@/types";
+import { UpdateDoctorInput, updateDoctorSchema } from "@/zod-validation/doctor";
+import { Gender } from "@prisma/client";
 
 interface DoctorDialogEditProps {
   doctor: DoctorWithRelations;
@@ -27,7 +28,19 @@ interface DoctorDialogEditProps {
 
 export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
   const [isPending, startTransition] = useTransition();
-  const [specialties, setSpecialties] = useState([]);
+
+  // fetch cities & specializations
+  const {
+    options: cities,
+    loading: citiesLoading,
+    error: citiesError,
+  } = useFetchOptions("/api/cities");
+
+  const {
+    options: specializations,
+    loading: specLoading,
+    error: specError,
+  } = useFetchOptions("/api/specialties");
 
   const form = useForm<UpdateDoctorInput>({
     resolver: zodResolver(updateDoctorSchema),
@@ -71,38 +84,6 @@ export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
     });
   }, [doctor, form]);
 
-  useEffect(() => {
-    let isMounted = true; // prevent state update after unmount
-
-    const fetchData = async () => {
-      try {
-        const fetchSpecialties = async () => {
-          const response = await fetch("/api/specialties");
-          const data = await response.json();
-          return data?.data || [];
-        };
-        fetchSpecialties().then((specialtiesData) => {
-          if (isMounted) {
-            setSpecialties(specialtiesData?.data || []);
-          }
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false; // cleanup
-    };
-  }, []);
-  const mappedCities = specialties?.map(
-    (city: { id: string; name: string }) => ({
-      value: city.name.toLowerCase(),
-      label: city.name,
-    })
-  );
   const onSubmit: SubmitHandler<UpdateDoctorInput> = (data) => {
     startTransition(async () => {
       try {
@@ -162,14 +143,14 @@ export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
                 />
                 <CustomFormField
                   fieldType={FormFieldType.SELECT}
-                  control={form.control}
                   name="gender"
+                  control={form.control}
+                  className="w-full"
                   label="Gender"
                   options={[
-                    { value: "", label: "Select Gender" },
-                    { value: "MALE", label: "Male" },
-                    { value: "FEMALE", label: "Female" },
-                    { value: "OTHER", label: "Other" },
+                    { value: Gender.MALE, label: "Male" },
+                    { value: Gender.FEMALE, label: "Female" },
+                    { value: Gender.OTHER, label: "Other" },
                   ]}
                 />
               </CardContent>
@@ -182,6 +163,15 @@ export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
               </CardHeader>
               <CardContent className="space-y-4">
                 <CustomFormField
+                  fieldType={FormFieldType.SELECT}
+                  control={form.control}
+                  name="specialization"
+                  label="Specialization"
+                  options={specializations}
+                  loading={specLoading}
+                  required
+                />
+                <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}
                   name="degree"
@@ -189,26 +179,7 @@ export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
                   placeholder="MBBS, MD"
                   required
                 />
-                <div className="w-full">
-                  <label
-                    htmlFor="specialization"
-                    className="block text-sm font-medium text-gray-700 dark:text-gray-200"
-                  >
-                    Specialization
-                  </label>
-                  <select
-                    id="specialization"
-                    {...form.register("specialization")}
-                    className="mt-1 block w-full rounded-md border border-gray-300 bg-white px-3 py-2 shadow-sm focus:border-primary-500 focus:ring focus:ring-primary-200 dark:bg-gray-900 dark:border-gray-700 dark:text-white"
-                  >
-                    <option value="">Select Specialization</option>
-                    {mappedCities?.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
+
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}
@@ -232,20 +203,17 @@ export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
                   label="Street Address"
                   placeholder="123 Medical Center Drive"
                 />
+
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
+                  fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="city"
                   label="City"
-                  placeholder="New York"
+                  loading={citiesLoading}
+                  options={cities}
+                  placeholder="City"
                 />
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="state"
-                  label="State"
-                  placeholder="Dinajpur"
-                />
+
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}

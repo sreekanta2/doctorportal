@@ -1,12 +1,10 @@
-import { User } from "@/components/svg";
+import { Building, Calendar, User, Users } from "@/components/svg";
 import { Button } from "@/components/ui/button";
 import { MembershipWithRelations } from "@/types";
 import { format } from "date-fns";
 import {
   Building2,
-  CalendarDays,
   Clock,
-  ExternalLink,
   MapPin,
   Phone,
   Star,
@@ -44,8 +42,8 @@ const ClinicMembershipCard = ({
 
       <div className="flex flex-col md:flex-row">
         {/* Clinic Image Section */}
-        <div className="md:w-1/3 relative">
-          <div className=" w-full h-72 md:h-full relative overflow-hidden">
+        <div className="md:w-1/3 relative p-4  ">
+          <div className=" w-full h-72 md:h-full relative overflow-hidden rounded-md">
             {membership?.clinic?.user?.image ||
             membership?.doctor?.user?.image ? (
               <Image
@@ -60,7 +58,7 @@ const ClinicMembershipCard = ({
                   ""
                 }
                 fill
-                className="object-cover group-hover:scale-105 transition-transform duration-300"
+                className="object-cover group-hover:scale-105 rounded-md transition-transform duration-300"
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
             ) : (
@@ -96,7 +94,7 @@ const ClinicMembershipCard = ({
         {/* Content Section */}
         <div className="md:w-2/3 p-6">
           {/* Header */}
-          <div className="flex flex-col sm:flex-row gap-6 md:gap-16 mb-6">
+          <div className="flex flex-col sm:flex-row gap-6 md:gap-16 mb-2">
             <div>
               <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
                 {membership?.clinic?.user?.name ||
@@ -104,55 +102,70 @@ const ClinicMembershipCard = ({
               </h2>
               {membership?.clinic?.street && (
                 <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 ">
-                  <MapPin className="w-4 h-4" />
+                  <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                    <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  </div>
                   <span className="text-sm">{membership?.clinic?.street}</span>
                 </div>
               )}
               {membership?.doctor?.specialization && (
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
-                    {membership?.doctor?.specialization || "General Physician"}
+                <div className="flex items-center gap-2 mb-1">
+                  <div className="bg-blue-100 text-blue-800 md:text-base font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                    {membership?.doctor?.specialization.toUpperCase() ||
+                      "General Physician"}
+                  </div>
+                </div>
+              )}
+              {membership?.doctor?.degree && (
+                <div className="flex items-center gap-2 mb-1">
+                  <div className=" text-blue-800 text-xs md:text-base   px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
+                    {membership?.doctor?.degree.toUpperCase()}
                   </div>
                 </div>
               )}
               {membership?.doctor?.specialization && (
-                <div className="space-y-3">
-                  <div className="flex items-center gap-3">
-                    <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
-                      <Stethoscope className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <p
-                      className="text-gray-700 dark:text-gray-300"
-                      itemProp="description"
-                    >
-                      {membership?.doctor?.hospital ||
-                        "MBBS, BCS (Health), MS (Ortho)"}
-                    </p>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                    <Stethoscope className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   </div>
+                  <p
+                    className="text-gray-700 dark:text-gray-300"
+                    itemProp="description"
+                  >
+                    {membership?.doctor?.hospital ||
+                      "MBBS, BCS (Health), MS (Ortho)"}
+                  </p>
                 </div>
               )}
             </div>
 
             {membership?.clinic && (
-              <Button asChild className="gap-2 rounded-full">
+              <Button
+                variant="outline"
+                className="  rounded-full flex gap-2 items-center"
+              >
+                <div className="w-4 h-4">
+                  <Users />
+                </div>
                 <Link href={`/clinics/${membership?.clinic?.id}`}>
                   All Doctors
-                  <ExternalLink className="w-4 h-4" />
                 </Link>
               </Button>
             )}
             {membership?.doctor && (
-              <Button asChild className="gap-2 rounded-full">
+              <Button className="gap-2 rounded-full">
+                <span className="w-4 h-4">
+                  <Building />
+                </span>
                 <Link href={`/doctors/${membership?.doctor?.id}`}>
                   All Chambers
-                  <ExternalLink className="w-4 h-4" />
                 </Link>
               </Button>
             )}
           </div>
 
           {/* Contact Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-2">
             {membership?.clinic?.phoneNumber && (
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
@@ -189,7 +202,9 @@ const ClinicMembershipCard = ({
           {/* Schedule Section */}
           <div className="pt-4 border-t border-gray-200 dark:border-gray-700">
             <h4 className="text-sm font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2">
-              <CalendarDays className="w-4 h-4" />
+              <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              </div>
               Available Time Slots
             </h4>
 
@@ -200,13 +215,17 @@ const ClinicMembershipCard = ({
                   className="flex flex-col w-full md:w-fit bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-lg text-sm hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors group/schedule"
                 >
                   <div className="flex items-center gap-2 mb-2">
-                    <CalendarDays className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+                    <div className=" bg-blue-50 rounded-lg dark:bg-gray-800">
+                      <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </div>
                     <span className="font-medium text-gray-900 dark:text-white">
                       {schedule?.startDay} - {schedule?.endDay}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground" />
+                    <div className=" bg-blue-50 rounded-lg dark:bg-gray-800">
+                      <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                    </div>
                     <span>
                       {format(
                         new Date(`1970-01-01T${schedule.startTime}`),

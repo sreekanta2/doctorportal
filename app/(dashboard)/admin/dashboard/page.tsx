@@ -4,26 +4,33 @@ import Link from "next/link";
 import AdminStats from "./components/admin-state";
 import DoctorList from "./components/doctor-list";
 
-import { getAllClinics } from "@/config/clinic/clinic";
-import { getAllDoctors } from "@/config/doctor/doctors";
+import { getAllAdminClinics, getAllAdminDoctors } from "@/config/admin";
 import { getAllPatients } from "@/config/patients/patients";
 import {
   ClinicWithRelations,
   DoctorWithRelations,
   PatientWithRelations,
 } from "@/types";
+import ClinicsList from "./components/clinics-list";
 import PatientsList from "./components/patients-list";
 
 export default async function AdminDashboardPage() {
-  const result = await getAllDoctors({ page: "1", limit: "10" });
+  const result = await getAllAdminDoctors({ page: "1", limit: "5" });
 
-  const doctors: DoctorWithRelations[] = result.data;
+  const doctors: DoctorWithRelations[] = result?.data || [];
+  const totalDoctors = result?.meta?.pagination?.total || 0;
   const patientResults = await getAllPatients({ page: "1", limit: "5" });
-  const patients: PatientWithRelations[] = patientResults.data;
-  const clinicResults = await getAllClinics("/admin", {
+
+  const patients: PatientWithRelations[] = patientResults?.data || [];
+  const totalPatients: number = patientResults?.meta?.pagination?.total || [];
+
+  const clinicResults = await getAllAdminClinics({
     page: "1",
-    limit: "10",
+    limit: "5",
   });
+
+  const totalClinics: number = clinicResults?.meta?.pagination?.total || [];
+
   const clinics: ClinicWithRelations[] = clinicResults.data;
 
   return (
@@ -37,9 +44,9 @@ export default async function AdminDashboardPage() {
         <CardContent className="p-4">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <AdminStats
-              doctorsCount={doctors?.length || 0}
-              totalPatient={patients?.length || 0}
-              totalClinics={clinics?.length || 0}
+              doctorsCount={totalDoctors || 0}
+              totalPatient={totalPatients || 0}
+              totalClinics={totalClinics || 0}
             />
           </div>
         </CardContent>
@@ -83,6 +90,24 @@ export default async function AdminDashboardPage() {
             </Link>
           )}
         </div>
+      </div>
+      <div className="border p-4 bg-card rounded-md space-y-2">
+        <h1 className="text-lg md:text-xl font-medium  bg-card  ">
+          Recent Clinics
+        </h1>
+        <hr className="pb-4" />
+        <ScrollArea className="pb-4">
+          <ClinicsList clinics={clinics} />
+          <ScrollBar orientation="horizontal" />
+        </ScrollArea>
+        {patients?.length !== 0 && (
+          <Link
+            href="/admin/patients"
+            className=" text-default-600 hover:text-primary flex justify-center w-full"
+          >
+            View All
+          </Link>
+        )}
       </div>
     </div>
   );

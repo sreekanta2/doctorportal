@@ -28,19 +28,21 @@ const Footer = () => {
       transition-[margin] duration-300
     `}
     >
-      <p className="sm:mb-0 text-xs md:text-base">
-        COPYRIGHT © {new Date().getFullYear()}
-      </p>
-      <p className="mb-0 text-xs md:text-base">
-        Hand-crafted & Made by{" "}
-        <a
-          className="text-primary"
-          target="__blank"
-          href="https://srikanto.site"
-        >
-          Srikanto
-        </a>
-      </p>
+      <div className="flex items-center gap-4">
+        <p className="sm:mb-0 text-xs md:text-base">
+          COPYRIGHT © {new Date().getFullYear()}
+        </p>
+        <p className="mb-0 text-xs md:text-base">
+          Hand-crafted & Made by{" "}
+          <a
+            className="text-primary"
+            target="__blank"
+            href="https://srikanto.site"
+          >
+            Srikanto
+          </a>
+        </p>
+      </div>
     </div>
   );
 };

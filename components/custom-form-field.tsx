@@ -1,5 +1,4 @@
 /* eslint-disable no-unused-vars */
-import { Portal } from "@radix-ui/react-portal";
 import { E164Number } from "libphonenumber-js/core";
 import Image from "next/image";
 import ReactDatePicker from "react-datepicker";
@@ -82,6 +81,7 @@ interface CustomProps {
   step?: number | string;
   minLength?: number;
   maxLength?: number;
+  loading?: boolean;
   pattern?: RegExp;
   validate?: (value: any) => boolean | string;
   className?: string;
@@ -449,41 +449,35 @@ const RenderInput = ({
       return (
         <div className="w-full">
           <FormControl>
-            <Select
-              onValueChange={field.onChange}
-              defaultValue={field.value}
-              value={field.value}
-              disabled={props.disabled}
+            <select
+              {...field}
+              disabled={props.disabled || props.loading} // disable when loading
+              className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm shadow-sm focus-visible:outline-none focus-visible:ring-0 focus-visible:ring-slate-300 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              <SelectTrigger
-                className="w-full   bg-background"
-                size={props.size || "lg"}
-              >
-                <SelectValue
-                  placeholder={`Select ${props?.label ?? "Options"}`}
-                />
-              </SelectTrigger>
-              <Portal>
-                <SelectContent className="z-[9999] max-h-60 overflow-y-auto">
-                  <SelectGroup>
-                    <SelectItem value="">All</SelectItem>
-                    {props.options?.map((option) => (
-                      <SelectItem
-                        key={option?.value}
-                        value={option?.value?.toString()}
-                        disabled={option.disabled}
-                        className="hover:bg-accent focus:bg-accent"
-                      >
-                        {option?.label}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Portal>
-            </Select>
+              {/* Loading state */}
+              {props.loading ? (
+                <option value="">Loading...</option>
+              ) : (
+                <>
+                  <option value="">{`Select ${
+                    props?.label ?? "Options"
+                  }`}</option>
+                  {props.options?.map((option) => (
+                    <option
+                      key={option?.value}
+                      value={option?.value?.toString()}
+                      disabled={option.disabled}
+                    >
+                      {option?.label}
+                    </option>
+                  ))}
+                </>
+              )}
+            </select>
           </FormControl>
         </div>
       );
+
     case FormFieldType.SELECT_MULTI:
       return (
         <div className="w-full">

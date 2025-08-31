@@ -69,7 +69,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
 
   return (
     <div
-      className={`relative flex items-center w-full border bg-background rounded-md px-2 max-w-sm min-w-[200px] h-10 ${className} focus-within:border-primary`}
+      className={`relative flex items-center w-full border bg-background rounded-md px-2 max-w-sm min-w-[200px] h-10   ${className} focus-within:border-primary`}
     >
       <span>
         <Search className="text-primary" size={16} />
@@ -79,7 +79,7 @@ const SearchInput: React.FC<SearchInputProps> = ({
         value={searchQuery}
         onChange={handleSearchChange}
         placeholder={placeholder}
-        className="w-full border-0 focus:outline-none"
+        className="w-full border-0  h-10 focus:outline-none"
       />
       {searchQuery && (
         <span

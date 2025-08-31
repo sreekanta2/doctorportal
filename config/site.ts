@@ -1,4 +1,8 @@
-import avatar from "@/public/images/avatar/avatar-11.jpg";
+import avatar from "@/public/images/avatar-13.jpg";
+import facebook from "@/public/images/social/facebook-1.png";
+import linkedin from "@/public/images/social/linkedin-1.png";
+import twitter from "@/public/images/social/twitter-1.png";
+import youtube from "@/public/images/social/youtube.png";
 export { avatar };
 export const siteConfig = {
   sidebarBg: "none",
@@ -42,3 +46,21 @@ export const siteConfig = {
     { name: "LinkedIn", url: "https://linkedin.com/company/Doccare" },
   ],
 };
+export const socials = [
+  {
+    icon: facebook,
+    href: "https://www.facebook.com",
+  },
+  {
+    icon: linkedin,
+    href: "https://www.linkedin.com/",
+  },
+  {
+    icon: youtube,
+    href: "https://www.youtube.com",
+  },
+  {
+    icon: twitter,
+    href: "https://twitter.com",
+  },
+];

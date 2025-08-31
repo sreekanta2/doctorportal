@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import "swiper/css";
 import { Autoplay, Navigation } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
+import { Users } from "../svg";
 
 const SpecialtiesCarousel = () => {
   const [specialties, setSpecialties] = useState([]);
@@ -45,7 +46,7 @@ const SpecialtiesCarousel = () => {
         </div>
 
         {/* Carousel */}
-        <div className="relative  ">
+        <div className="relative px-2  ">
           <Swiper
             slidesPerView={1}
             spaceBetween={20}
@@ -88,7 +89,7 @@ const SpecialtiesCarousel = () => {
                     </div>
 
                     <div className="flex items-center justify-center h-12 w-12 rounded-lg bg-primary-100 dark:bg-primary-900/50 text-primary-600 dark:text-primary-400 mb-4">
-                      <Icon icon="heroicons:user-group" className="w-6 h-6" />
+                      <Users className="w-6 h-6" />
                     </div>
 
                     <div>

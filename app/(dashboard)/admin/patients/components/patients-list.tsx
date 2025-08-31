@@ -1,6 +1,6 @@
 "use client";
 
-import { deletePatient } from "@/action/action.patient";
+import { deleteAdminPatient } from "@/action/action.admin-doctor";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import {
@@ -40,7 +40,7 @@ const PatientsList = ({
     const confirmed = confirm("Are you sure you want to delete this patient?");
     if (confirmed) {
       // Call the delete patient action
-      const response = await deletePatient(email);
+      const response = await deleteAdminPatient(email);
       if (response.success) {
         toast.success("Patient deleted successfully");
       } else {

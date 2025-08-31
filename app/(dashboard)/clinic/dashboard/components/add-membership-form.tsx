@@ -6,7 +6,7 @@ import { Building, User } from "@/components/svg";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { mapSpecializationsToOptions } from "@/lib/utils/utils";
+import { useFetchOptions } from "@/hooks/useFetchCities";
 import { DoctorWithRelations } from "@/types";
 
 import { Gender } from "@/types/common";
@@ -63,8 +63,17 @@ export function AddDoctorMembership({
   const [doctors, setDoctors] = useState<DoctorWithRelations[]>([]);
   const [isFetchingDoctors, setIsFetchingDoctors] = useState(false);
   const [isPending, startTransition] = useTransition();
-  const [specialties, setSpecialties] = useState([]);
-  const [cities, setCities] = useState([]);
+  const {
+    options: cities,
+    loading: citiesLoading,
+    error: citiesError,
+  } = useFetchOptions("/api/cities");
+  const {
+    options: specializations,
+    loading: specLoading,
+    error: specError,
+  } = useFetchOptions("/api/specialties");
+
   const form = useForm<FormValues>({
     resolver: zodResolver(baseClinicMembership),
     defaultValues: {
@@ -130,40 +139,7 @@ export function AddDoctorMembership({
     debouncedCity,
     debouncedGender,
   ]);
-  useEffect(() => {
-    let isMounted = true; // prevent state update after unmount
 
-    const fetchData = async () => {
-      try {
-        const [specialtiesRes, citiesRes] = await Promise.all([
-          fetch("/api/specialties"),
-          fetch("/api/cities"),
-        ]);
-
-        const specialtiesData = await specialtiesRes.json();
-        const citiesData = await citiesRes.json();
-
-        if (isMounted) {
-          setSpecialties(specialtiesData?.data?.data || []);
-          setCities(citiesData?.data?.data || []);
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false; // cleanup
-    };
-  }, []);
-
-  const mappedSpecialties = mapSpecializationsToOptions(specialties);
-  const mappedCities = cities.map((city: { id: string; name: string }) => ({
-    value: city.name.toLowerCase(),
-    label: city.name,
-  }));
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     if (!selectedDoctor) {
       toast.error("Please select a doctor first");
@@ -211,7 +187,7 @@ export function AddDoctorMembership({
           <Button variant="ghost" size="icon" onClick={handleBackToList}>
             <ArrowLeft className="w-5 h-5" />
           </Button>
-          <h1 className="text-2xl font-bold">Add Doctor to Clinic</h1>
+          <h1 className="text-2xl font-bold">Add Doctor</h1>
         </div>
       </div>
 
@@ -234,7 +210,8 @@ export function AddDoctorMembership({
               control={form.control}
               placeholder="Select Specialization"
               label="Specialty"
-              options={mappedSpecialties}
+              loading={citiesLoading}
+              options={specializations}
             />
 
             <CustomFormField
@@ -242,18 +219,17 @@ export function AddDoctorMembership({
               name="city"
               control={form.control}
               placeholder="Select Location"
-              label="Location"
-              options={mappedCities}
+              label="City"
+              loading={citiesLoading}
+              options={cities}
             />
 
             <CustomFormField
               fieldType={FormFieldType.SELECT}
               name="gender"
               control={form.control}
-              placeholder="Select gender"
               label="Gender"
               options={[
-                { value: "", label: "All" },
                 { value: Gender.MALE, label: "Male" },
                 { value: Gender.FEMALE, label: "Female" },
                 { value: Gender.OTHER, label: "Other" },

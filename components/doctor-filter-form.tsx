@@ -100,7 +100,7 @@ const DoctorFilterForm = () => {
           fieldType={FormFieldType.INPUT}
           name="search"
           control={form.control}
-          placeholder="Search by name, email"
+          placeholder="Search by name"
           className="w-full"
           label="Search"
         />
@@ -121,7 +121,7 @@ const DoctorFilterForm = () => {
           control={form.control}
           placeholder="Select Location"
           className="w-full"
-          label="Location"
+          label="City"
           options={mappedCities}
         />
 
@@ -129,7 +129,6 @@ const DoctorFilterForm = () => {
           fieldType={FormFieldType.SELECT}
           name="gender"
           control={form.control}
-          placeholder="Select gender"
           className="w-full"
           label="Gender"
           options={[

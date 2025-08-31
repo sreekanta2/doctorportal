@@ -11,7 +11,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { deleteClinic } from "@/action/action.clinics";
+import { deleteAdminClinic } from "@/action/action.admin-doctor";
 import { ClinicWithRelations } from "@/types";
 import { DeleteIcon } from "lucide-react";
 import { startTransition } from "react";
@@ -31,7 +31,7 @@ export default function ClinicList({
   const handleDelete = (email: string) => {
     startTransition(async () => {
       try {
-        const result = await deleteClinic(email);
+        const result = await deleteAdminClinic(email);
 
         if (result?.success) {
           toast.success("clinic deleted successfully");

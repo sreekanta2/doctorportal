@@ -28,7 +28,7 @@ const plans: SubscriptionPlan[] = [
       { name: "Priority support", included: false },
       { name: "Unlimited appointments", included: false },
     ],
-    buttonText: "Get Started",
+    buttonText: "",
     buttonVariant: "outline",
   },
   {
@@ -123,18 +123,20 @@ export default function PlansPage() {
               ))}
             </ul>
 
-            <button
-              onClick={() => handleChoosePlan(plan.name)}
-              className={`w-full py-2 rounded-lg font-semibold transition-all duration-200 ${
-                plan.buttonVariant === "primary"
-                  ? "bg-primary-500 text-white hover:bg-primary-600"
-                  : plan.buttonVariant === "secondary"
-                  ? "bg-gray-800 text-white hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
-                  : "border border-primary-500 text-primary-500 hover:bg-primary-50 dark:text-primary-400 dark:border-primary-400"
-              }`}
-            >
-              {plan.buttonText}
-            </button>
+            {plan?.buttonText && (
+              <button
+                onClick={() => handleChoosePlan(plan.name)}
+                className={`w-full py-2 rounded-lg font-semibold transition-all duration-200 ${
+                  plan.buttonVariant === "primary"
+                    ? "bg-primary-500 text-white hover:bg-primary-600"
+                    : plan.buttonVariant === "secondary"
+                    ? "bg-gray-800 text-white hover:bg-gray-900 dark:bg-gray-700 dark:hover:bg-gray-600"
+                    : "border border-primary-500 text-primary-500 hover:bg-primary-50 dark:text-primary-400 dark:border-primary-400"
+                }`}
+              >
+                {plan.buttonText}
+              </button>
+            )}
           </div>
         ))}
       </div>

@@ -1,8 +1,9 @@
 "use client";
 
-import { CheckShape, CupBar, NoteIcon } from "@/components/svg";
+import { Users } from "@/components/svg";
 import { cn } from "@/lib/utils";
 import { Icon } from "@iconify/react";
+import { Building2 } from "lucide-react";
 
 const AdminStats = ({
   doctorsCount,
@@ -18,19 +19,19 @@ const AdminStats = ({
       text: "Total Doctors",
       total: doctorsCount,
       color: "primary",
-      icon: <CupBar className="w-3.5 h-3.5" />,
+      icon: <Users className="w-3.5 h-3.5" />,
     },
     {
       text: "Total Patients",
       total: totalPatient,
       color: "warning",
-      icon: <NoteIcon className="w-3.5 h-3.5" />,
+      icon: <Users className="w-3.5 h-3.5" />,
     },
     {
       text: "Total Clinics",
       total: totalClinics,
       color: "destructive",
-      icon: <CheckShape className="w-3.5 h-3.5" />,
+      icon: <Building2 className="w-3.5 h-3.5" />,
     },
     // {
     //   text: "Revenue",

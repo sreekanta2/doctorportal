@@ -86,7 +86,7 @@ export default function DoctorPageView({
                 className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground rounded-lg hover:bg-primary/90 transition-colors"
               >
                 <Plus size={18} />
-                Doctor Add Your clinic
+                Add Doctor
               </button>
             </div>
             <hr className="my-3 border-default-200 dark:border-default-700" />
@@ -124,16 +124,31 @@ export default function DoctorPageView({
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-4">
                           <div>
                             <h2 className="text-xl font-bold text-default-900">
-                              {member?.doctor?.user?.name || ""}{" "}
+                              Dr.{" "}
+                              {member?.doctor?.user?.name
+                                ? member.doctor.user.name
+                                    .charAt(0)
+                                    .toUpperCase() +
+                                  member.doctor.user.name.slice(1)
+                                : ""}
                             </h2>
                             <div className="flex items-center gap-2 mt-1">
-                              <Stethoscope size={16} className="text-primary" />
-                              <span className="text-xs font-semibold text-primary">
-                                {member?.doctor?.specialization || ""}
+                              <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                                <Stethoscope className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                              </div>
+                              <span className="  font-semibold text-primary">
+                                {member?.doctor?.specialization
+                                  ? member?.doctor?.specialization
+                                      .charAt(0)
+                                      .toUpperCase() +
+                                    member?.doctor?.specialization.slice(1)
+                                  : ""}
                               </span>
                             </div>
                             <div className="flex items-center gap-2 mt-1">
-                              <Building2 size={16} className="text-primary" />
+                              <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                                <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                              </div>
                               <span className="text-base font-bold text-primary">
                                 {member?.doctor?.hospital || "Medicine"}
                               </span>
@@ -192,7 +207,9 @@ export default function DoctorPageView({
                               {/* Schedule Information - Improved layout */}
                               <div className="   space-y-3 w-full">
                                 <div className="flex items-center gap-2 min-w-[120px]">
-                                  <CalendarDays className="h-4 w-4 text-muted-foreground" />
+                                  <div className=" bg-blue-50 rounded-lg dark:bg-gray-800">
+                                    <CalendarDays className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                  </div>
                                   <span>
                                     {String(schedule.startDay).substring(0, 3)}{" "}
                                     - {String(schedule.endDay).substring(0, 3)}
@@ -200,7 +217,9 @@ export default function DoctorPageView({
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                  <Clock className="h-4 w-4 text-muted-foreground" />
+                                  <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                                    <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                                  </div>
                                   <span>
                                     {format(
                                       new Date(

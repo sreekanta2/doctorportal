@@ -4,6 +4,7 @@ import { useSidebar } from "@/store";
 import React, { useState } from "react";
 import SidebarLogo from "../common/logo";
 
+import LogoutButton from "@/components/logout";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
@@ -151,11 +152,11 @@ const MobileSidebar = ({
           </ul>
           <div className="mt-auto mb-2 transition-all duration-200">
             <Separator className="mb-4 transition-opacity duration-200" />
-            {status !== "authenticated" && (
+            {status !== "authenticated" ? (
               <div className="space-y-4 transition-all duration-200">
                 <Button className="w-full transition-all duration-200">
                   <Link
-                    href="/auth/signin"
+                    href="/auth/sign-in"
                     className="font-semibold mx-3 text-default-100 flex items-center gap-1 transition-all duration-200"
                   >
                     Sign in
@@ -164,13 +165,15 @@ const MobileSidebar = ({
 
                 <Button className="w-full transition-all duration-200">
                   <Link
-                    href="/auth/signup"
+                    href="/auth/sign-up"
                     className="font-semibold mx-3 text-white flex items-center gap-1 transition-all duration-200"
                   >
                     Sign up
                   </Link>
                 </Button>
               </div>
+            ) : (
+              <LogoutButton />
             )}
           </div>
         </ScrollArea>

@@ -9,8 +9,8 @@ import { Gender } from "@/types/common";
 
 import { Metadata } from "next";
 import { Suspense } from "react";
-import DoctorCard from "./components/doctor-card";
 import DoctorCardSkeleton from "./components/doctor-card-skeleton";
+import DoctorCard from "./components/search-doctor-card";
 
 // Structured Data Component
 function StructuredData({ data }: { data: any }) {

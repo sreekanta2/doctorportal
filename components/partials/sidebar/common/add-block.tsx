@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import thumbnail from "@/public/images/all-img/thumbnail.png";
+import thumbnail from "@/public/images/thumbnail.png";
 import { Icon } from "@iconify/react";
 import { X } from "lucide-react";
 import Image from "next/image";

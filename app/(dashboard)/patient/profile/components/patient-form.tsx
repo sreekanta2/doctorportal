@@ -49,7 +49,7 @@ export default function PatientForm({
         image: user?.data?.user?.image || patient?.user?.image || "",
         email: user?.data?.user?.email || patient?.user?.email || "",
         phoneNumber: patient?.phoneNumber || "",
-        age: patient?.age || 0,
+        age: patient?.age || undefined,
         gender: patient?.gender || undefined,
         bloodGroup: patient?.bloodGroup || undefined,
         street: patient?.street || "",

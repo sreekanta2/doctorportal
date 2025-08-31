@@ -1,7 +1,9 @@
 "use client";
 
-import { createUserAndClinicAction } from "@/action/action.clinics";
+import { createAdminUserAndClinicAction } from "@/action/action.admin-doctor";
+import Error from "@/app/error";
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
+import Loader from "@/components/loader";
 import SubmitButton from "@/components/submit-button";
 import {
   Dialog,
@@ -11,17 +13,20 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Form } from "@/components/ui/form";
+import { useFetchOptions } from "@/hooks/useFetchCities";
 import { CreateClinicInput, createClinicSchema } from "@/zod-validation/clinic";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
 export default function ClinicCreateDialog() {
   const [isPending, startTransition] = useTransition();
-
+  const { options: cities, loading, error } = useFetchOptions("/api/cities");
+  const router = useRouter();
   const form = useForm<CreateClinicInput>({
     resolver: zodResolver(createClinicSchema),
     defaultValues: {
@@ -37,14 +42,14 @@ export default function ClinicCreateDialog() {
       zipCode: "",
       country: "",
       openingHour: "",
-      establishedYear: new Date().getFullYear(),
+      establishedYear: undefined,
     },
   });
 
   const onSubmit: SubmitHandler<CreateClinicInput> = async (data) => {
     startTransition(async () => {
       try {
-        const result = await createUserAndClinicAction(data);
+        const result = await createAdminUserAndClinicAction(data);
 
         if (!result?.success) {
           toast.error(
@@ -57,15 +62,22 @@ export default function ClinicCreateDialog() {
         }
       } catch (error) {
         console.error("Form submission error:", error);
-        toast.error(
-          error instanceof Error
-            ? error.message
-            : "Something went wrong. Please try again."
-        );
+        toast.error("Something went wrong. Please try again.");
       }
     });
   };
 
+  if (loading) {
+    <div>
+      <Loader />
+    </div>;
+  }
+  const reset = () => {
+    router.refresh();
+  };
+  if (error) {
+    <Error error={error} reset={reset} />;
+  }
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -158,12 +170,13 @@ export default function ClinicCreateDialog() {
                 className="bg-white md:col-span-2"
               />
               <CustomFormField
-                fieldType={FormFieldType.INPUT}
+                fieldType={FormFieldType.SELECT}
                 control={form.control}
                 name="city"
                 label="City"
-                placeholder="New York"
+                placeholder="Dinajpur"
                 required
+                options={cities}
                 className="bg-white"
               />
 
@@ -190,7 +203,7 @@ export default function ClinicCreateDialog() {
                 control={form.control}
                 name="openingHour"
                 label="Opening Hours"
-                placeholder="Mon-Fri 09:00-17:00"
+                placeholder="09:00 Am -9:00 Pm"
                 required
                 className="bg-white"
               />

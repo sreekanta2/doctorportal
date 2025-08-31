@@ -24,10 +24,6 @@ export const menus: MenuItemProps[] = [
     title: "About",
     href: "/about",
   },
-  {
-    title: "Contact",
-    href: "/contact",
-  },
 ];
 
 export interface MenuItemProps {

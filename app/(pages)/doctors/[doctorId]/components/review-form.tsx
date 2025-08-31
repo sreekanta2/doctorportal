@@ -120,7 +120,7 @@ export default function ReviewForm({
             {/* Rating */}
             <fieldset className="space-y-2">
               <legend className="text-base font-medium text-default-700 mb-1">
-                Your Rating
+                {user?.data?.user?.name}
               </legend>
               <Rating
                 value={currentRating}
@@ -129,11 +129,6 @@ export default function ReviewForm({
                 error={form.formState.errors.rating?.message}
                 aria-label="Rate your experience from 1 to 5 stars"
               />
-              {form.formState.errors.rating && (
-                <p className="text-base text-red-500">
-                  {form.formState.errors.rating.message}
-                </p>
-              )}
             </fieldset>
           </div>
 

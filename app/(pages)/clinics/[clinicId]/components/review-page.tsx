@@ -19,7 +19,7 @@ import { Edit2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useSession } from "next-auth/react";
 import { useState, useTransition } from "react";
 import toast from "react-hot-toast";
-import ReviewForm from "./review-form"; // ✅ import the form we created for create/update
+import ReviewForm from "./review-form";
 
 interface IReviewProps {
   reviews: ReviewWithUser[];
@@ -48,7 +48,6 @@ export default function ReviewPage({
         const result = await deleteClinicReview(reviewId);
         if (result?.success) {
           toast.success("Review deleted");
-          // TODO: trigger re-fetch or filter locally
         } else {
           toast.error(
             result?.errors?.[0]?.message || "Failed to delete review"

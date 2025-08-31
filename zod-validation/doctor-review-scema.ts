@@ -8,9 +8,9 @@ export const DoctorReviewSchema = z.object({
   doctorId: z.string({
     required_error: "Doctor ID is required",
   }),
-  rating: z.number().min(1).max(5),
+  rating: z.number({ required_error: "Rating is required" }).min(1).max(5),
   status: z.string().default("pending"),
-  comment: z.string(),
+  comment: z.string().min(2, "Please write something"),
 });
 
 export const CreateDoctorReviewSchema = DoctorReviewSchema;

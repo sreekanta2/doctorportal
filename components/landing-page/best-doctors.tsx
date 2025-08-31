@@ -1,8 +1,14 @@
 "use client";
 import { DoctorWithRelations } from "@/types";
 import { motion, useInView } from "framer-motion";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
-import Image, { StaticImageData } from "next/image";
+import {
+  Building2,
+  ChevronLeft,
+  ChevronRight,
+  Globe,
+  Star,
+} from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import "swiper/css";
@@ -11,19 +17,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Swiper as SwiperType } from "swiper/types";
 import { User } from "../svg";
 import { Button } from "../ui/button";
-
-interface Doctor {
-  id: number;
-  image: StaticImageData;
-  name: string;
-  rating: number;
-  qualification: string;
-  location: string;
-  consultations: number;
-  yearsExperience: number;
-  reviews: number;
-  specialties?: string[];
-}
 
 const BestDoctors = () => {
   const [swiperInstance, setSwiperInstance] = useState<SwiperType | null>(null);
@@ -43,7 +36,6 @@ const BestDoctors = () => {
         const response = await fetch("/api/doctors?page=1&limit=15");
         const data = await response.json();
         if (response.ok) {
-          // Update state with fetched doctors
           setDoctors(data?.data);
         } else {
           console.error("Error fetching doctors:", data);
@@ -55,7 +47,7 @@ const BestDoctors = () => {
 
     fetchDoctors();
   }, []);
-  console.log(doctors[0]);
+
   return (
     <motion.section
       ref={sectionRef}
@@ -133,18 +125,19 @@ const BestDoctors = () => {
                 itemType="https://schema.org/Physician"
               >
                 {/* Doctor Image with proper alt text */}
-                <figure className="relative lg:mx-auto h-full max-h-[250px] w-full max-w-[300px] aspect-square">
+                <figure className="relative  ">
                   {doctor?.user?.image ? (
-                    <Image
-                      src={doctor.user?.image}
-                      alt={`Portrait of ${doctor.user?.name}`}
-                      fill
-                      className="rounded-lg object-cover"
-                      sizes="(max-width: 640px) 100vw, 250px"
-                      itemProp="image"
-                    />
+                    <div className="relative w-full h-64">
+                      <Image
+                        src={doctor.user?.image}
+                        alt={`Portrait of ${doctor.user?.name}`}
+                        fill
+                        className="object-cover"
+                        priority
+                      />
+                    </div>
                   ) : (
-                    <div className="w-full h-full p-2 rounded-md border flex items-center justify-center bg-default-70 aspect-square">
+                    <div className="w-full h-64 p-2 rounded-md border flex items-center justify-center bg-default-70 aspect-square">
                       <User className="w-1/2 h-1/2 text-default-700" />
                     </div>
                   )}
@@ -168,18 +161,28 @@ const BestDoctors = () => {
                 <div className="mb-4">
                   <Link
                     href={`/doctors/${doctor?.id}`}
-                    className="text-xl font-bold text-default-800 dark:text-white mb-1"
+                    className="text-xl font-bold text-default-600   mb-1"
                     itemProp="url"
                   >
-                    <h3 itemProp="name">{doctor?.user?.name}</h3>
+                    Dr.{" "}
+                    {doctor?.user?.name
+                      ? doctor.user.name.charAt(0).toUpperCase() +
+                        doctor.user.name.slice(1)
+                      : ""}
                   </Link>
-
                   <p
-                    className="text-base text-default-600 dark:text-default-300"
+                    className="text-base bg-primary-100 px-2 rounded-md w-fit text-primary-600  "
                     itemProp="hasCredential"
                   >
-                    {doctor?.specialization}
+                    {doctor?.specialization.toUpperCase()}
                   </p>
+                  <p
+                    className="text-sm text-primary-600 mt-1   "
+                    itemProp="hasCredential"
+                  >
+                    {doctor?.degree}
+                  </p>
+
                   <meta
                     itemProp="medicalSpecialty"
                     content={doctor.hospital || ""}
@@ -214,12 +217,11 @@ const BestDoctors = () => {
                 <div className="mt-auto pt-4 border-t border-default-100 dark:border-default-700">
                   <div className="pt-2 flex gap-2 sm:gap-8 justify-between items-center">
                     <Button
-                      variant="outline"
-                      color="primary"
+                      variant="soft"
                       size="sm"
-                      className="w-fit"
-                      asChild
+                      className="w-fit flex items-center gap-2"
                     >
+                      <Globe className="w-4 h-4" />
                       <Link
                         href={`/doctors/${doctor.id}#website`}
                         aria-label={`Visit ${doctor.user?.name}'s website`}
@@ -227,7 +229,8 @@ const BestDoctors = () => {
                         Website
                       </Link>
                     </Button>
-                    <Button color="primary" size="sm" className="w-fit" asChild>
+                    <Button size="sm" className="w-fit flex items-center gap-2">
+                      <Building2 className="w-4 h-4" />
                       <Link
                         href={`/doctors/${doctor?.id}#chambers`}
                         aria-label={`View ${doctor.user?.name}'s chambers`}

@@ -1,5 +1,5 @@
 "use client";
-import work from "@/public/images/all-img/work-img.png";
+import work from "@/public/images/work-img.png";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -73,7 +73,7 @@ export default function Summary() {
             ].map((step, index) => (
               <motion.div
                 key={index}
-                className="flex items-start gap-5 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
+                className="flex flex-col md:flex-row items-start gap-5 p-4 bg-white dark:bg-gray-800 rounded-xl shadow-sm hover:shadow-md transition-all duration-300"
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}

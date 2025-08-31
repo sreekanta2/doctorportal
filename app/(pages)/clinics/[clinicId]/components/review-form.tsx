@@ -118,7 +118,7 @@ export default function PatientReviewForm({
           <div className="flex items-start gap-4">
             {/* User Avatar */}
             <figure className="flex-shrink-0">
-              {user.data?.user?.image ? (
+              {user?.data?.user?.image ? (
                 <Image
                   src={user.data.user.image}
                   alt={`${user.data.user.name} profile picture`}
@@ -137,7 +137,7 @@ export default function PatientReviewForm({
             {/* Rating */}
             <fieldset className="space-y-2">
               <legend className="text-base font-medium text-default-700 mb-1">
-                Your Rating
+                {user?.data?.user?.name}
               </legend>
               <Rating
                 value={currentRating || 0}
@@ -146,11 +146,6 @@ export default function PatientReviewForm({
                 error={form.formState.errors.rating?.message}
                 aria-label="Rate your experience from 1 to 5 stars"
               />
-              {form.formState.errors.rating && (
-                <p className="text-base text-red-500">
-                  {form.formState.errors.rating.message}
-                </p>
-              )}
             </fieldset>
           </div>
 
@@ -180,7 +175,7 @@ export default function PatientReviewForm({
                 {isPending ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    {review ? "Updating..." : "Submitting..."}
+                    Processing...
                   </>
                 ) : review ? (
                   "Update Review"

@@ -4,6 +4,8 @@ import BestDoctors from "@/components/landing-page/best-doctors";
 import { Icon } from "@iconify/react";
 import { motion } from "framer-motion";
 import Head from "next/head";
+import Image from "next/image";
+import Link from "next/link";
 
 export default function AboutUs() {
   return (
@@ -12,7 +14,7 @@ export default function AboutUs() {
         <title>About Us | MedCare HMS</title>
         <meta
           name="description"
-          content="Learn about MedCare Hospital Management System and our mission to revolutionize healthcare administration"
+          content="Discover MedCare HMS – a modern healthcare platform that connects patients, doctors, and clinics seamlessly."
         />
       </Head>
 
@@ -20,6 +22,7 @@ export default function AboutUs() {
         title={<span className="text-primary">About Us</span>}
         breadcrumbs={[{ label: "Home", href: "/" }, { label: "About Us" }]}
       />
+
       <main className="bg-card/50 backdrop-blur-lg shadow-md dark:bg-card/70">
         {/* Our Story */}
         <section className="py-20 bg-background dark:bg-[#0e1527]">
@@ -36,17 +39,19 @@ export default function AboutUs() {
                   Our Story
                 </h2>
                 <p className="text-lg text-default-600 mb-4">
-                  Founded in 2010 by a team of healthcare professionals and
-                  technology experts, MedCare HMS began with a simple mission:
-                  to eliminate administrative burdens so medical staff can focus
-                  on what matters most - patient care.
+                  MedCare HMS was founded to simplify healthcare services by
+                  bridging the gap between patients, doctors, and clinics.
+                  Instead of struggling with appointments, availability, or
+                  records, we provide one seamless platform to manage everything
+                  in a smarter way.
                 </p>
                 <p className="text-lg text-default-600">
-                  What started as a small startup has grown into the leading
-                  hospital management platform, serving over 500 healthcare
-                  facilities across 12 countries.
+                  Today, MedCare helps thousands of patients find trusted
+                  doctors, book consultations, access reports, and manage
+                  prescriptions—all in one place.
                 </p>
               </motion.div>
+
               <motion.div
                 initial={{ opacity: 0, x: 50 }}
                 whileInView={{ opacity: 1, x: 0 }}
@@ -54,17 +59,19 @@ export default function AboutUs() {
                 viewport={{ once: true }}
                 className="md:w-1/2 bg-default-100 rounded-xl overflow-hidden"
               >
-                <img
-                  src="/images/hospital-team.jpg"
+                <Image
+                  src="/images/about.png"
                   alt="Hospital team discussing"
                   className="w-full h-auto object-cover"
+                  width={600}
+                  height={400}
                 />
               </motion.div>
             </div>
           </div>
         </section>
 
-        {/* Mission and Values */}
+        {/* Features / Mission */}
         <section className="py-20 bg-background/10">
           <div className="container mx-auto px-6">
             <motion.h2
@@ -74,46 +81,46 @@ export default function AboutUs() {
               viewport={{ once: true }}
               className="text-3xl font-bold text-center text-default-800 mb-16"
             >
-              Our Mission & Values
+              What We Offer
             </motion.h2>
 
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
                   icon: "healthicons:doctor",
-                  title: "Patient-Centered",
+                  title: "Doctor Search",
                   description:
-                    "We design our systems with patient outcomes as the top priority.",
+                    "Find doctors by specialty, clinic, or availability and view their full profiles.",
+                },
+                {
+                  icon: "mdi:calendar-clock",
+                  title: "Schedules & Availability",
+                  description:
+                    "Check clinic timings, consultation fees, and book appointments instantly.",
                 },
                 {
                   icon: "carbon:collaborate",
-                  title: "Collaborative",
+                  title: "Clinic Search",
                   description:
-                    "We work closely with healthcare providers to understand their needs.",
+                    "Search for clinics, explore available doctors, and compare services easily.",
+                },
+                {
+                  icon: "mdi:comment-text-multiple",
+                  title: "Real Patient Feedback",
+                  description:
+                    "Read verified reviews to choose the right doctor with confidence.",
+                },
+                {
+                  icon: "mdi:file-document-multiple",
+                  title: "Reports & Prescriptions",
+                  description:
+                    "Patients can securely store and access medical reports and prescriptions online.",
                 },
                 {
                   icon: "icon-park-outline:innovation",
-                  title: "Innovative",
+                  title: "Smart Healthcare Platform",
                   description:
-                    "We continuously evolve our technology to meet industry changes.",
-                },
-                {
-                  icon: "carbon:security",
-                  title: "Secure",
-                  description:
-                    "Patient data security is at the core of everything we build.",
-                },
-                {
-                  icon: "carbon:data-vis-1",
-                  title: "Data-Driven",
-                  description:
-                    "Our decisions are guided by analytics and real-world evidence.",
-                },
-                {
-                  icon: "carbon:user-certification",
-                  title: "Compliant",
-                  description:
-                    "We maintain the highest standards of regulatory compliance.",
+                    "A complete system designed to simplify healthcare for both patients and providers.",
                 },
               ].map((item, index) => (
                 <motion.div
@@ -139,6 +146,7 @@ export default function AboutUs() {
 
         {/* Leadership */}
         <BestDoctors />
+
         {/* CTA */}
         <section className="py-20 bg-blue-900 text-white">
           <div className="container mx-auto px-6 text-center">
@@ -149,7 +157,7 @@ export default function AboutUs() {
               viewport={{ once: true }}
               className="text-3xl md:text-4xl font-bold mb-8"
             >
-              Ready to Transform Your Hospital Management?
+              Ready to Experience Smarter Healthcare?
             </motion.h2>
             <motion.div
               initial={{ opacity: 0 }}
@@ -158,12 +166,18 @@ export default function AboutUs() {
               viewport={{ once: true }}
               className="flex flex-col sm:flex-row justify-center gap-4"
             >
-              <button className="px-8 py-3 bg-white text-blue-900 font-medium rounded-lg hover:bg-default-100 transition-colors">
-                Request a Demo
-              </button>
-              <button className="px-8 py-3 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-blue-900 transition-colors">
-                Contact Sales
-              </button>
+              <Link
+                href={`/doctors`}
+                className="px-8 py-3 bg-white text-blue-900 font-medium rounded-lg hover:bg-default-100 transition-colors"
+              >
+                Explore Doctors
+              </Link>
+              <Link
+                href={`/clinics`}
+                className="px-8 py-3 border-2 border-white text-white font-medium rounded-lg hover:bg-white hover:text-blue-900 transition-colors"
+              >
+                Find a Clinic
+              </Link>
             </motion.div>
           </div>
         </section>

@@ -9,7 +9,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-import { deleteSpecialization } from "@/action/action.specialties";
+import { deleteCity } from "@/action/action.city";
 import { Button } from "@/components/ui/button";
 import { PaginationMeta } from "@/types/common";
 import { City } from "@prisma/client";
@@ -28,15 +28,15 @@ export default function CitiesPageList({
   const handleDelete = (id: string) => {
     startTransition(async () => {
       try {
-        const result = await deleteSpecialization(id);
+        const result = await deleteCity(id);
 
         if (result?.success) {
-          toast.success("Specialization deleted successfully");
+          toast.success("City deleted successfully");
         } else {
           toast.error(result?.message || "Delete failed");
         }
       } catch (error) {
-        console.error("Error deleting specialization:", error);
+        console.error("Error deleting city:", error);
         toast.error("Something went wrong.");
       }
     });

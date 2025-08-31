@@ -1,5 +1,5 @@
 import Pagination from "@/components/PaginationComponents";
-import { User } from "@/components/svg";
+import { User, Users } from "@/components/svg";
 import { Button } from "@/components/ui/button";
 
 import { getAllClinics } from "@/config/clinic/clinic";
@@ -14,7 +14,6 @@ import {
   Phone,
   Plus,
   Star,
-  Users,
 } from "lucide-react";
 import { Metadata } from "next";
 import Image from "next/image";
@@ -235,14 +234,16 @@ export default async function ClinicsPage({
                     content={clinic?.city || "Multi-Specialty"}
                   />
 
-                  <div className="flex flex-col md:flex-row">
+                  <div className="flex flex-col md:flex-row p-4 gap-4 ">
                     {/* Clinic Image */}
                     <div className="w-full md:w-64 flex-shrink-0 relative h-64">
                       <div className="absolute top-3 left-3 z-10">
-                        <span className="inline-flex items-center px-3 py-1 rounded-full bg-white/90 text-primary-700 text-sm font-medium shadow-sm">
-                          <CheckCircle className="w-4 h-4 mr-1" />
+                        <div className="inline-flex items-center px-3 py-1  gap-1 rounded-full bg-white/90 text-primary-700 text-sm font-medium shadow-sm">
+                          <span className=" bg-blue-50 rounded-lg dark:bg-gray-800">
+                            <CheckCircle className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                          </span>
                           Verified
-                        </span>
+                        </div>
                       </div>
 
                       {clinic?.user?.image ? (
@@ -262,7 +263,7 @@ export default async function ClinicsPage({
                     </div>
 
                     {/* Clinic Info */}
-                    <div className="flex-1 p-4">
+                    <div className="flex-1 ">
                       <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                         <div>
                           <div className="flex items-center gap-2">
@@ -275,7 +276,10 @@ export default async function ClinicsPage({
                                 itemProp="url"
                                 className="hover:text-primary-600 transition-colors"
                               >
-                                {clinic?.user?.name || "Unknown"}
+                                {clinic?.user?.name
+                                  ? clinic?.user?.name.charAt(0).toUpperCase() +
+                                    clinic?.user?.name?.slice(1)
+                                  : ""}
                               </Link>
                             </h2>
                             {clinic?.user?.emailVerified && (
@@ -288,7 +292,9 @@ export default async function ClinicsPage({
 
                           {/* Address */}
                           <div className="mt-1 flex items-center gap-2">
-                            <MapPin className="w-4 h-4 text-gray-500" />
+                            <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                              <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            </div>
                             <span
                               className="text-sm text-gray-600"
                               itemProp="address"
@@ -298,7 +304,9 @@ export default async function ClinicsPage({
                             </span>
                           </div>
                           <div className="mt-1 flex items-center gap-2">
-                            <Phone className="w-4 h-4 text-gray-500" />
+                            <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                              <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            </div>
                             <span
                               className="text-sm text-gray-600"
                               itemProp="telephone"
@@ -319,8 +327,10 @@ export default async function ClinicsPage({
                               ({clinic?.reviewsCount || 0})
                             </span>
                           </div>
-                          <div className="mt-2 text-sm text-gray-600">
-                            <Clock className="w-4 h-4 inline mr-1" />
+                          <div className="mt-2 text-sm text-gray-600 flex  items-center gap-2">
+                            <span className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                              <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                            </span>
                             Open until {clinic?.openingHour || "8:00 PM"}
                           </div>
                         </div>
@@ -353,7 +363,13 @@ export default async function ClinicsPage({
                               )}
                               <div>
                                 <p className="text-sm font-medium">
-                                  Dr. {doctor?.doctor?.user?.name.split(" ")[0]}
+                                  Dr.{" "}
+                                  {doctor?.doctor?.user?.name
+                                    ? doctor?.doctor?.user?.name
+                                        .charAt(0)
+                                        .toUpperCase() +
+                                      doctor?.doctor?.user?.name.slice(1)
+                                    : ""}
                                 </p>
                                 <p className="text-xs text-gray-500">
                                   {doctor?.doctor?.specialization}
@@ -378,24 +394,22 @@ export default async function ClinicsPage({
                       <div className="mt-6 flex flex-wrap gap-3">
                         <Button
                           asChild
-                          variant="outline"
+                          variant="soft"
                           size="sm"
-                          className="flex-1 min-w-[120px]"
-                        >
-                          <Link href={`/clinics/${clinic.id}`}>
-                            <Users className="w-4 h-4 mr-2" />
-                            View All Doctors
-                          </Link>
-                        </Button>
-                        <Button
-                          asChild
-                          variant="outline"
-                          size="sm"
-                          className="flex-1 min-w-[120px]"
+                          className=" min-w-[200px]  "
                         >
                           <Link href={`/book-appointment?clinic=${clinic.id}`}>
                             <Globe className="w-4 h-4 mr-2" />
                             Websites
+                          </Link>
+                        </Button>
+                        <Button
+                          size="sm"
+                          className=" flex gap-2 items-center min-w-[200px]"
+                        >
+                          <Users className="w-4 h-4 " />
+                          <Link href={`/clinics/${clinic.id}`}>
+                            All Doctors
                           </Link>
                         </Button>
                       </div>

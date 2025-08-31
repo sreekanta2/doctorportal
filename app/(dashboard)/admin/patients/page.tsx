@@ -2,7 +2,7 @@ import LimitSelect from "@/components/limit-select";
 import Pagination from "@/components/PaginationComponents";
 import SearchInput from "@/components/SearchInput";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
-import { getAllPatients } from "@/config/patients/patients";
+import { getAllAdminPatients } from "@/config/admin";
 import PatientsList from "./components/patients-list";
 
 export default async function AdminPatientPage({
@@ -15,7 +15,7 @@ export default async function AdminPatientPage({
   const search = searchParams?.search as string | undefined;
 
   // Fetch doctors data based on page and limit
-  const patientsResponse = await getAllPatients({ page, limit, search });
+  const patientsResponse = await getAllAdminPatients({ page, limit, search });
   const patients = patientsResponse.data;
   const pagination = patientsResponse.meta?.pagination;
   return (
@@ -25,7 +25,7 @@ export default async function AdminPatientPage({
       </h1>
       <hr />
       <div className="flex flex-col md:flex-row justify-between gap-4">
-        <SearchInput searchParamKey="name" />
+        <SearchInput searchParamKey="search" />
         <LimitSelect />
       </div>
       <ScrollArea className="pb-8  lg:pb-0">
