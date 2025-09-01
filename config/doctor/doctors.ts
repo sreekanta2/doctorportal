@@ -1,5 +1,5 @@
+import prisma from "@/lib/db";
 import { SearchParams } from "@/types/common";
-
 export const getAllDoctors = async (filterOptions?: SearchParams) => {
   const query = new URLSearchParams({
     sortBy: filterOptions?.sortBy || "rating",
@@ -38,3 +38,24 @@ export const getSingleDoctor = async (
     return error;
   }
 };
+// config/doctor/doctors.ts
+export async function getDoctorSEO(doctorId: string) {
+  return prisma.doctor.findUnique({
+    where: { id: doctorId },
+    select: {
+      id: true,
+      specialization: true,
+      hospital: true,
+      city: true,
+      country: true,
+      averageRating: true,
+      reviewsCount: true,
+      user: {
+        select: {
+          name: true,
+          image: true,
+        },
+      },
+    },
+  });
+}

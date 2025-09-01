@@ -35,7 +35,7 @@ export default function DoctorCard({
         content={doctor?.specialization || "General Practice"}
       />
 
-      <div className="p-6">
+      <div className="p-4">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Doctor Image */}
           <div className="relative  w-64 h-64      min-w-[128px] rounded-xl border-2 border-white shadow-md overflow-hidden group-hover:scale-105 transition-transform duration-300">

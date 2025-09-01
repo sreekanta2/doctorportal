@@ -20,7 +20,16 @@ export async function GET(request: Request) {
       limit = "10",
     } = params;
 
-    const where: any = { AND: [] };
+    const where: any = {
+      AND: [
+        {
+          subscription: {
+            status: "ACTIVE",
+            endDate: { gte: new Date() }, // ✅ only valid subscriptions
+          },
+        },
+      ],
+    };
 
     // Text search
     if (search) {
@@ -37,7 +46,7 @@ export async function GET(request: Request) {
     where.AND = where.AND.filter((cond: any) => Object.keys(cond).length > 0);
     if (!where.AND.length) delete where.AND;
 
-    // Order by
+    // Sorting
     let orderBy: any;
     switch (sortBy) {
       case "rating":
@@ -54,6 +63,7 @@ export async function GET(request: Request) {
     const pageNum = parseInt(page);
     const limitNum = parseInt(limit);
     const skip = (pageNum - 1) * limitNum;
+
     const [clinics, totalCount] = await Promise.all([
       prisma.clinic.findMany({
         where,
@@ -67,33 +77,35 @@ export async function GET(request: Request) {
           country: true,
           phoneNumber: true,
           openingHour: true,
+          subscription: {
+            select: {
+              status: true,
+              endDate: true,
+              startDate: true,
+              pricePlan: { select: { plan: true, price: true } },
+            },
+          },
+          memberships: {
+            select: {
+              doctor: {
+                select: {
+                  user: {
+                    select: {
+                      name: true,
+                      image: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
           user: {
             select: {
               id: true,
               name: true,
               image: true,
               email: true,
-              emailVerified: true,
               createdAt: true,
-            },
-          },
-          memberships: {
-            select: {
-              id: true,
-              doctor: {
-                select: {
-                  id: true,
-                  specialization: true,
-                  user: {
-                    select: {
-                      id: true,
-                      name: true,
-                      image: true,
-                      createdAt: true,
-                    },
-                  },
-                },
-              },
             },
           },
         },
@@ -102,7 +114,7 @@ export async function GET(request: Request) {
     ]);
 
     if (!clinics || clinics.length === 0) {
-      throw new AppError("No clinics found", 404);
+      throw new AppError("No clinics with valid subscription found", 404);
     }
 
     return successPaginationResponse(clinics, {

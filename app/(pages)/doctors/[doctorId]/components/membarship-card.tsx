@@ -36,7 +36,7 @@ const ClinicMembershipCard = ({
       <div className="flex flex-col md:flex-row">
         {/* Clinic Image Section */}
         <div className="md:w-1/3 relative p-4  ">
-          <div className=" w-full h-72 md:h-full relative overflow-hidden rounded-md">
+          <div className=" w-64 h-64 md:h-full relative overflow-hidden rounded-md">
             {membership?.clinic?.user?.image ||
             membership?.doctor?.user?.image ? (
               <Image
@@ -85,15 +85,42 @@ const ClinicMembershipCard = ({
         </div>
 
         {/* Content Section */}
-        <div className="md:w-2/3 p-6">
+        <div className="container p-6">
+          <div className="flex gap-6 items-center">
+            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+              {membership?.clinic?.user?.name ||
+                ` Dr. ${membership?.doctor?.user?.name}`}
+            </h2>
+            {membership?.clinic && (
+              <Button
+                variant="outline"
+                className="  rounded-full flex gap-2 items-center"
+              >
+                <div className="w-4 h-4">
+                  <Users />
+                </div>
+                <Link href={`/clinics/${membership?.clinic?.id}`}>
+                  All Doctors
+                </Link>
+              </Button>
+            )}
+            {membership?.doctor && (
+              <Button
+                variant="outline"
+                className="  rounded-full flex gap-2 items-center"
+              >
+                <div className="w-4 h-4">
+                  <Building />
+                </div>
+                <Link href={`/doctors/${membership?.doctor?.id}`}>
+                  All Chambers
+                </Link>
+              </Button>
+            )}
+          </div>
           {/* Header */}
           <div className="flex flex-col sm:flex-row gap-6 md:gap-16 mb-2">
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                {membership?.clinic?.user?.name ||
-                  ` Dr. ${membership?.doctor?.user?.name}`}
-              </h2>
-
               {membership?.doctor?.specialization && (
                 <div className="flex items-center gap-2 mb-1">
                   <div className="bg-blue-100 text-blue-800 md:text-base font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">
@@ -124,30 +151,6 @@ const ClinicMembershipCard = ({
                 </div>
               )}
             </div>
-
-            {membership?.clinic && (
-              <Button
-                variant="outline"
-                className="  rounded-full flex gap-2 items-center"
-              >
-                <div className="w-4 h-4">
-                  <Users />
-                </div>
-                <Link href={`/clinics/${membership?.clinic?.id}`}>
-                  All Doctors
-                </Link>
-              </Button>
-            )}
-            {membership?.doctor && (
-              <Button className="gap-2 rounded-full">
-                <span className="w-4 h-4">
-                  <Building />
-                </span>
-                <Link href={`/doctors/${membership?.doctor?.id}`}>
-                  All Chambers
-                </Link>
-              </Button>
-            )}
           </div>
 
           {/* Contact Information */}

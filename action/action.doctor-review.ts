@@ -115,7 +115,7 @@ export async function updateDoctorReviewAction(
     });
 
     const newAverageRating = aggregation._avg.rating
-      ? parseFloat(aggregation._avg.rating.toFixed(1))
+      ? Math.round(aggregation._avg.rating * 10) / 10
       : 0;
 
     const newReviewCount = aggregation._count.id;

@@ -1,37 +1,17 @@
 import { Hero } from "@/components/hero";
-import { getSingleDoctor } from "@/config/doctor/doctors";
+import { getDoctorSEO } from "@/config/doctor/doctors";
+import { DoctorPageProps } from "@/types";
+import { Suspense } from "react";
+import DoctorCardSkeleton from "../components/doctor-card-skeleton";
+import DoctorProfile from "./components/doctor-profile";
 
-import { DoctorWithRelations } from "@/types";
-import { PaginationMeta } from "@/types/common";
-import { DoctorReview } from "@prisma/client";
-import DoctorCard from "../components/search-doctor-card";
-import ClinicMembershipCard from "./components/membarship-card";
-import ReviewPage from "./components/review-page";
-
-// Structured Data Component
-function StructuredData({ data }: { data: any }) {
-  return (
-    <script
-      type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
-    />
-  );
-}
-
-export const generateMetadata = async ({
-  params,
-  searchParams,
-}: DoctorPageProps) => {
+export const generateMetadata = async ({ params }: DoctorPageProps) => {
   try {
     const { doctorId } = params;
-    const page = Number(searchParams?.page || 1);
-    const limit = Number(searchParams?.limit || 2);
-    const result = await getSingleDoctor(doctorId, page, limit);
+    const doctor = await getDoctorSEO(doctorId);
     const baseUrl = process.env.NEXT_PUBLIC_API_URL;
 
-    const doctor: DoctorWithRelations = result?.doctor;
-
-    if (!result) {
+    if (!doctor) {
       return {
         title: "Doctor Not Found | MediBook",
         description: "Doctor profile not found",
@@ -77,46 +57,6 @@ export const generateMetadata = async ({
         `doctor ${location}`,
         "book doctor appointment",
       ],
-      // JSON-LD structured data for rich snippet
-      metadataBase: new URL(baseUrl || ""),
-      additionalMetaTags: [
-        {
-          name: "structured-data",
-          content: JSON.stringify({
-            "@context": "https://schema.org",
-            "@type": "Physician",
-            "@id": canonicalUrl,
-            name: doctorName,
-            image: {
-              "@type": "ImageObject",
-              url: doctorImage,
-              width: 1200,
-              height: 1200,
-            },
-            url: canonicalUrl,
-            address: {
-              "@type": "PostalAddress",
-              addressLocality: doctor?.city,
-              streetAddress: doctor?.country,
-            },
-            medicalSpecialty: specialties,
-            alumniOf: doctor?.hospital || "",
-            description: `${doctorName} is a ${specialties} at ${
-              doctor?.hospital || "Hospital"
-            }`,
-            aggregateRating: {
-              "@type": "AggregateRating",
-              ratingValue: doctor?.averageRating || 0,
-              ratingCount: doctor?.reviewsCount || 0,
-              bestRating: 5,
-            },
-            sameAs: [
-              "https://twitter.com/doctor",
-              "https://linkedin.com/in/doctor",
-            ],
-          }),
-        },
-      ],
     };
   } catch (error) {
     console.error("Error generating metadata:", error);
@@ -127,100 +67,44 @@ export const generateMetadata = async ({
   }
 };
 
-interface DoctorPageProps {
-  params: { doctorId: string };
-  searchParams?: { [key: string]: string | string[] | undefined };
-}
-
-export default async function DoctorPage({
+export default function DoctorPage({
   params,
   searchParams,
-}: DoctorPageProps) {
+}: {
+  params: { doctorId: string };
+  searchParams?: { [key: string]: string | string[] | undefined };
+}) {
   const page = Number(searchParams?.page || 1);
   const limit = Number(searchParams?.limit || 5);
-
   const { doctorId } = params;
-  const result = await getSingleDoctor(doctorId, page, limit);
-  const doctor: DoctorWithRelations = result?.doctor;
-  const reviews: DoctorReview[] = result?.reviews?.reviews || [];
-  const reviewsPagination: PaginationMeta = result?.reviews?.pagination || {};
 
   return (
     <div className="bg-background">
       <Hero
-        title={<span className="text-primary">Search Doctor</span>}
+        title={<span className="text-primary">Doctor Profile</span>}
         breadcrumbs={[
           { label: "Home", href: "/" },
           { label: "Doctors", href: "/doctors" },
-          { label: doctor?.user?.name || "" },
+          { label: doctorId },
         ]}
       />
 
       <main className="bg-card/50 backdrop-blur-lg shadow-md dark:bg-card/70">
-        <div className="container space-y-8 py-4">
-          {/* Doctor Profile Section */}
-
-          <DoctorCard doctor={doctor} />
-
-          {doctor?.memberships?.length > 0 && (
-            <section aria-labelledby="clinics-heading">
-              <header className="mb-4">
-                <h1
-                  id="clinics-heading"
-                  className="font-semibold text-xl text-default-800"
-                >
-                  Chambers & Clinics
-                </h1>
-              </header>
-
-              <div className="grid gap-10">
-                {doctor?.memberships?.length > 0 &&
-                  doctor?.memberships?.map((membership) => {
-                    return (
-                      <ClinicMembershipCard
-                        key={membership?.id}
-                        membership={membership}
-                      />
-                    );
-                  })}
+        <div className="container py-4">
+          {/* ✅ Streaming profile */}
+          <Suspense
+            fallback={
+              <div className="grid gap-4 my-4">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <DoctorCardSkeleton key={i} />
+                ))}
               </div>
-            </section>
-          )}
-
-          <section aria-labelledby="reviews-heading">
-            <ReviewPage
-              reviews={reviews}
-              pagination={reviewsPagination}
-              doctorId={doctorId}
-            />
-          </section>
+            }
+          >
+            <DoctorProfile doctorId={doctorId} page={page} limit={limit} />
+          </Suspense>
         </div>
       </main>
-
-      <StructuredData
-        data={{
-          "@context": "https://schema.org",
-          "@type": "Physician",
-          name: doctor?.user?.name,
-          url: `${process.env.NEXT_PUBLIC_API_URL}/doctors/${doctor?.id}`,
-          image:
-            doctor?.user?.image ||
-            `${process.env.NEXT_PUBLIC_API_URL}/default-doctor.png`,
-          medicalSpecialty: doctor?.specialization || "General Practice",
-          hospitalAffiliation: doctor?.hospital || "",
-          address: {
-            "@type": "PostalAddress",
-            addressLocality: doctor?.city || "",
-            addressCountry: doctor?.country || "",
-          },
-          aggregateRating: {
-            "@type": "AggregateRating",
-            ratingValue: doctor?.averageRating || 0,
-            reviewCount: doctor?.reviewsCount || 0,
-            bestRating: "5",
-          },
-        }}
-      />
     </div>
   );
 }

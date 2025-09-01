@@ -200,6 +200,7 @@ export default function ReviewPage({
             <Pagination
               currentPage={pagination?.page}
               totalPages={pagination?.totalPages}
+              queryKey="reviewPage"
             />
           )}
         </nav>

@@ -118,7 +118,7 @@ export function AddDoctorMembership({
 
         // Only fetch if at least one filter is set
         if (params.toString()) {
-          const res = await fetch(`/api/doctors?${params.toString()}`);
+          const res = await fetch(`/api/admin/doctors?${params.toString()}`);
           const data = await res.json();
           setDoctors(data?.data || []);
         } else {

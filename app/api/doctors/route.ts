@@ -3,7 +3,9 @@ import {
   successPaginationResponse,
 } from "@/lib/api/api-response";
 import prisma from "@/lib/db";
+
 export const dynamic = "force-dynamic";
+
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -21,28 +23,40 @@ export async function GET(request: Request) {
       limit = "10",
     } = params;
 
-    const where: any = { AND: [] };
+    const where: any = {
+      AND: [
+        {
+          memberships: {
+            some: {
+              clinic: {
+                subscription: {
+                  status: "ACTIVE",
+                  endDate: { gte: new Date() },
+                },
+              },
+            },
+          },
+        },
+      ],
+    };
 
-    // Text search
+    // 🔍 Search by doctor name
     if (search) {
       where.AND.push({
         OR: [{ user: { name: { contains: search, mode: "insensitive" } } }],
       });
     }
 
-    // Specialty filter
+    // Filters
     if (specialization) where.AND.push({ specialization });
-
-    // Exact match filters
     if (city) where.AND.push({ city });
     if (country) where.AND.push({ country });
     if (gender) where.AND.push({ gender });
 
-    // Clean AND
     where.AND = where.AND.filter((cond: any) => Object.keys(cond).length > 0);
     if (!where.AND.length) delete where.AND;
 
-    // Order by
+    // Sorting
     let orderBy: any;
     switch (sortBy) {
       case "rating":
@@ -77,21 +91,40 @@ export async function GET(request: Request) {
             },
           },
           memberships: {
+            where: {
+              clinic: {
+                subscription: {
+                  endDate: { gte: new Date() },
+                  status: "ACTIVE",
+                },
+              },
+            },
             select: {
               id: true,
+              fee: true,
+              maxAppointments: true,
+              discount: true,
               clinic: {
                 select: {
                   id: true,
+
+                  city: true,
+                  country: true,
+                  phoneNumber: true,
+                  openingHour: true,
+                  averageRating: true,
+                  reviewsCount: true,
                   user: {
                     select: {
                       id: true,
                       name: true,
+                      email: true,
                       image: true,
-                      createdAt: true,
                     },
                   },
                 },
               },
+              schedules: true,
             },
           },
         },
