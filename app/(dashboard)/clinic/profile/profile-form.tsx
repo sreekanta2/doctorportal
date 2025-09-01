@@ -40,18 +40,18 @@ export default function ClinicProfileForm({
         image: clinic?.image || "",
         description: clinic?.clinic?.description || "",
         phoneNumber: clinic?.clinic?.phoneNumber || "",
-        street: clinic?.clinic?.street || "",
         role: "clinic",
         city: clinic?.clinic?.city || "",
-        zipCode: clinic?.clinic?.zipCode || "",
-        country: clinic?.clinic?.country || "",
+        country: clinic?.clinic?.country || "Bangladesh",
         openingHour: clinic?.clinic?.openingHour || "",
+        website: clinic?.clinic?.website || "",
         establishedYear:
           clinic?.clinic?.establishedYear || new Date().getFullYear(),
       });
     }
   }, [clinic, user, form]);
 
+  console.log(form.formState.errors);
   const onSubmit: SubmitHandler<UpdateClinicInput> = async (data) => {
     startTransition(async () => {
       try {
@@ -143,15 +143,6 @@ export default function ClinicProfileForm({
 
           <div className="w-ful flex gap-4 items-center">
             <CustomFormField
-              fieldType={FormFieldType.INPUT}
-              control={form.control}
-              name="street"
-              label="Street Address"
-              placeholder="123 Medical Center Drive"
-              required
-              className="bg-white md:col-span-2"
-            />
-            <CustomFormField
               fieldType={FormFieldType.SELECT}
               control={form.control}
               name="city"
@@ -161,28 +152,6 @@ export default function ClinicProfileForm({
               required
               className="bg-white"
             />
-          </div>
-          <div className="w-ful flex gap-4 items-center">
-            <CustomFormField
-              fieldType={FormFieldType.INPUT}
-              control={form.control}
-              name="country"
-              label="Country"
-              placeholder="United States"
-              required
-              className="bg-white"
-            />
-            <CustomFormField
-              fieldType={FormFieldType.INPUT}
-              control={form.control}
-              name="zipCode"
-              label="ZIP/Postal Code"
-              placeholder="10001"
-              required
-              className="bg-white"
-            />
-          </div>
-          <div className="w-ful flex gap-4 items-start">
             <CustomFormField
               fieldType={FormFieldType.INPUT}
               control={form.control}
@@ -192,15 +161,16 @@ export default function ClinicProfileForm({
               required
               className="bg-white"
             />
-            <CustomFormField
-              fieldType={FormFieldType.TEXTAREA}
-              control={form.control}
-              name="description"
-              label="Clinic Description"
-              placeholder="Tell patients about your clinic, services, and values..."
-              className="bg-white"
-            />
           </div>
+
+          <CustomFormField
+            fieldType={FormFieldType.TEXTAREA}
+            control={form.control}
+            name="description"
+            label="Clinic Description"
+            placeholder="Tell patients about your clinic, services, and values..."
+            className="bg-white"
+          />
         </div>
 
         {/* Submit Section */}

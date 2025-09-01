@@ -28,10 +28,9 @@ export type ClinicWithUser = {
     description: string | null;
     openingHour: string | null;
     establishedYear: number | null;
-    street: string | null;
+    website: string | null;
     city: string | null;
     country: string | null;
-    zipCode: string | null;
   } | null;
 };
 

@@ -1,7 +1,14 @@
 import { User } from "@/components/svg";
 import { Button } from "@/components/ui/button";
 import { DoctorWithRelations } from "@/types";
-import { BadgeCheck, Globe, Star, Stethoscope } from "lucide-react";
+import {
+  BadgeCheck,
+  Building,
+  Globe,
+  Plus,
+  Star,
+  Stethoscope,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -113,9 +120,53 @@ export default function DoctorCard({
                 {doctor?.hospital || "MBBS, BCS (Health), MS (Ortho)"}
               </h1>
             </div>
-
+            <div className="mt-4 pt-4 border-t">
+              <h3 className="text-sm font-medium text-gray-500 mb-2">
+                All Chambers ({doctor?.memberships?.length || 0}+ Clinics)
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {doctor?.memberships?.slice(0, 3).map((doctor) => (
+                  <div key={doctor?.id} className="flex items-center gap-2">
+                    {doctor?.clinic?.user?.image ? (
+                      <Image
+                        src={doctor?.clinic?.user?.image}
+                        alt={`Dr. ${doctor?.clinic?.user?.name}`}
+                        width={32}
+                        height={32}
+                        className="w-8 h-8 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                        <User className="w-4 h-4 text-gray-400" />
+                      </div>
+                    )}
+                    <div>
+                      <p className="text-sm font-medium">
+                        {doctor?.clinic?.user?.name
+                          ? doctor?.clinic?.user?.name.charAt(0).toUpperCase() +
+                            doctor?.clinic?.user?.name.slice(1)
+                          : ""}
+                      </p>
+                      {/* <p className="text-xs text-gray-500">
+                        {doctor?.clinic}
+                      </p> */}
+                    </div>
+                  </div>
+                ))}
+                {doctor?.memberships?.length > 3 && (
+                  <div className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center">
+                      <Plus className="w-4 h-4 text-gray-400" />
+                    </div>
+                    <p className="text-sm text-gray-600">
+                      {doctor?.memberships?.length - 3}+ more
+                    </p>
+                  </div>
+                )}
+              </div>
+            </div>
             {/* Action Buttons */}
-            <div className="  flex flex-wrap gap-3 ">
+            <div className="  flex flex-wrap gap-3 mt-3 ">
               <Button
                 asChild
                 variant="soft"
@@ -132,8 +183,8 @@ export default function DoctorCard({
                   className="gap-2 w-full sm:w-fit  rounded-full bg-blue-600 hover:bg-blue-700"
                 >
                   <Link href={`/doctors/${doctor?.id}`}>
-                    <User className="w-4 h-4" />
-                    View Profile
+                    <Building className="w-4 h-4" />
+                    All Chambers
                   </Link>
                 </Button>
               )}

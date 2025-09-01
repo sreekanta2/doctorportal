@@ -63,12 +63,10 @@ export async function adminDoctorCreate(data: CreateDoctorInput) {
         degree: validatedData.degree,
         gender: validatedData.gender,
         hospital: validatedData.hospital,
-        street: validatedData.street,
-        state: validatedData.state,
         city: validatedData.city,
         country: validatedData.country,
-        zipCode: validatedData.zipCode,
         specialization: validatedData.specialization,
+        website: validatedData?.website,
       },
     });
     const name =
@@ -126,12 +124,10 @@ export async function adminDoctorUpdate(data: UpdateDoctorInput) {
         degree: validatedData.degree,
         gender: validatedData.gender,
         hospital: validatedData.hospital,
-        street: validatedData.street,
-        state: validatedData.state,
         city: validatedData.city,
         country: validatedData.country,
-        zipCode: validatedData.zipCode,
         specialization: validatedData.specialization,
+        website: validatedData?.website,
       },
       include: {
         user: {
@@ -260,11 +256,10 @@ export async function createAdminUserAndClinicAction(data: CreateClinicInput) {
           description: validatedData.description,
           openingHour: validatedData.openingHour,
           establishedYear: validatedData.establishedYear,
-          street: validatedData.street,
           city: validatedData.city,
           country: validatedData.country,
-          zipCode: validatedData.zipCode,
           userId: user.id,
+          website: validatedData?.website,
         },
       });
 
@@ -306,10 +301,9 @@ export async function updateAdminUserAndClinicAction(data: UpdateClinicInput) {
           description: validatedData.description,
           openingHour: validatedData.openingHour,
           establishedYear: validatedData.establishedYear,
-          street: validatedData.street,
+          website: validatedData?.website,
           city: validatedData.city,
           country: validatedData.country,
-          zipCode: validatedData.zipCode,
         },
         create: {
           userId: user.id,
@@ -317,10 +311,10 @@ export async function updateAdminUserAndClinicAction(data: UpdateClinicInput) {
           description: validatedData.description,
           openingHour: validatedData.openingHour,
           establishedYear: validatedData.establishedYear,
-          street: validatedData.street,
+
           city: validatedData.city,
           country: validatedData.country,
-          zipCode: validatedData.zipCode,
+          website: validatedData?.website,
         },
       });
       return { clinic };

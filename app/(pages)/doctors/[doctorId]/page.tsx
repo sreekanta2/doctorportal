@@ -97,9 +97,7 @@ export const generateMetadata = async ({
             address: {
               "@type": "PostalAddress",
               addressLocality: doctor?.city,
-              addressRegion: doctor?.state,
-              postalCode: doctor?.zipCode,
-              streetAddress: doctor?.street,
+              streetAddress: doctor?.country,
             },
             medicalSpecialty: specialties,
             alumniOf: doctor?.hospital || "",
@@ -212,9 +210,7 @@ export default async function DoctorPage({
           hospitalAffiliation: doctor?.hospital || "",
           address: {
             "@type": "PostalAddress",
-            streetAddress: doctor?.street || "",
             addressLocality: doctor?.city || "",
-            addressRegion: doctor?.state || "",
             addressCountry: doctor?.country || "",
           },
           aggregateRating: {

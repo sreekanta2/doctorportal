@@ -114,17 +114,14 @@ model User {
 }
 
 model Doctor {
-  id            String  @id @default(cuid())
-  degree        String
-  gender        Gender?
-  hospital      String?
-  street        String?
-  state         String?
-  city          String?
-  country       String?
-  zipCode       String?
-  averageRating Float   @default(0.0)
-
+  id             String                   @id @default(cuid())
+  degree         String
+  gender         Gender?
+  hospital       String?
+  city           String?
+  country        String?
+  averageRating  Float                    @default(0.0)
+  website        String?
   reviewsCount   Int?
   specialization String
   searchVector   Unsupported("tsvector")? @map("_search")
@@ -157,11 +154,9 @@ model Clinic {
   establishedYear Int?
   averageRating   Float   @default(0.0)
   reviewsCount    Int?
-  street          String?
-  state           String?
+  website         String?
   city            String?
   country         String?
-  zipCode         String?
 
   // For better text search
   searchVector Unsupported("tsvector")? @map("_search")
@@ -194,7 +189,6 @@ model Patient {
   street      String?
   city        String?
   country     String?
-  zipCode     String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

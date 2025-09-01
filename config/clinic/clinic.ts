@@ -66,14 +66,16 @@ export async function getClinicProfileByEmail(email: string) {
         name: true,
         email: true,
         image: true,
+        role: true,
+        password: true,
+        emailVerified: true,
         clinic: {
           select: {
             id: true,
             phoneNumber: true,
             description: true,
-            street: true,
             city: true,
-            zipCode: true,
+            website: true,
             country: true,
             openingHour: true,
             establishedYear: true,

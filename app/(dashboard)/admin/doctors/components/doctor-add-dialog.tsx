@@ -10,11 +10,7 @@ import { useTransition } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import toast from "react-hot-toast";
 
-import {
-  CreateDoctorInput,
-  createDoctorSchema,
-  DoctorFormValues,
-} from "@/zod-validation/doctor";
+import { CreateDoctorInput, createDoctorSchema } from "@/zod-validation/doctor";
 
 import {
   Dialog,
@@ -40,26 +36,18 @@ export default function DoctorDialogAdd() {
       degree: "",
       specialization: "",
       city: "",
-      state: "",
-      country: "",
-      zipCode: "",
-      street: "",
+      website: "",
+      country: "Bangladesh",
       hospital: "",
       gender: undefined,
     },
   });
-  const {
-    options: cities,
-    loading: citiesLoading,
-    error: citiesError,
-  } = useFetchOptions("/api/cities");
-  const {
-    options: specializations,
-    loading: specLoading,
-    error: specError,
-  } = useFetchOptions("/api/specialties");
+  const { options: cities, loading: citiesLoading } =
+    useFetchOptions("/api/cities");
+  const { options: specializations, loading: specLoading } =
+    useFetchOptions("/api/specialties");
 
-  const onSubmit: SubmitHandler<DoctorFormValues> = (data) => {
+  const onSubmit: SubmitHandler<CreateDoctorInput> = (data) => {
     startTransition(async () => {
       try {
         const result = await adminDoctorCreate(data);
@@ -134,77 +122,50 @@ export default function DoctorDialogAdd() {
             </Card>
 
             {/* Professional Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Professional Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="degree"
-                  label="Degree"
-                  placeholder="MBBS, MD"
-                  required
-                />
+            <div className=" space-y-3 border rounded-md p-6 shadow-md">
+              <CustomFormField
+                fieldType={FormFieldType.INPUT}
+                control={form.control}
+                name="degree"
+                label="Degree"
+                placeholder="MBBS, MD"
+                required
+              />
 
-                <CustomFormField
-                  fieldType={FormFieldType.SELECT}
-                  control={form.control}
-                  name="specialization"
-                  label="Specialization"
-                  loading={citiesLoading}
-                  options={specializations}
-                />
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="hospital"
-                  label="Hospital/Clinic"
-                  placeholder="City Hospital"
-                />
-              </CardContent>
-            </Card>
+              <CustomFormField
+                fieldType={FormFieldType.SELECT}
+                control={form.control}
+                name="specialization"
+                label="Specialization"
+                loading={specLoading}
+                options={specializations}
+              />
+              <CustomFormField
+                fieldType={FormFieldType.INPUT}
+                control={form.control}
+                name="hospital"
+                label="Hospital/Clinic"
+                placeholder="City Hospital"
+              />
 
-            {/* Address */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Address</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="street"
-                  label="Street Address"
-                  placeholder="123 Medical Center Drive"
-                />
+              <CustomFormField
+                fieldType={FormFieldType.SELECT}
+                control={form.control}
+                name="city"
+                label="City"
+                loading={citiesLoading}
+                options={cities}
+                placeholder="Enter city"
+              />
 
-                <CustomFormField
-                  fieldType={FormFieldType.SELECT}
-                  control={form.control}
-                  name="city"
-                  label="City"
-                  loading={citiesLoading}
-                  options={cities}
-                  placeholder="United States"
-                />
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="country"
-                  label="Country"
-                  placeholder="United States"
-                />
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="zipCode"
-                  label="ZIP/Postal Code"
-                  placeholder="10001"
-                />
-              </CardContent>
-            </Card>
+              <CustomFormField
+                fieldType={FormFieldType.INPUT}
+                control={form.control}
+                name="website"
+                label="Website"
+                placeholder="website url"
+              />
+            </div>
 
             {/* Submit */}
             <div className="flex justify-end gap-4 pt-4">
@@ -212,7 +173,7 @@ export default function DoctorDialogAdd() {
                 <DialogClose>Cancel</DialogClose>
               </Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Creating..." : "Create Doctor"}
+                {isPending ? "Processing..." : "Create Doctor"}
               </Button>
             </div>
           </form>

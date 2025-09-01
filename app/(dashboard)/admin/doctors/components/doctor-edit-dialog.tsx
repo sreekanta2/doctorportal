@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { adminDoctorUpdate } from "@/action/action.admin-doctor";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
@@ -30,17 +31,11 @@ export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
   const [isPending, startTransition] = useTransition();
 
   // fetch cities & specializations
-  const {
-    options: cities,
-    loading: citiesLoading,
-    error: citiesError,
-  } = useFetchOptions("/api/cities");
+  const { options: cities, loading: citiesLoading } =
+    useFetchOptions("/api/cities");
 
-  const {
-    options: specializations,
-    loading: specLoading,
-    error: specError,
-  } = useFetchOptions("/api/specialties");
+  const { options: specializations, loading: specLoading } =
+    useFetchOptions("/api/specialties");
 
   const form = useForm<UpdateDoctorInput>({
     resolver: zodResolver(updateDoctorSchema),
@@ -52,10 +47,8 @@ export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
       degree: "",
       specialization: "",
       city: "",
-      state: "",
-      country: "",
-      zipCode: "",
-      street: "",
+      website: "",
+      country: "Bangladesh",
       hospital: "",
       gender: undefined,
       id: "",
@@ -67,17 +60,17 @@ export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
     if (!doctor) return;
 
     form.reset({
-      name: doctor.user?.name ?? "",
-      email: doctor.user?.email ?? "",
+      name: doctor?.user?.name ?? "",
+      email: doctor?.user?.email ?? "",
       password: "",
-      image: doctor.user?.image ?? "",
-      degree: doctor.degree ?? "",
-      specialization: doctor.specialization ?? "",
-      city: doctor.city ?? "",
-      state: doctor.state ?? "",
+      image: doctor?.user?.image ?? "",
+      degree: doctor?.degree ?? "",
+      specialization: doctor?.specialization ?? "",
+      city: doctor?.city ?? "",
+
       country: doctor.country ?? "",
-      zipCode: doctor.zipCode ?? "",
-      street: doctor.street ?? "",
+      website: doctor?.website ?? "",
+
       hospital: doctor.hospital ?? "",
       gender: doctor.gender ?? undefined,
       id: doctor.id ?? "",
@@ -157,84 +150,53 @@ export default function DoctorDialogEdit({ doctor }: DoctorDialogEditProps) {
             </Card>
 
             {/* Professional Details */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Professional Details</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <CustomFormField
-                  fieldType={FormFieldType.SELECT}
-                  control={form.control}
-                  name="specialization"
-                  label="Specialization"
-                  options={specializations}
-                  loading={specLoading}
-                  required
-                />
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="degree"
-                  label="Degree"
-                  placeholder="MBBS, MD"
-                  required
-                />
+            <div className="space-y-4">
+              <CustomFormField
+                fieldType={FormFieldType.SELECT}
+                control={form.control}
+                name="specialization"
+                label="Specialization"
+                options={specializations}
+                loading={specLoading}
+                required
+              />
+              <CustomFormField
+                fieldType={FormFieldType.INPUT}
+                control={form.control}
+                name="degree"
+                label="Degree"
+                placeholder="MBBS, MD"
+                required
+              />
 
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="hospital"
-                  label="Hospital/Clinic"
-                  placeholder="City Hospital"
-                />
-              </CardContent>
-            </Card>
+              <CustomFormField
+                fieldType={FormFieldType.INPUT}
+                control={form.control}
+                name="hospital"
+                label="Hospital/Clinic"
+                placeholder="City Hospital"
+              />
 
-            {/* Address */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Address</CardTitle>
-              </CardHeader>
-              <CardContent className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="street"
-                  label="Street Address"
-                  placeholder="123 Medical Center Drive"
-                />
+              {/* Address */}
 
-                <CustomFormField
-                  fieldType={FormFieldType.SELECT}
-                  control={form.control}
-                  name="city"
-                  label="City"
-                  loading={citiesLoading}
-                  options={cities}
-                  placeholder="City"
-                />
-
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="country"
-                  label="Country"
-                  placeholder="United States"
-                />
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="zipCode"
-                  label="ZIP/Postal Code"
-                  placeholder="10001"
-                />
-              </CardContent>
-            </Card>
+              <CustomFormField
+                fieldType={FormFieldType.SELECT}
+                control={form.control}
+                name="city"
+                label="City"
+                loading={citiesLoading}
+                options={cities}
+                placeholder="City"
+              />
+            </div>
 
             {/* Submit */}
             <div className="flex justify-end gap-4 pt-4">
+              <Button type="button" variant="outline">
+                <DialogClose>Cancel</DialogClose>
+              </Button>
               <Button type="submit" disabled={isPending}>
-                {isPending ? "Updating..." : "Update Doctor"}
+                {isPending ? "Processing..." : "Update Doctor"}
               </Button>
             </div>
           </form>

@@ -37,7 +37,7 @@ export default function PatientForm({
       street: "",
       country: "",
       city: "",
-      zipCode: "",
+
       userId: "",
       id: "",
     },
@@ -55,7 +55,7 @@ export default function PatientForm({
         street: patient?.street || "",
         country: patient?.country || "",
         city: patient?.city || "",
-        zipCode: patient?.zipCode || "",
+
         userId: user?.data?.user?.id || "",
         id: user?.data?.user?.id || patient?.userId || "",
       });
@@ -170,7 +170,7 @@ export default function PatientForm({
                 fieldType={FormFieldType.INPUT}
                 name="street"
                 control={form.control}
-                label="Street Address"
+                label="Address"
                 placeholder="Enter your street address"
                 required
               />
@@ -190,14 +190,6 @@ export default function PatientForm({
                 control={form.control}
                 label="Country"
                 placeholder="Enter your country"
-                required
-              />
-              <CustomFormField
-                fieldType={FormFieldType.INPUT}
-                name="zipCode"
-                control={form.control}
-                label="Zip/Postal Code"
-                placeholder="Enter your zip or postal code"
                 required
               />
 

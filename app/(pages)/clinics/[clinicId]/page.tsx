@@ -153,7 +153,7 @@ export default async function ClinicPage({
                     </div>
                     <div>
                       <h3 className="font-medium text-default-900">Address</h3>
-                      <p className="text-default-600">{clinic?.street}</p>
+                      <p className="text-default-600">{clinic?.city}</p>
                     </div>
                   </div>
 
@@ -309,19 +309,15 @@ export default async function ClinicPage({
           image:
             clinic.user?.image ||
             `${process.env.NEXT_PUBLIC_API_URL}/default-clinic.png`,
-          description: `Visit ${clinic.user?.name} clinic in ${clinic.city}, ${
-            clinic.state
+          description: `Visit ${clinic.user?.name} clinic in ${clinic.city} 
           }. We offer services with our team of ${
             clinic.memberships?.length || 0
           } specialists.`,
           telephone: clinic.phoneNumber,
           address: {
             "@type": "PostalAddress",
-            streetAddress: clinic.street || "",
             addressLocality: clinic.city || "",
-            addressRegion: clinic.state || "",
             addressCountry: clinic.country || "",
-            postalCode: clinic.zipCode || "",
           },
           aggregateRating: {
             "@type": "AggregateRating",

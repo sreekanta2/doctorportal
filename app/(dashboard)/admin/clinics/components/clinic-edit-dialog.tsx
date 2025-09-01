@@ -48,10 +48,10 @@ export default function ClinicEditDialog({
         image: clinic.user.image || "",
         description: clinic.description || "",
         phoneNumber: clinic.phoneNumber || "",
-        street: clinic.street || "",
+
         role: "clinic",
         city: clinic.city || "",
-        zipCode: clinic.zipCode || "",
+
         country: clinic.country || "",
         openingHour: clinic.openingHour || "",
         establishedYear: clinic.establishedYear || new Date().getFullYear(),
@@ -179,15 +179,6 @@ export default function ClinicEditDialog({
                 />
 
                 <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="street"
-                  label="Street Address"
-                  placeholder="123 Medical Center Drive"
-                  required
-                  className="bg-white md:col-span-2"
-                />
-                <CustomFormField
                   fieldType={FormFieldType.SELECT}
                   control={form.control}
                   name="city"
@@ -207,15 +198,7 @@ export default function ClinicEditDialog({
                   required
                   className="bg-white"
                 />
-                <CustomFormField
-                  fieldType={FormFieldType.INPUT}
-                  control={form.control}
-                  name="zipCode"
-                  label="ZIP/Postal Code"
-                  placeholder="10001"
-                  required
-                  className="bg-white"
-                />
+
                 <CustomFormField
                   fieldType={FormFieldType.INPUT}
                   control={form.control}

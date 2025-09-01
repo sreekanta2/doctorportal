@@ -15,8 +15,6 @@ export async function GET(request: Request) {
       city,
       country,
       gender,
-      minRating,
-      maxRating,
       sortBy = "createdAt",
       sortOrder = "desc",
       page = "1",
@@ -39,16 +37,6 @@ export async function GET(request: Request) {
     if (city) where.AND.push({ city });
     if (country) where.AND.push({ country });
     if (gender) where.AND.push({ gender });
-
-    // Range filters
-    if (minRating || maxRating) {
-      where.AND.push({
-        averageRating: {
-          gte: minRating ? parseFloat(minRating) : undefined,
-          lte: maxRating ? parseFloat(maxRating) : undefined,
-        },
-      });
-    }
 
     // Clean AND
     where.AND = where.AND.filter((cond: any) => Object.keys(cond).length > 0);
@@ -88,14 +76,24 @@ export async function GET(request: Request) {
               createdAt: true,
             },
           },
-          // memberships: {
-          //   select: {
-          //     id: true,
-          //     maxAppointments: true,
-          //     fee: true,
-          //     discount: true,
-          //   },
-          // },
+          memberships: {
+            select: {
+              id: true,
+              clinic: {
+                select: {
+                  id: true,
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                      image: true,
+                      createdAt: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
       }),
       prisma.doctor.count({ where }),

@@ -65,7 +65,6 @@ export async function GET(request: Request) {
           averageRating: true,
           city: true,
           country: true,
-          street: true,
           phoneNumber: true,
           openingHour: true,
           user: {

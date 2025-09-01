@@ -50,10 +50,9 @@ export async function createUserAndClinicAction(
           description: validatedData.description,
           openingHour: validatedData.openingHour,
           establishedYear: validatedData.establishedYear,
-          street: validatedData.street,
+          website: validatedData?.website,
           city: validatedData.city,
           country: validatedData.country,
-          zipCode: validatedData.zipCode,
           userId: user.id,
         },
       });
@@ -101,10 +100,10 @@ export async function updateUserAndClinicAction(
           description: validatedData.description,
           openingHour: validatedData.openingHour,
           establishedYear: validatedData.establishedYear,
-          street: validatedData.street,
+          website: validatedData?.website,
+
           city: validatedData.city,
           country: validatedData.country,
-          zipCode: validatedData.zipCode,
         },
         create: {
           userId: user.id,
@@ -112,10 +111,10 @@ export async function updateUserAndClinicAction(
           description: validatedData.description,
           openingHour: validatedData.openingHour,
           establishedYear: validatedData.establishedYear,
-          street: validatedData.street,
+          website: validatedData?.website,
+
           city: validatedData.city,
           country: validatedData.country,
-          zipCode: validatedData.zipCode,
         },
       });
       return { clinic };

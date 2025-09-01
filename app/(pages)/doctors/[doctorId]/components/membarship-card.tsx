@@ -2,14 +2,7 @@ import { Building, Calendar, User, Users } from "@/components/svg";
 import { Button } from "@/components/ui/button";
 import { MembershipWithRelations } from "@/types";
 import { format } from "date-fns";
-import {
-  Building2,
-  Clock,
-  MapPin,
-  Phone,
-  Star,
-  Stethoscope,
-} from "lucide-react";
+import { Building2, Clock, Phone, Star, Stethoscope } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -100,14 +93,7 @@ const ClinicMembershipCard = ({
                 {membership?.clinic?.user?.name ||
                   ` Dr. ${membership?.doctor?.user?.name}`}
               </h2>
-              {membership?.clinic?.street && (
-                <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 ">
-                  <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
-                    <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                  </div>
-                  <span className="text-sm">{membership?.clinic?.street}</span>
-                </div>
-              )}
+
               {membership?.doctor?.specialization && (
                 <div className="flex items-center gap-2 mb-1">
                   <div className="bg-blue-100 text-blue-800 md:text-base font-medium px-2.5 py-0.5 rounded dark:bg-blue-900 dark:text-blue-300">

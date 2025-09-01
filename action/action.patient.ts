@@ -40,7 +40,6 @@ export async function updateUserAndPatientAction(
           street: data.street,
           city: data.city,
           country: data.country,
-          zipCode: data.zipCode,
         },
         create: {
           userId: user.id,
@@ -51,7 +50,6 @@ export async function updateUserAndPatientAction(
           street: data.street,
           city: data.city,
           country: data.country,
-          zipCode: data.zipCode,
         },
       });
 

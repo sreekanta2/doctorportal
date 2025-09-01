@@ -8,7 +8,7 @@ export const PatientBaseSchema = z.object({
   role: z.enum(["clinic", "doctor", "patient", "admin"]).default("clinic"),
   image: z.string().optional(),
 
-  phoneNumber: z.string().min(6, "Phone number is too short"),
+  phoneNumber: z.string().min(11, "Phone number is too short"),
   age: z.coerce
     .number()
     .int("Year must be an integer")
@@ -18,7 +18,7 @@ export const PatientBaseSchema = z.object({
   street: z.string().optional(),
   city: z.string().optional(),
   country: z.string().optional(),
-  zipCode: z.string().optional(),
+
   userId: z.string(),
 });
 

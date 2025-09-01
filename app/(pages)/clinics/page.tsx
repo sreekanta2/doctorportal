@@ -54,11 +54,8 @@ function ClinicsStructuredData({
           telephone: clinic?.phoneNumber,
           address: {
             "@type": "PostalAddress",
-            streetAddress: clinic?.street || "",
             addressLocality: clinic?.city || "",
-            addressRegion: clinic?.state || "", // Add state for more detail
             addressCountry: clinic?.country || "",
-            postalCode: clinic?.zipCode || "",
           },
           aggregateRating: clinic?.reviewsCount
             ? {
@@ -299,8 +296,7 @@ export default async function ClinicsPage({
                               className="text-sm text-gray-600"
                               itemProp="address"
                             >
-                              {clinic?.street}, {clinic?.city},{" "}
-                              {clinic?.country}
+                              {clinic?.city}, {clinic?.country}
                             </span>
                           </div>
                           <div className="mt-1 flex items-center gap-2">

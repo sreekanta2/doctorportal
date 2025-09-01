@@ -27,7 +27,6 @@ export async function GET(
           where: {
             clinic: {
               subscription: {
-                // subscription must exist and be valid
                 endDate: { gte: new Date() },
                 status: "ACTIVE",
               },
@@ -41,7 +40,7 @@ export async function GET(
             clinic: {
               select: {
                 id: true,
-                street: true,
+
                 city: true,
                 country: true,
                 phoneNumber: true,

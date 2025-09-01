@@ -36,11 +36,11 @@ export default function ClinicCreateDialog() {
       image: "",
       description: "",
       phoneNumber: "",
-      street: "",
+
       role: "clinic",
       city: "",
-      zipCode: "",
-      country: "",
+
+      country: "Bangladesh",
       openingHour: "",
       establishedYear: undefined,
     },
@@ -146,7 +146,6 @@ export default function ClinicCreateDialog() {
                 control={form.control}
                 name="phoneNumber"
                 label="Phone Number"
-                placeholder="+1 (555) 123-4567"
                 required
                 className="bg-white"
               />
@@ -155,20 +154,11 @@ export default function ClinicCreateDialog() {
                 control={form.control}
                 name="email"
                 label="Email"
-                placeholder="contact@clinic.com"
+                placeholder="boss@gmail.com"
                 type="email"
                 className="bg-white"
               />
 
-              <CustomFormField
-                fieldType={FormFieldType.INPUT}
-                control={form.control}
-                name="street"
-                label="Street Address"
-                placeholder="123 Medical Center Drive"
-                required
-                className="bg-white md:col-span-2"
-              />
               <CustomFormField
                 fieldType={FormFieldType.SELECT}
                 control={form.control}
@@ -180,24 +170,6 @@ export default function ClinicCreateDialog() {
                 className="bg-white"
               />
 
-              <CustomFormField
-                fieldType={FormFieldType.INPUT}
-                control={form.control}
-                name="country"
-                label="Country"
-                placeholder="United States"
-                required
-                className="bg-white"
-              />
-              <CustomFormField
-                fieldType={FormFieldType.INPUT}
-                control={form.control}
-                name="zipCode"
-                label="ZIP/Postal Code"
-                placeholder="10001"
-                required
-                className="bg-white"
-              />
               <CustomFormField
                 fieldType={FormFieldType.INPUT}
                 control={form.control}

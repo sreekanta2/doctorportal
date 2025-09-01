@@ -3,20 +3,17 @@ import { z } from "zod";
 export const baseDoctorSchema = z.object({
   name: z.string(),
   email: z.string().email(),
-  password: z.string().optional(),
+  password: z.string(),
   image: z.string().optional(),
-  degree: z.string(),
-
-  gender: z.enum(["MALE", "FEMALE", "OTHER"]).optional(),
+  degree: z.string().min(4, "Degree are required"),
+  gender: z.enum(["MALE", "FEMALE", "OTHER"], {
+    errorMap: () => ({ message: "Please select a gender" }),
+  }),
   hospital: z.string().optional(),
-
-  street: z.string().optional(),
-  state: z.string().optional(),
-  city: z.string().optional(),
-  country: z.string().optional(),
-  zipCode: z.string().optional(),
-
-  specialization: z.string(),
+  city: z.string().min(2, "City are required"),
+  country: z.string(),
+  specialization: z.string().min(4, "Specialization are required"),
+  website: z.string().optional(),
 });
 
 export const createDoctorSchema = baseDoctorSchema;

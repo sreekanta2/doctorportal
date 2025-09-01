@@ -26,7 +26,6 @@ export async function GET(
         street: true,
         country: true,
         city: true,
-        zipCode: true,
         userId: true,
         user: {
           select: {
