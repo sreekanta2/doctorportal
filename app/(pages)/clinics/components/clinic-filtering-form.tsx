@@ -1,12 +1,13 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
 
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
 import { Form } from "@/components/ui/form";
+import { useFetchOptions } from "@/hooks/useFetchCities";
 
 // Schema definition for filtering form
 const formSchema = z.object({
@@ -17,7 +18,8 @@ const formSchema = z.object({
 type FormData = z.infer<typeof formSchema>;
 
 const ClinicFilterForm = () => {
-  const [cities, setCities] = useState([]);
+  const { options: cities, loading: citiesLoading } =
+    useFetchOptions("/api/cities");
   const router = useRouter();
   const searchParams = useSearchParams();
   const isFirstRender = useRef(true);
@@ -51,38 +53,6 @@ const ClinicFilterForm = () => {
     const newUrl = `${currentUrl.pathname}?${params.toString()}`;
     router.push(newUrl);
   }, [watchedValues, router]);
-  useEffect(() => {
-    let isMounted = true; // prevent state update after unmount
-
-    const fetchData = async () => {
-      try {
-        const fetchCities = async () => {
-          const response = await fetch("/api/cities");
-          const data = await response.json();
-
-          return data?.data?.data || [];
-        };
-        fetchCities().then((citiesData) => {
-          if (isMounted) {
-            setCities(citiesData || []);
-          }
-        });
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-
-    fetchData();
-
-    return () => {
-      isMounted = false; // cleanup
-    };
-  }, []);
-
-  const mappedCities = cities?.map((city: { id: string; name: string }) => ({
-    value: city.name.toLowerCase(),
-    label: city.name,
-  }));
 
   return (
     <Form {...form}>
@@ -103,7 +73,8 @@ const ClinicFilterForm = () => {
           placeholder="Select City"
           className="w-full"
           label="City"
-          options={mappedCities}
+          options={cities}
+          loading={citiesLoading}
         />
       </form>
     </Form>
