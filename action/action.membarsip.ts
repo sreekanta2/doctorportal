@@ -41,23 +41,23 @@ export const createClinicMembershipCheckSubscription = async (
       where: { clinicId },
       _count: { doctorId: true },
     });
-
     const count = uniqueDoctorCount.length;
+    console.log(count, subscription);
 
     if (!subscription && count === 0) {
       const pricingPlan = await prisma.pricePlan.findUnique({
         where: { plan: "PREMIUM" },
       });
       if (!pricingPlan) {
-        throw new AppError("something went wrong try again ", 500);
+        throw new AppError("Create pricing plan ", 500);
       }
       const subscriptionData = {
         clinicId,
         pricePlanId: pricingPlan?.id,
         status: SubscriptionStatus.ACTIVE,
-        bkashNumber: "",
+        bkashNumber: "01****",
         endDate: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
-        transactionId: undefined,
+        transactionId: "tranid",
         startDate: new Date(),
       };
       await prisma.subscription.create({

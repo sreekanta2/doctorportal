@@ -23,7 +23,7 @@ export async function createOrUpdateSubscription(
 
     // ✅ Verify clinic user exists
     const clinicUser = await prisma.user.findFirst({
-      where: { email: validatedData.email, role: "clinic" },
+      where: { email: validatedData.email },
       select: {
         id: true,
         email: true,
@@ -31,7 +31,6 @@ export async function createOrUpdateSubscription(
         clinic: { select: { id: true } },
       },
     });
-
     if (!clinicUser?.clinic?.id) {
       throw new AppError("Only for Clinic user!", 404);
     }

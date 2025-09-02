@@ -41,7 +41,7 @@ export default function UpdateSubscriptionDialog({
       status: subscription?.status,
       pricePlanId: subscription?.pricePlanId,
       email: subscription?.clinic?.user?.email || "",
-      bkashNumber: subscription?.bkashNumber,
+      bkashNumber: subscription?.bkashNumber || "017*****",
       transactionId: subscription?.transactionId || undefined,
       endDate: subscription?.endDate || undefined,
       startDate: new Date(),
@@ -55,14 +55,14 @@ export default function UpdateSubscriptionDialog({
         status: subscription?.status,
         pricePlanId: subscription?.pricePlanId,
         email: subscription?.clinic?.user?.email || "",
-        bkashNumber: subscription?.bkashNumber,
-        transactionId: subscription?.transactionId || undefined,
+        bkashNumber: subscription?.bkashNumber || "017*****",
+        transactionId: subscription?.transactionId || "tranid",
         startDate: subscription?.startDate,
         endDate: subscription?.endDate,
       });
     }
   }, [subscription, form, session?.user]);
-
+  console.log(form.formState?.errors);
   const onSubmit: SubmitHandler<UpdateSubscriptionInput> = (data) => {
     if (!data.id) {
       toast.error("Subscription ID is required");
@@ -118,6 +118,14 @@ export default function UpdateSubscriptionDialog({
               ]}
             />
 
+            <CustomFormField
+              fieldType={FormFieldType.INPUT}
+              control={form.control}
+              name="bkashNumber"
+              label="Bkash Number"
+              placeholder="Bkash Number"
+              required
+            />
             <CustomFormField
               fieldType={FormFieldType.INPUT}
               control={form.control}

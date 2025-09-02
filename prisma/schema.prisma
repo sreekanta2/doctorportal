@@ -334,7 +334,7 @@ model Subscription {
   status        SubscriptionStatus
   startDate     DateTime
   endDate       DateTime
-  transactionId String?            @unique
+  transactionId String             @unique
   bkashNumber   String
 
   pricePlan PricePlan @relation(fields: [pricePlanId], references: [id], onDelete: Cascade)
