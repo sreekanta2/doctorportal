@@ -1,10 +1,9 @@
 import ClinicMembershipCard from "@/app/(pages)/doctors/[doctorId]/components/membarship-card";
 import { NotFound } from "@/components/not-found";
-import { Users } from "@/components/svg";
 import { Rating } from "@/components/ui/rating";
 import { getClinicProfileById } from "@/config/clinic/clinic";
 import { ClinicWithRelations } from "@/types";
-import { Building, Mail, MapPin, Phone } from "lucide-react";
+import { Building, Mail, MapPin, Phone, Users } from "lucide-react";
 import Image from "next/image";
 import ReviewPage from "./review-page";
 function StructuredData({ data }: { data: any }) {
@@ -36,8 +35,8 @@ export default async function ClinicProfile({
       <main className="bg-card/50 backdrop-blur-lg dark:bg-card/70">
         <div className="container py-8">
           {/* Clinic Header */}
-          <div className="bg-card/70 rounded-xl shadow-md overflow-hidden mb-8">
-            <div className="flex flex-col md:flex-row gap-6 p-6">
+          <div className="bg-card/70 rounded-xl border overflow-hidden mb-8">
+            <div className="flex flex-col md:flex-row gap-6 p-4">
               {/* Clinic Image */}
               <div className="relative  w-64 h-64      min-w-[128px] rounded-xl border-2 border-white shadow-md overflow-hidden group-hover:scale-105 transition-transform duration-300">
                 {clinic?.user?.image ? (
@@ -49,8 +48,8 @@ export default async function ClinicProfile({
                     sizes="(max-width: 768px) 100vw, 128px"
                   />
                 ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-gray-800 dark:to-gray-700">
-                    <Building className="w-20 h-20 text-gray-400 dark:text-gray-500" />
+                  <div className="w-full h-full flex items-center justify-center  bg-blue-100">
+                    <Building className="w-20 h-20 text-primary" />
                   </div>
                 )}
               </div>
@@ -127,7 +126,7 @@ export default async function ClinicProfile({
           {/* Main Content */}
           <div className="  gap-8">
             <div className="lg:col-span-2 space-y-8">
-              <section className="bg-card/70 rounded-xl shadow-sm p-4">
+              <section className="bg-card/70 rounded-xl border shadow-md p-4">
                 <div className="flex justify-between items-center mb-6">
                   <h2 className="text-xl font-bold text-default-900">
                     Our Doctors{" "}

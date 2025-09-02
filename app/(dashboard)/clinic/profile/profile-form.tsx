@@ -51,7 +51,6 @@ export default function ClinicProfileForm({
     }
   }, [clinic, user, form]);
 
-  console.log(form.formState.errors);
   const onSubmit: SubmitHandler<UpdateClinicInput> = async (data) => {
     startTransition(async () => {
       try {

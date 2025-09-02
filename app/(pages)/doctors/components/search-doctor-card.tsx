@@ -38,7 +38,7 @@ export default function DoctorCard({
       <div className="p-4">
         <div className="flex flex-col md:flex-row gap-6">
           {/* Doctor Image */}
-          <div className="relative  w-64 h-64      min-w-[128px] rounded-xl border-2 border-white shadow-md overflow-hidden group-hover:scale-105 transition-transform duration-300">
+          <div className="relative w-full h-72 sm:w-64 sm:h-64       rounded-xl border-2 border-white shadow-md overflow-hidden group-hover:scale-105 transition-transform duration-300">
             {doctor?.user?.image ? (
               <Image
                 src={doctor?.user?.image}

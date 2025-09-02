@@ -160,7 +160,7 @@ export default async function ClinicList({
 
               <div className="flex flex-col md:flex-row p-4 gap-4 ">
                 {/* Clinic Image */}
-                <div className="w-full md:w-64 flex-shrink-0 relative h-64">
+                <div className="w-full h-72 sm:w-64  sm:h-64 flex-shrink-0 relative ">
                   <div className="absolute top-3 left-3 z-10">
                     <div className="inline-flex items-center px-3 py-1  gap-1 rounded-full bg-white/90 text-primary-700 text-sm font-medium shadow-sm">
                       <span className=" bg-blue-50 rounded-lg dark:bg-gray-800">
@@ -311,12 +311,12 @@ export default async function ClinicList({
                   </div>
 
                   {/* Action Buttons */}
-                  <div className="mt-6 flex flex-wrap gap-3">
+                  <div className="mt-6 w-full flex flex-wrap gap-3">
                     <Button
                       asChild
                       variant="soft"
                       size="sm"
-                      className=" min-w-[200px]  "
+                      className=" w-full sm:w-fit min-w-[200px]  "
                     >
                       <Link href={`/book-appointment?clinic=${clinic.id}`}>
                         <Globe className="w-4 h-4 mr-2" />
@@ -325,7 +325,7 @@ export default async function ClinicList({
                     </Button>
                     <Button
                       size="sm"
-                      className=" flex gap-2 items-center min-w-[200px]"
+                      className="w-full sm:w-fit flex gap-2 items-center min-w-[200px]"
                     >
                       <Users className="w-4 h-4 " />
                       <Link href={`/clinics/${clinic.id}`}>All Doctors</Link>

@@ -181,7 +181,7 @@ export function AddDoctorMembership({
   );
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-4">
           <Button variant="ghost" size="icon" onClick={handleBackToList}>
@@ -289,7 +289,7 @@ export function AddDoctorMembership({
                 </div>
               ) : (
                 <div className="p-4 border rounded-lg bg-card shadow-sm">
-                  <div className="flex items-start gap-4">
+                  <div className="flex flex-col sm:flex-row items-start gap-4">
                     {selectedDoctor?.user?.image ? (
                       <div className="relative w-12 h-12 rounded-full overflow-hidden border-2 border-default-100 shadow">
                         <Image
@@ -306,31 +306,32 @@ export function AddDoctorMembership({
                       </div>
                     )}
 
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-lg font-semibold">
-                          Dr. {selectedDoctor?.user?.name}
-                        </h3>
-                        <Badge
-                          variant="outline"
-                          className="border-blue-200 text-blue-600"
-                        >
-                          Selected
-                        </Badge>
-                      </div>
+                    <div className="w-full flex-col sm:flex-row justify-between">
+                      <div className="  ">
+                        <div className="flex items-center gap-2">
+                          <h3 className="text-lg font-semibold">
+                            Dr. {selectedDoctor?.user?.name}
+                          </h3>
+                          <Badge
+                            variant="outline"
+                            className="border-blue-200 text-blue-600"
+                          >
+                            Selected
+                          </Badge>
+                        </div>
 
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {selectedDoctor.specialization}
-                      </div>
+                        <div className="text-sm text-muted-foreground mt-1">
+                          {selectedDoctor.specialization}
+                        </div>
 
-                      <div className="flex gap-3 mt-2 text-xs text-muted-foreground">
-                        {selectedDoctor.hospital && (
-                          <div className="flex items-center gap-1">
-                            <Building className="w-3 h-3" />
-                            <span>{selectedDoctor.hospital}</span>
-                          </div>
-                        )}
-                        {/* {selectedDoctor.experience && (
+                        <div className="flex gap-3 mt-2 text-xs text-muted-foreground">
+                          {selectedDoctor.hospital && (
+                            <div className="flex items-center gap-1">
+                              <Building className="w-3 h-3" />
+                              <span>{selectedDoctor.hospital}</span>
+                            </div>
+                          )}
+                          {/* {selectedDoctor.experience && (
                           <div className="flex items-center gap-1">
                             <Briefcase className="w-3 h-3" />
                             <span>
@@ -338,17 +339,19 @@ export function AddDoctorMembership({
                             </span>
                           </div>
                         )} */}
+                        </div>
                       </div>
-                    </div>
 
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedDoctor(null)}
-                      className="text-blue-600 hover:text-blue-800"
-                    >
-                      Change
-                    </Button>
+                      <Button
+                        variant="soft"
+                        size="sm"
+                        color="destructive"
+                        onClick={() => setSelectedDoctor(null)}
+                        className="text-blue-600 hover:text-blue-800 mt-1"
+                      >
+                        Change
+                      </Button>
+                    </div>
                   </div>
                 </div>
               )

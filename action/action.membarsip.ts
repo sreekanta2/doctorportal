@@ -42,7 +42,6 @@ export const createClinicMembershipCheckSubscription = async (
       _count: { doctorId: true },
     });
     const count = uniqueDoctorCount.length;
-    console.log(count, subscription);
 
     if (!subscription && count === 0) {
       const pricingPlan = await prisma.pricePlan.findUnique({
