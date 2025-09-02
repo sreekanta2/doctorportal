@@ -49,8 +49,6 @@ export async function generateMetadata({
   };
 }
 
-// Structured Data (JSON-LD)
-
 export default async function ClinicPage({
   params,
   searchParams,

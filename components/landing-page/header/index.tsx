@@ -28,7 +28,7 @@ const Header = () => {
     return (
       <div
         className={`fixed top-0 left-0 w-full z-50 ${
-          scroll ? "bg-card/50 backdrop-blur-lg shadow-xl py-3" : "py-6"
+          scroll ? "bg-card/50 backdrop-blur-lg shadow-xl py-3" : "py-3"
         }`}
       >
         <nav className="container flex justify-between relative z-50">

@@ -11,6 +11,7 @@ const LandingPageView = () => {
   return (
     <>
       <Header />
+
       <main>
         <HomeBanner />
         <SpecialtiesCarousel />

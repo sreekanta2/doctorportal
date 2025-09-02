@@ -1,10 +1,13 @@
 import {
+  Building2,
   Calendar,
+  CreditCard,
   LayoutDashboard,
+  MapPin,
   MessageSquare,
-  Receipt,
   Share2,
   Star,
+  Stethoscope,
   User,
   UserPlus,
   Users,
@@ -16,7 +19,7 @@ export const menus: MenuItemProps[] = [
     href: "/doctors",
   },
   {
-    title: "Clinic",
+    title: "Clinics",
     href: "/clinics",
   },
 
@@ -125,7 +128,7 @@ export const clinicConfig: MenuItemProps[] = [
   },
 ];
 export const adminConfig: MenuItemProps[] = [
-  // dashboard
+  // Dashboard section
   {
     isHeader: true,
     title: "Admin Dashboard",
@@ -136,39 +139,44 @@ export const adminConfig: MenuItemProps[] = [
     href: "dashboard",
   },
   {
-    title: " Doctors",
+    title: "Doctors",
     href: "doctors",
-    icon: UserPlus,
+    icon: Stethoscope, // better than UserPlus
   },
   {
     title: "Clinics",
     href: "clinics",
-    icon: UserPlus,
+    icon: Building2, // building icon for clinics
   },
   {
     title: "Patients",
     href: "patients",
-    icon: Receipt,
+    icon: Users, // group of users
   },
   {
     title: "Subscriptions",
     href: "subscriptions",
-    icon: Receipt,
+    icon: CreditCard, // payment/subscription
   },
   {
-    title: "Reviews",
+    title: "Doctor Reviews",
     href: "reviews",
-    icon: MessageSquare,
+    icon: Star, // reviews/rating
+  },
+  {
+    title: "Clinic Reviews",
+    href: "clinic-review",
+    icon: MessageSquare, // feedback/comments
   },
   {
     title: "Specialties",
     href: "specialties",
-    icon: Receipt,
+    icon: UserPlus, // could also use ClipboardList if more relevant
   },
   {
     title: "Cities",
     href: "cities",
-    icon: Receipt,
+    icon: MapPin, // location/city
   },
 ];
 // export const pharmacyConfig: MenuItemProps[] = [

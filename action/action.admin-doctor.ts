@@ -14,6 +14,10 @@ import {
   updateClinicSchema,
 } from "@/zod-validation/clinic";
 import {
+  ClinicReviewUpdateInput,
+  UpdateClinicReviewSchema,
+} from "@/zod-validation/clinicReviewSchema";
+import {
   CreateDoctorInput,
   createDoctorSchema,
   UpdateDoctorInput,
@@ -359,7 +363,56 @@ export async function deleteAdminClinic(email: string) {
     return serverActionErrorResponse(error);
   }
 }
+export async function updateAdminClinicReviewAction(
+  data: ClinicReviewUpdateInput
+) {
+  try {
+    const validatedData = UpdateClinicReviewSchema.parse(data);
+    console.log(validatedData);
 
+    const existingReview = await prisma.clinicReview.findUnique({
+      where: { id: validatedData.id },
+    });
+
+    if (!existingReview) {
+      throw new AppError("Review not found", 404);
+    }
+
+    // Update review
+    const updatedReview = await prisma.clinicReview.update({
+      where: { id: validatedData.id },
+      data: {
+        comment: validatedData.comment,
+        rating: validatedData.rating,
+        status: validatedData.status,
+      },
+    });
+
+    // Recalculate the doctor's average rating & review count
+    const aggregation = await prisma.clinicReview.aggregate({
+      where: { clinicId: validatedData.clinicId },
+      _avg: { rating: true },
+      _count: { id: true },
+    });
+
+    const newAverageRating = aggregation._avg.rating || 0;
+    const newReviewCount = aggregation._count.id;
+
+    await prisma.clinic.update({
+      where: { id: validatedData.clinicId },
+      data: {
+        averageRating: newAverageRating,
+        reviewsCount: newReviewCount,
+      },
+    });
+
+    revalidatePath(`/admin/clinic-review`);
+    return serverActionSuccessResponse(updatedReview);
+  } catch (error: any) {
+    console.error("❌ updateDoctorReviewAction error:", error);
+    return serverActionErrorResponse(error || "Failed to update doctor review");
+  }
+}
 //
 export async function deleteAdminPatient(email: string) {
   try {

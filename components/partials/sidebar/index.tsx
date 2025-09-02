@@ -21,19 +21,6 @@ const Sidebar = () => {
   // Type-safe role extraction
   const userRole = user?.data?.user?.role;
 
-  // // Handle loading state
-  // if (!isLoaded) {
-  //   return (
-  //     <div className="flex items-center space-x-4 p-4">
-  //       <Skeleton className="h-10 w-10 rounded-full" />
-  //       <div className="space-y-2">
-  //         <Skeleton className="h-4 w-[100px]" />
-  //         <Skeleton className="h-4 w-[80px]" />
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   // Get appropriate menu config based on role
   const getMenuConfig = (): MenuItemProps[] => {
     switch (userRole) {

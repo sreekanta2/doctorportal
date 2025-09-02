@@ -37,25 +37,6 @@ const DoctorCardSkeleton = () => {
             </div>
           </div>
         </div>
-
-        {/* Footer Skeleton */}
-        <div className="border-t px-5 py-3 bg-gray-50 dark:bg-gray-800/50 dark:border-gray-800">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="flex items-center flex-wrap gap-3">
-              <div className="flex items-center gap-1.5">
-                <div className="flex gap-1">
-                  {[...Array(5)].map((_, i) => (
-                    <div
-                      key={i}
-                      className="w-4 h-4 bg-gray-200 dark:bg-gray-700 rounded-sm"
-                    ></div>
-                  ))}
-                </div>
-                <div className="h-5 w-20 bg-gray-200 dark:bg-gray-700 rounded-md"></div>
-              </div>
-            </div>
-          </div>
-        </div>
       </article>
     </div>
   );

@@ -1,8 +1,6 @@
 "use client";
 
 import CustomFormField, { FormFieldType } from "@/components/custom-form-field";
-import CustomImage from "@/components/ImageComponent";
-import FileInput from "@/components/shared/FileInput";
 import SubmitButton from "@/components/submit-button";
 import { Form } from "@/components/ui/form";
 import { SelectItem } from "@/components/ui/select";
@@ -59,23 +57,15 @@ export default function DoctorProfileForm() {
           onSubmit={form.handleSubmit(onSubmit)}
         >
           {/* Profile Section */}
-
-          <div className="border p-4  rounded-md flex gap-4 bg-card">
-            <CustomImage
-              src={profilePicture}
-              alt=""
-              aspectRatio="1/1"
-              className="rounded-full"
-              containerClass="w-24 h-24 "
-            />
-
-            <FileInput
-              images={images}
-              setImages={setImages}
-              label="Profile Image"
-              maxFiles={1}
-            />
-          </div>
+          <CustomFormField
+            fieldType={FormFieldType.FILE_UPLOAD}
+            control={form.control}
+            name="image"
+            label="Profile Image"
+            placeholder="John Doe"
+            iconAlt="user"
+          />
+          <div className="border p-4  rounded-md flex gap-4 bg-card"></div>
 
           {/* Information Section */}
 

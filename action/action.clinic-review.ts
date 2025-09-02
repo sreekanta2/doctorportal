@@ -36,25 +36,6 @@ export async function createClinicReviewAction(data: ClinicReviewCreateInput) {
       data: { ...validatedData, reviewerId: validatedData.reviewerId },
     });
 
-    // // Calculate the new average rating & count
-    // const aggregation = await prisma.doctorReview.aggregate({
-    //   where: { doctorId: validatedData.doctorId },
-    //   _avg: { rating: true },
-    //   _count: { id: true },
-    // });
-
-    // const newAverageRating = aggregation._avg.rating || 0;
-    // const newReviewCount = aggregation._count.id;
-
-    // // Update the doctor's average rating & review count
-    // await prisma.doctor.update({
-    //   where: { id: validatedData.doctorId },
-    //   data: {
-    //     averageRating: newAverageRating,
-    //     reviewsCount: newReviewCount,
-    //   },
-    // });
-
     revalidatePath(`/clinics/${validatedData.clinicId}`);
 
     return serverActionCreatedResponse(review);
