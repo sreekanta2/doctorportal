@@ -6,25 +6,33 @@ import {
 import prisma from "@/lib/db";
 import { SearchParams } from "@/types/common";
 
-export async function getClinicProfileById(id: string) {
+export async function getClinicProfileById(
+  id: string,
+  page?: number,
+  limit?: number
+) {
   if (!id) {
     throw new AppError("Unauthorized user!");
   }
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/api/clinics/${id}`,
+      `${process.env.NEXT_PUBLIC_API_URL}/api/clinics/${id}?page=${page}&limit=${limit}`,
       {
         method: "GET",
+        cache: "no-store", // optional, prevents caching
       }
     );
+
     if (!res.ok) {
       throw new AppError("Failed to fetch clinic profile", res.status);
     }
+
     return await res.json();
   } catch (error) {
     return error;
   }
 }
+
 export const getAllClinics = async (
   path: string,
   filterOptions?: SearchParams

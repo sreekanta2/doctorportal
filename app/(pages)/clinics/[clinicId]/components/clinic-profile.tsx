@@ -23,7 +23,7 @@ export default async function ClinicProfile({
   page: number;
   limit: number;
 }) {
-  const result = await getClinicProfileById(clinicId);
+  const result = await getClinicProfileById(clinicId, page, limit);
 
   const reviews = result?.reviews?.reviews || [];
   const clinic: ClinicWithRelations | null = result?.clinic || null;

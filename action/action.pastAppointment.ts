@@ -34,7 +34,9 @@ export async function createPastAppointment(values: unknown) {
         doctorId: data?.doctorId,
       },
     });
-
+    if (pastAppointment) {
+      throw new AppError("This doctor already added try another ");
+    }
     if (!pastAppointment) {
       pastAppointment = await prisma.pastAppointment.create({
         data: {

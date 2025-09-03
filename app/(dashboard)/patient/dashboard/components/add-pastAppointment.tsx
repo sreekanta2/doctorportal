@@ -7,7 +7,7 @@ import { User } from "@/components/svg";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Form } from "@/components/ui/form";
-import { BANGLADESH_DISTRICTS } from "@/lib/utils/utils";
+import { useFetchOptions } from "@/hooks/useFetchCities";
 import { PatientWithRelations } from "@/types"; // 👈 your patient type
 import { medicalHistoryCreateSchema } from "@/zod-validation/medical-history";
 import { passAppointmentCreateSchema } from "@/zod-validation/pastAppointment";
@@ -48,6 +48,8 @@ export function AddPastAppointment({
   const user = useSession(); // logged-in doctor
   const [selectedDoctor, setSelectedDoctor] =
     useState<PatientWithRelations | null>(null);
+  const { options: cities, loading: citiesLoading } =
+    useFetchOptions("/api/cities");
   const [doctors, setDoctors] = useState<PatientWithRelations[]>([]);
   const [isFetchingDoctors, setIsFetchingDoctors] = useState(false);
   const [isPending, startTransition] = useTransition();
@@ -155,7 +157,8 @@ export function AddPastAppointment({
               control={form.control}
               placeholder="Select city"
               label="City"
-              options={BANGLADESH_DISTRICTS}
+              loading={citiesLoading}
+              options={cities}
             />
             <CustomFormField
               fieldType={FormFieldType.SELECT}
