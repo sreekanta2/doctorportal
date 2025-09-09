@@ -18,6 +18,10 @@ export const menus: MenuItemProps[] = [
     title: "Doctors",
     href: "/doctors",
   },
+  {
+    title: "Clinics",
+    href: "/clinics",
+  },
 
   {
     title: "About",
