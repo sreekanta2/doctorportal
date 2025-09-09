@@ -40,7 +40,7 @@ export default function ClinicCreateDialog() {
       role: "clinic",
       city: "",
 
-      country: "Bangladesh",
+      country: "বাংলাদেশ",
       openingHour: "",
       establishedYear: undefined,
     },

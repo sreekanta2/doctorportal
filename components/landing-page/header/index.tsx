@@ -2,7 +2,8 @@
 import MobileMenuHandler from "@/components/partials/header/mobile-menu-handler";
 import { ProfileInfo } from "@/components/partials/header/profile-info";
 import MobileSidebar from "@/components/partials/sidebar/mobile-sidebar";
-import { SiteLogo } from "@/components/svg";
+import SiteLogo from "@/components/sitelogo";
+
 import { menus } from "@/config/menus";
 import { siteConfig } from "@/config/site";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -35,7 +36,7 @@ const Header = () => {
           <div className="w-full flex items-center gap-1">
             <MobileSidebar menus={menus} />
             <Link href="/" className="flex gap-1 items-center">
-              <SiteLogo className="h-6 w-6 text-primary" />
+              <SiteLogo />
               <span className="text-primary-500 font-medium text-xl">
                 {siteConfig.siteName}
               </span>

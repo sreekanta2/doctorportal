@@ -6,12 +6,12 @@ import youtube from "@/public/images/social/youtube.png";
 export { avatar };
 export const siteConfig = {
   sidebarBg: "none",
-  siteName: "Medixa",
-  name: "Medixa - Find & Book Doctors Online",
+  siteName: "Sebader",
+  name: "Sebadar - Find & Book Doctors Online",
   url: `${process.env.NEXT_PUBLIC_API_URL || "https://doccare.srikanto.site"}`,
   description:
     "Find and book appointments with top-rated doctors by specialty, location, and availability. Read verified patient reviews.",
-  author: "Doccare Team",
+  author: "Sebadar Team",
 
   // SEO Enhancements
   googleSiteVerification: "ABC123XYZ", // From Google Search Console
@@ -30,7 +30,7 @@ export const siteConfig = {
   // Social & Images
   twitterHandle: "@DoccareApp",
   ogImage: `/assets/logo.png`,
-  logo: `/images/logo/logo.png`,
+  logo: `/assets/logo.jpeg`,
 
   // Contact Information
   contact: {

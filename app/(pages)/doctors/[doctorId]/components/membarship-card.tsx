@@ -1,8 +1,15 @@
-import { Building, Calendar, User, Users } from "@/components/svg";
+import { Calendar, User } from "@/components/svg";
 import { Button } from "@/components/ui/button";
 import { MembershipWithRelations } from "@/types";
 import { format } from "date-fns";
-import { Building2, Clock, Phone, Star, Stethoscope } from "lucide-react";
+import {
+  Building2,
+  Clock,
+  MapPin,
+  Phone,
+  Star,
+  Stethoscope,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,15 +35,15 @@ const ClinicMembershipCard = ({
             Max: {membership?.maxAppointments} Appointments
           </div>
         )}
-        <div className="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1.5 rounded-full dark:bg-amber-900 dark:text-amber-300">
+        <div className="bg-amber-100 text-amber-800 font-medium text-base   px-3 py-1.5 rounded-full dark:bg-amber-900 dark:text-amber-300">
           Fee: {membership?.fee}৳
         </div>
       </div>
 
       <div className="flex flex-col md:flex-row gap-4">
         {/* Clinic Image Section */}
-        <div className="md:w-1/3  relative   ">
-          <div className="sw-full h-72 sm:w-64 sm:h-64  relative overflow-hidden rounded-md">
+        <div className="md:w-1/3 relative">
+          <div className="sw-full h-72 sm:w-64 sm:h-64 relative overflow-hidden rounded-md">
             {membership?.clinic?.user?.image ||
             membership?.doctor?.user?.image ? (
               <Image
@@ -55,11 +62,11 @@ const ClinicMembershipCard = ({
                 sizes="(max-width: 768px) 100vw, 33vw"
               />
             ) : (
-              <div className=" w-full h-full bg-blue-100 flex items-center justify-center mb-3">
+              <div className="w-full h-full bg-blue-100 flex items-center justify-center mb-3">
                 {membership?.clinic?.user?.name ? (
-                  <Building2 className="w-8 h-8 text-blue-600 " />
+                  <Building2 className="w-8 h-8 text-blue-600" />
                 ) : (
-                  <User className="w-20 h-20 text-blue-600  " />
+                  <User className="w-20 h-20 text-blue-600" />
                 )}
               </div>
             )}
@@ -77,41 +84,16 @@ const ClinicMembershipCard = ({
         </div>
 
         {/* Content Section */}
-        <div className=" mt-2 w-full  space-y-2">
-          <div className=" space-y-2">
+        <div className="mt-2 w-full space-y-4">
+          {/* Header */}
+          <div className="space-y-2">
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white">
               {membership?.clinic?.user?.name ||
                 ` Dr. ${membership?.doctor?.user?.name}`}
             </h2>
-            {membership?.clinic && (
-              <Button
-                variant="outline"
-                className="w-fit  rounded-full flex gap-2 items-center"
-              >
-                <div className="w-4 h-4">
-                  <Users />
-                </div>
-                <Link href={`/clinics/${membership?.clinic?.id}`}>
-                  All Doctors
-                </Link>
-              </Button>
-            )}
-            {membership?.doctor && (
-              <Button
-                variant="outline"
-                className=" w-fit  rounded-full flex gap-2 items-center"
-              >
-                <div className="w-4 h-4">
-                  <Building />
-                </div>
-                <Link href={`/doctors/${membership?.doctor?.id}`}>
-                  All Chambers
-                </Link>
-              </Button>
-            )}
           </div>
-          {/* Header */}
 
+          {/* Doctor Info */}
           <div className="space-y-2">
             {membership?.doctor?.specialization && (
               <div className="flex items-center gap-2 mb-1">
@@ -122,7 +104,7 @@ const ClinicMembershipCard = ({
               </div>
             )}
             {membership?.doctor?.degree && (
-              <h1 className=" text-blue-800 text-xs md:text-base      ">
+              <h1 className="text-blue-800 text-xs md:text-base">
                 {membership?.doctor?.degree.toUpperCase()}
               </h1>
             )}
@@ -143,35 +125,35 @@ const ClinicMembershipCard = ({
           </div>
 
           {/* Contact Information */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 ">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {membership?.clinic?.phoneNumber && (
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
-                  <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+              <div className="space-y-3">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                    <MapPin className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Address
+                    </p>
+                    <p className="text-sm text-gray-900 dark:text-white">
+                      {membership?.clinic?.city}, রংপুর{" "}
+                      {membership?.clinic?.country}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Phone
-                  </p>
-                  <p className="font-medium text-gray-900 dark:text-white">
-                    {membership?.clinic?.phoneNumber}
-                  </p>
-                </div>
-              </div>
-            )}
-
-            {membership?.clinic?.openingHour && (
-              <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
-                  <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-                </div>
-                <div>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">
-                    Open Until
-                  </p>
-                  <p className="font-medium text-gray-900 dark:text-white">
-                    {membership?.clinic?.openingHour}
-                  </p>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 bg-blue-50 rounded-lg dark:bg-gray-800">
+                    <Phone className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">
+                      Phone
+                    </p>
+                    <p className="font-medium text-gray-900 dark:text-white">
+                      {membership?.clinic?.phoneNumber}
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -179,7 +161,7 @@ const ClinicMembershipCard = ({
 
           {/* Schedule Section */}
           {membership?.schedules && (
-            <div className=" border-t pt-1 border-gray-200 dark:border-gray-700">
+            <div className="border-t pt-3 border-gray-200 dark:border-gray-700">
               <div className="flex flex-wrap gap-3">
                 {membership?.schedules?.map((schedule) => (
                   <div
@@ -187,7 +169,7 @@ const ClinicMembershipCard = ({
                     className="flex flex-col w-full md:w-fit bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 p-3 rounded-lg text-sm hover:border-blue-500 hover:bg-blue-50/50 dark:hover:bg-blue-900/10 transition-colors group/schedule"
                   >
                     <div className="flex items-center gap-2 mb-2">
-                      <div className=" bg-blue-50 rounded-lg dark:bg-gray-800">
+                      <div className="bg-blue-50 rounded-lg dark:bg-gray-800">
                         <Calendar className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                       </div>
                       <span className="font-medium text-gray-900 dark:text-white">
@@ -195,7 +177,7 @@ const ClinicMembershipCard = ({
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <div className=" bg-blue-50 rounded-lg dark:bg-gray-800">
+                      <div className="bg-blue-50 rounded-lg dark:bg-gray-800">
                         <Clock className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                       </div>
                       <span>
@@ -215,13 +197,53 @@ const ClinicMembershipCard = ({
               </div>
             </div>
           )}
+          {/* action */}
+          <div>
+            {/* {membership?.clinic && (
+              <Button
+                variant="outline"
+                className="w-fit rounded-full flex gap-2 items-center"
+              >
+                <div className="w-4 h-4">
+                  <Users />
+                </div>
+                <Link href={`/clinics/${membership?.clinic?.id}`}>
+                  All Doctors
+                </Link>
+              </Button>
+            )} */}
+            {/* {membership?.doctor && (
+              <Button
+                variant="outline"
+                className="w-fit rounded-full flex gap-2 items-center"
+              >
+                <div className="w-4 h-4">
+                  <Building />
+                </div>
+                <Link href={`/doctors/${membership?.doctor?.id}`}>
+                  All Chambers
+                </Link>
+              </Button>
+            )} */}
+            <div className="pt-4">
+              <Button
+                className="w-full md:w-fit bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2 rounded-full shadow-md transition"
+                asChild
+              >
+                <Link
+                  href={`/booking?doctorId=${membership?.doctorId}&clinicId=${membership?.clinicId}`}
+                >
+                  Book Appointment
+                </Link>
+              </Button>
+            </div>
+          </div>
+
+          {/* Booking Button */}
         </div>
       </div>
     </article>
   );
 };
-
-// You'll need to import Building2 from lucide-react
-// import { Building2 } from 'lucide-react';
 
 export default ClinicMembershipCard;

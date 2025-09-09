@@ -8,7 +8,7 @@ export { default as Building } from "./duel-tone/building.svg";
 export { default as CupBar } from "./duel-tone/cup-bar.svg";
 export { default as Error } from "./duel-tone/error.svg";
 export { default as Expand } from "./duel-tone/expand.svg";
-export { default as SiteLogo } from "./duel-tone/logo.svg";
+// export { default as SiteLogo } from "./duel-tone/logo.svg";
 export { default as NoteIcon } from "./duel-tone/note.svg";
 export { default as BlankVector } from "./man-vector.svg";
 

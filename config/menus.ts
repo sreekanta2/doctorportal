@@ -18,10 +18,6 @@ export const menus: MenuItemProps[] = [
     title: "Doctors",
     href: "/doctors",
   },
-  {
-    title: "Clinics",
-    href: "/clinics",
-  },
 
   {
     title: "About",
@@ -129,10 +125,7 @@ export const clinicConfig: MenuItemProps[] = [
 ];
 export const adminConfig: MenuItemProps[] = [
   // Dashboard section
-  {
-    isHeader: true,
-    title: "Admin Dashboard",
-  },
+
   {
     title: "Dashboard",
     icon: LayoutDashboard,
@@ -179,82 +172,3 @@ export const adminConfig: MenuItemProps[] = [
     icon: MapPin, // location/city
   },
 ];
-// export const pharmacyConfig: MenuItemProps[] = [
-//   {
-//     isHeader: true,
-//     title: "Menu",
-//   },
-
-//   {
-//     title: "Dashboard",
-//     icon: LayoutDashboard,
-//     href: "dashboard",
-//   },
-
-//   {
-//     title: "Products",
-//     href: "products",
-//     icon: CalendarDays,
-//     child: [
-//       {
-//         title: "Products ",
-//         href: "products",
-//         icon: Heart,
-//         // multi_menu: [
-//         //   {
-//         //     title: "Active Products",
-//         //     href: "active-products",
-//         //     icon: Heart,
-//         //   },
-//         //   {
-//         //     title: "Inactive Products",
-//         //     href: "inactive-products",
-//         //     icon: Heart,
-//         //   },
-//         // ],
-//       },
-//       {
-//         title: "Add Product",
-//         href: "add-product",
-//         icon: DollarSign,
-//       },
-//       {
-//         title: "Out of Stock",
-//         href: "out-of-stock",
-//         icon: DollarSign,
-//       },
-//       {
-//         title: "Expired",
-//         href: "expired",
-//         icon: DollarSign,
-//       },
-//     ],
-//   },
-//   {
-//     title: "Categories",
-//     href: "categories",
-//     icon: Users,
-//   },
-//   {
-//     title: "Orders",
-//     href: "orders",
-//     icon: Heart,
-//   },
-
-//   {
-//     title: "Transactions",
-//     href: "transactions",
-//     icon: CreditCard,
-//   },
-//   {
-//     title: "Settings",
-//     href: "settings",
-//     icon: User,
-//   },
-
-//   {
-//     title: "Change Password",
-//     href: "change-password",
-//     icon: Lock,
-//   },
-// ];

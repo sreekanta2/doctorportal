@@ -1,5 +1,5 @@
 export const metadata = {
-  title: "Doctors Reviews",
+  title: "Clinics Reviews",
 };
 
 const Layout = ({ children }: { children: React.ReactNode }) => {

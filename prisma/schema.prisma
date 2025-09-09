@@ -134,6 +134,7 @@ model Doctor {
   userId          String             @unique
   user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   pastAppointment PastAppointment[]
+  appointment     Appointment[]
 
   @@index([city], type: Hash)
   @@index([gender], type: Hash)
@@ -167,8 +168,9 @@ model Clinic {
   memberships  ClinicMembership[]
   subscription Subscription?
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  appointment Appointment[]
 
   // Indexes for faster filtering
   @@index([city], type: Hash)
@@ -237,6 +239,23 @@ model ClinicMembership {
   @@index([clinicId])
 }
 
+model Appointment {
+  id          String   @id @default(cuid())
+  doctorId    String
+  clinicId    String
+  status      String
+  patientName String
+  phoneNumber String
+  date        DateTime
+
+  doctor    Doctor     @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  clinic    Clinic     @relation(fields: [clinicId], references: [id], onDelete: Cascade)
+  schedules Schedule[]
+
+  @@unique([doctorId, clinicId])
+  @@index([clinicId])
+}
+
 model Schedule {
   id           String  @id @default(cuid())
   membershipId String
@@ -245,7 +264,9 @@ model Schedule {
   startTime    String
   endTime      String
 
-  membership ClinicMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  membership    ClinicMembership @relation(fields: [membershipId], references: [id], onDelete: Cascade)
+  Appointment   Appointment?     @relation(fields: [appointmentId], references: [id])
+  appointmentId String?
 
   @@unique([membershipId, startDay])
   @@index([membershipId, startDay])

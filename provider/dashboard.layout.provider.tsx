@@ -84,7 +84,6 @@ const LayoutWrapper = ({ children, location }: LayoutWrapperProps) => {
       case Role.PATIENT:
         return patientConfig;
       default:
-        // Handle unauthenticated or unknown roles
         return [];
     }
   };

@@ -87,7 +87,7 @@ export default function DoctorCard({
                   </div>
                 </div>
                 <div className="flex items-center gap-2 mb-1">
-                  <p className="text-sm sm:text-base   text-blue-800  font-medium px-2.5 py-0.5 rounded  ">
+                  <p className="text-sm sm:text-base   text-blue-800  font-medium   py-0.5 rounded  ">
                     {doctor?.degree || ""}
                   </p>
                 </div>

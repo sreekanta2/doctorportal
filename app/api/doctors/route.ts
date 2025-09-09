@@ -104,6 +104,8 @@ export async function GET(request: Request) {
               fee: true,
               maxAppointments: true,
               discount: true,
+              clinicId: true,
+              doctorId: true,
               clinic: {
                 select: {
                   id: true,

@@ -36,11 +36,12 @@ export async function GET(
             id: true,
             fee: true,
             maxAppointments: true,
+            clinicId: true,
+            doctorId: true,
             discount: true,
             clinic: {
               select: {
                 id: true,
-
                 city: true,
                 country: true,
                 phoneNumber: true,
